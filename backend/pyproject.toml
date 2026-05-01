@@ -37,7 +37,9 @@ dev = [
 asyncio_mode = "auto"
 testpaths = ["tests"]
 pythonpath = ["."]
-addopts = "-ra --strict-markers --strict-config"
+# Disable pytest-postgresql plugin: we use our own asyncpg-based ephemeral DB fixture in conftest.
+# pytest-postgresql pulls in psycopg which lacks libpq on Windows dev machines.
+addopts = "-ra --strict-markers --strict-config -p no:postgresql"
 markers = [
     "integration: integration tests requiring postgres",
     "unit: pure unit tests, no I/O",
@@ -63,6 +65,9 @@ ignore = ["S101"]  # allow assert in tests
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S", "T20"]
+# FastAPI uses `Depends()` as a default arg — that's the idiomatic DI pattern.
+"app/core/deps.py" = ["B008"]
+"app/api/**" = ["B008"]
 
 [tool.mypy]
 python_version = "3.12"
