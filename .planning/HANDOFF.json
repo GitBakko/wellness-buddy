@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-05-01T14:51:14.277Z",
+  "timestamp": "2026-05-01T15:28:54.350Z",
   "source": "auto-postool",
   "partial": false,
   "phase": "1",
@@ -8,10 +8,51 @@
   "phase_dir": ".planning/phases/01-foundation",
   "plan": "1",
   "task": null,
-  "total_tasks": 0,
+  "total_tasks": 8,
   "status": "auto-checkpoint",
   "completed_tasks": [],
-  "remaining_tasks": [],
+  "remaining_tasks": [
+    {
+      "id": "01",
+      "name": "Task 1: Monorepo root + workspace + Docker Compose dev postgres + plans/ scaffold",
+      "status": "not_started"
+    },
+    {
+      "id": "02",
+      "name": "Task 1: Core scaffolding (config + database + logging + middleware + exceptions + deps stubs) + main.py with lifespan",
+      "status": "not_started"
+    },
+    {
+      "id": "03",
+      "name": "Task 1: Backend auth — security.py rotation logic + auth_service + /api/auth/* real endpoints + invite flow + integration tests",
+      "status": "not_started"
+    },
+    {
+      "id": "04",
+      "name": "Task 1: MD parser pipeline (normalizer + plan_parser + plan_sections + Pydantic v2 strict schema) + evil-corpus fixtures + unit tests",
+      "status": "not_started"
+    },
+    {
+      "id": "05",
+      "name": "Task 1: Frontend deps install + Vite + TypeScript + Tailwind 4 @theme + shadcn/ui CLI init + 17 primitives + globals.css + format.ts + copy.it.ts",
+      "status": "not_started"
+    },
+    {
+      "id": "06",
+      "name": "Task 1: vite-plugin-pwa Workbox config + manifest + version polling + update toast hook + Dexie schema v1 + mutation queue + persistQueryClient",
+      "status": "not_started"
+    },
+    {
+      "id": "07",
+      "name": "Task 1: Backend /api/today aggregator + /api/weight + /api/workout CRUD + cross-user authz tests",
+      "status": "not_started"
+    },
+    {
+      "id": "08",
+      "name": "Task 1: Three /today tone calibration HTML mockups (A 75/25 elegant, B 50/50 balanced, C 25/75 playful) consuming production @theme tokens + index page + sign-off checklist",
+      "status": "not_started"
+    }
+  ],
   "blockers": [],
   "human_actions_pending": [],
   "decisions": [],
@@ -22,9 +63,37 @@
     },
     {
       "status": "??",
-      "path": ".planning/phases/01-foundation/01-VALIDATION.md"
+      "path": ".planning/phases/01-foundation/01-01-PLAN.md"
+    },
+    {
+      "status": "??",
+      "path": ".planning/phases/01-foundation/01-02-PLAN.md"
+    },
+    {
+      "status": "??",
+      "path": ".planning/phases/01-foundation/01-03-PLAN.md"
+    },
+    {
+      "status": "??",
+      "path": ".planning/phases/01-foundation/01-04-PLAN.md"
+    },
+    {
+      "status": "??",
+      "path": ".planning/phases/01-foundation/01-05-PLAN.md"
+    },
+    {
+      "status": "??",
+      "path": ".planning/phases/01-foundation/01-06-PLAN.md"
+    },
+    {
+      "status": "??",
+      "path": ".planning/phases/01-foundation/01-07-PLAN.md"
+    },
+    {
+      "status": "??",
+      "path": ".planning/phases/01-foundation/01-08-PLAN.md"
     }
   ],
   "next_action": "Roadmap approved, awaiting plan generation for Phase 1",
-  "context_notes": "Status: Roadmap approved, awaiting plan generation for Phase 1\n\nRecent commits:\n3afb677 docs(01): phase research .planning/phases/01-foundation/01-RESEARCH.md\n1e90e24 chore: relocate phase-01 dir to canonical .planning/phases/, add .gitignore for plans/, CLAUDE.md, contract\nafd2d8d docs(01): capture phase context .planning/phase-01-foundation/01-CONTEXT.md .planning/phase-01-foundation/01-DISCUSSION-LOG.md\n6adaedb docs(01): UI-SPEC approved (6/6 dimensions PASS) .planning/phase-01-foundation/01-UI-SPEC.md\n3f53ff8 docs(01): UI-SPEC revision 1 — typography scale + focal points .planning/phase-01-foundation/01-UI-SPEC.md"
+  "context_notes": "Status: Roadmap approved, awaiting plan generation for Phase 1\n\nRecent commits:\n797ac07 docs(01): add validation strategy .planning/phases/01-foundation/01-VALIDATION.md\n3afb677 docs(01): phase research .planning/phases/01-foundation/01-RESEARCH.md\n1e90e24 chore: relocate phase-01 dir to canonical .planning/phases/, add .gitignore for plans/, CLAUDE.md, contract\nafd2d8d docs(01): capture phase context .planning/phase-01-foundation/01-CONTEXT.md .planning/phase-01-foundation/01-DISCUSSION-LOG.md\n6adaedb docs(01): UI-SPEC approved (6/6 dimensions PASS) .planning/phase-01-foundation/01-UI-SPEC.md"
 }

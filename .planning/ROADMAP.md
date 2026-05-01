@@ -61,7 +61,17 @@ UI-01 — UI-20 (cross-cutting — foundations land here)
 
 **Pause Gate (exit criteria)**: Real iPhone install riuscita; offline `/today` testato; upgrade path da vecchia versione funziona (toast → skipWaiting → reload); resync dopo manual Dexie wipe ricostruisce la cache; axe-core verde; Lighthouse PWA 100/100; tone calibration approvata da entrambi gli utenti reali.
 
-**Plans**: TBD
+**Plans:** 8 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Monorepo + tooling + Docker Compose dev postgres + GitHub Actions CI workflows
+- [ ] 01-02-PLAN.md — Backend skeleton: FastAPI + SQLAlchemy 2 async + 10 models + Alembic baseline + AI ABC + NullProvider + DI lifespan + /api/health + /version.json
+- [ ] 01-03-PLAN.md — Auth: JWT 15min + refresh 7d rotation + 10s grace + family revocation + invite-only signup + frontend Zustand + singleton refresh promise + Login/Register pages + PersistStorageWelcome
+- [ ] 01-04-PLAN.md — MD parser tolerant pipeline + strict Pydantic v2 schema + evil-corpus fixtures (BOM/CRLF/NFD/emoji/Obsidian/NBSP) + /api/plans/* + admin assign-plan + frontend Plans page (dropzone + diff view)
+- [ ] 01-05-PLAN.md — Frontend skeleton: Vite + React 19 + Tailwind 4 @theme tokens + shadcn/ui CLI + 17 customized primitives + dark mode + axe-core CI + Lighthouse 95+/100 + Italian copy.it.ts + format helpers
+- [ ] 01-06-PLAN.md — PWA shell: vite-plugin-pwa Workbox (NetworkFirst index, CacheFirst hashed, NetworkOnly auth+writes) + Dexie v1 schema + mutation_queue + persist() + update toast + AppShell layout + locked AIWidget
+- [ ] 01-07-PLAN.md — /today landing (Italian greeting Instrument Serif escape hatch + MealCard + MacroDisplay + WeightQuickLog + WorkoutForm + AIWidget) + /api/today + /api/weight + /api/workout CRUD + WeightChart (UI-08 CSS variable colors) + History + Settings
+- [ ] 01-08-PLAN.md — Tone calibration mockups (3 variants A/B/C — Stefano+Marta sign-off blocking checkpoint) + complete DEPLOY.md (Windows Server 2019 + NSSM + IIS + win-acme) + smoke test script
 
 **UI hint**: yes
 
