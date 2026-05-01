@@ -9,9 +9,10 @@ missing SECRET_KEY/DATABASE_URL/etc.
 The `test_engine` fixture creates/drops the `WellnessBuddy_test` DB and applies Alembic
 migrations to head. Integration tests that need the schema depend on `test_engine`.
 
-If Postgres is not reachable on localhost:5432 (developer running `pytest -k unit` without
+If Postgres is not reachable on localhost:5434 (developer running `pytest -k unit` without
 docker compose up), the engine fixture raises a clear error — only integration tests using
-`test_engine` are affected.
+`test_engine` are affected. Port 5434 is set by `docker-compose.override.yml` to avoid clash
+with another local Postgres container on 5432.
 
 The pytest-postgresql plugin (transitive via dev deps) is disabled in pyproject.toml
 (`-p no:postgresql`) because it requires libpq/psycopg which we do not install.
@@ -27,7 +28,7 @@ from typing import Any
 # IMPORTANT: env defaults must be set BEFORE any `app.*` import below.
 os.environ.setdefault(
     "DATABASE_URL",
-    "postgresql+asyncpg://wnbd:WnBd4321%40@localhost:5432/WellnessBuddy_test",
+    "postgresql+asyncpg://wnbd:WnBd4321%40@localhost:5434/WellnessBuddy_test",
 )
 os.environ.setdefault(
     "SECRET_KEY",
