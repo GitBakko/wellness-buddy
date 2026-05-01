@@ -11,8 +11,8 @@ Requirements per release v1 (Sprint 1-5). Ogni requisito mappa a una fase roadma
 
 - [ ] **FND-01**: Monorepo pnpm workspaces con `frontend/` (React 19 + Vite 7 + TailwindCSS 4) e `backend/` (FastAPI Python 3.12) configurato con linter (ESLint 9 flat, Prettier, ruff, mypy)
 - [ ] **FND-02**: Database PostgreSQL `WellnessBuddy` creato + Alembic init con migration baseline
-- [x] **FND-03**: Backend FastAPI skeleton con SQLAlchemy 2 async + asyncpg pool 15/10 + lifespan startup
-- [ ] **FND-04**: Frontend Vite skeleton con React 19 + TailwindCSS 4 `@theme` tokens + shadcn/ui CLI inizializzato + Geist Sans/Mono + lucide-react + sonner + Motion v12
+- [ ] **FND-03**: Backend FastAPI skeleton con SQLAlchemy 2 async + asyncpg pool 15/10 + lifespan startup
+- [x] **FND-04**: Frontend Vite skeleton con React 19 + TailwindCSS 4 `@theme` tokens + shadcn/ui 17 customized primitives + Geist (via fontsource-variable) + lucide-react + sonner + Motion v12 (Plan 01-05a, 2026-05-01)
 - [ ] **FND-05**: PWA shell con vite-plugin-pwa, manifest (icons 192/512, theme color, display standalone), Service Worker con strategia NetworkFirst per `index.html` + CacheFirst hashed assets
 - [ ] **FND-06**: Update flow PWA con `/version.json` polling + toast "Nuova versione disponibile" + `skipWaiting` + postMessage
 - [ ] **FND-07**: Dexie schema con `cache_*` tables + `mutation_queue` + `drafts` (UUIDs server-generated), upgrade hooks documentate
@@ -32,20 +32,20 @@ Requirements per release v1 (Sprint 1-5). Ogni requisito mappa a una fase roadma
 - [ ] **AUTH-09**: User può registrarsi solo con token invito valido (no signup pubblico)
 - [ ] **AUTH-10**: Admin può generare token invito (24h expiry, single-use, revocable)
 - [ ] **AUTH-11**: Endpoint `GET /api/auth/me` ritorna profilo user corrente
-- [x] **AUTH-12**: API errors sempre JSON `{detail: string, code: string}`
+- [ ] **AUTH-12**: API errors sempre JSON `{detail: string, code: string}`
 
 ### Data Models (Sprint 1)
 
-- [x] **MOD-01**: Modello `User` (id, email, username, hashed_password, role admin|user, group_id FK, timezone IANA default `Europe/Rome`, created_at TIMESTAMPTZ)
-- [x] **MOD-02**: Modello `Group` (id, name) — esiste in schema Sprint 1 anche se family sync arriva Sprint 2
-- [x] **MOD-03**: Modello `NutritionPlan` (id, user_id, name, raw_md, parsed_json JSONB, uploaded_at, is_active)
-- [x] **MOD-04**: Modello `WeeklyPlanVariant` (id, user_id, plan_id, week_start, day_of_week, meal_type, variant_key, visibility enum private|group_shared, version int per LWW)
-- [x] **MOD-05**: Modello `WorkoutLog` (id, user_id, date, trained bool, duration_min, calories_burned, workout_type, notes) — visibility sempre private
-- [x] **MOD-06**: Modello `WeightLog` (id, user_id, date, weight_kg) — visibility sempre private
-- [x] **MOD-07**: Modello `ShoppingListState` (id, user_id, week_start, items_json checklist serializzata, version int)
-- [x] **MOD-08**: Modello `InviteToken` (id, token, created_by, used_by nullable, expires_at, revoked bool)
-- [x] **MOD-09**: Tutte timestamp colonne sono TIMESTAMPTZ + UTC storage + IANA tz su User
-- [x] **MOD-10**: Indici time-series su `workout_log(user_id, date)`, `weight_log(user_id, date)`, `weekly_plan_variant(user_id, week_start)`
+- [ ] **MOD-01**: Modello `User` (id, email, username, hashed_password, role admin|user, group_id FK, timezone IANA default `Europe/Rome`, created_at TIMESTAMPTZ)
+- [ ] **MOD-02**: Modello `Group` (id, name) — esiste in schema Sprint 1 anche se family sync arriva Sprint 2
+- [ ] **MOD-03**: Modello `NutritionPlan` (id, user_id, name, raw_md, parsed_json JSONB, uploaded_at, is_active)
+- [ ] **MOD-04**: Modello `WeeklyPlanVariant` (id, user_id, plan_id, week_start, day_of_week, meal_type, variant_key, visibility enum private|group_shared, version int per LWW)
+- [ ] **MOD-05**: Modello `WorkoutLog` (id, user_id, date, trained bool, duration_min, calories_burned, workout_type, notes) — visibility sempre private
+- [ ] **MOD-06**: Modello `WeightLog` (id, user_id, date, weight_kg) — visibility sempre private
+- [ ] **MOD-07**: Modello `ShoppingListState` (id, user_id, week_start, items_json checklist serializzata, version int)
+- [ ] **MOD-08**: Modello `InviteToken` (id, token, created_by, used_by nullable, expires_at, revoked bool)
+- [ ] **MOD-09**: Tutte timestamp colonne sono TIMESTAMPTZ + UTC storage + IANA tz su User
+- [ ] **MOD-10**: Indici time-series su `workout_log(user_id, date)`, `weight_log(user_id, date)`, `weekly_plan_variant(user_id, week_start)`
 
 ### Markdown Plan Parsing (Sprint 1)
 
@@ -190,15 +190,15 @@ Requirements per release v1 (Sprint 1-5). Ogni requisito mappa a una fase roadma
 
 ### WIN REQUISITE UI/UX (cross-cutting, ogni sprint)
 
-- [ ] **UI-01**: TailwindCSS 4 `@theme` design tokens — colors OKLCH/HSL con dark variants, typography Geist, radius, motion
-- [ ] **UI-02**: Mobile-first 390px → tablet → desktop con container queries
-- [ ] **UI-03**: shadcn/ui + Radix primitives customizzati (no vanilla shadcn)
+- [x] **UI-01**: TailwindCSS 4 `@theme` design tokens — colors OKLCH/HSL con dark variants, typography Geist, radius, motion (foundation Plan 01-05a; cross-phase quality gate continues to apply)
+- [x] **UI-02**: Mobile-first 390px → tablet → desktop con container queries (foundation Plan 01-05a — token spacing scale + Card sm:p-6 breakpoints established; per-page validation continues per phase)
+- [x] **UI-03**: shadcn/ui + Radix primitives customizzati (no vanilla shadcn) — 17 primitives consumed @theme tokens (Plan 01-05a, 2026-05-01)
 - [ ] **UI-04**: Motion v12 per ogni state transition con motion budget enforced (≤250ms micro, ≤800ms celebration, ≤2 simultaneous moving elements)
 - [ ] **UI-05**: `prefers-reduced-motion: reduce` honored via `--motion-scale: 0` (full disable)
 - [ ] **UI-06**: Touch microinteractions: every tap scales 0.97 con 80ms ease
-- [ ] **UI-07**: Dark mode first-class — palette OKLCH con dark variants da day one
-- [ ] **UI-08**: Recharts colors via CSS variables (mai hardcoded hex)
-- [ ] **UI-09**: PWA manifest theme color con `media` queries dark/light
+- [x] **UI-07**: Dark mode first-class — palette OKLCH con dark variants da day one (foundation Plan 01-05a; @media + :root[data-theme=dark] mirror + @custom-variant dark; per-route screenshot tests continue per phase)
+- [x] **UI-08**: Recharts colors via CSS variables (mai hardcoded hex) — token contract locked Plan 01-05a; Recharts integration with var(--color-*) lands Plan 07
+- [x] **UI-09**: PWA manifest theme color con `media` queries dark/light (Plan 01-05a — index.html `<meta name="theme-color" media="(prefers-color-scheme: light|dark)">`)
 - [ ] **UI-10**: axe-core in Playwright CI su ogni PR — fail at <4.5:1 body, <3:1 large/icons
 - [ ] **UI-11**: Lighthouse a11y ≥95 su ogni route UI
 - [ ] **UI-12**: Dark mode screenshot tests CI per ogni pagina
@@ -260,9 +260,9 @@ Requirements per release v1 (Sprint 1-5). Ogni requisito mappa a una fase roadma
 
 | Requirement | Phase | Phase Name | Status |
 |-------------|-------|------------|--------|
-| FND-01 — FND-09 | Phase 1 | Foundation | Partial — FND-03 complete (Plan 02a) |
-| AUTH-01 — AUTH-12 | Phase 1 | Foundation | Partial — AUTH-12 envelope complete (Plan 02a) |
-| MOD-01 — MOD-10 | Phase 1 | Foundation | Complete (Plan 02a) |
+| FND-01 — FND-09 | Phase 1 | Foundation | Pending |
+| AUTH-01 — AUTH-12 | Phase 1 | Foundation | Pending |
+| MOD-01 — MOD-10 | Phase 1 | Foundation | Pending |
 | PLAN-01 — PLAN-10 | Phase 1 | Foundation | Pending |
 | TODAY-01 — TODAY-08 | Phase 1 | Foundation | Pending |
 | WEIGHT-01, WEIGHT-02 | Phase 1 | Foundation | Pending |
