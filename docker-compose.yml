@@ -1,0 +1,24 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: wellness-buddy-postgres-dev
+    environment:
+      POSTGRES_USER: wnbd
+      POSTGRES_PASSWORD: WnBd4321@
+      POSTGRES_DB: WellnessBuddy
+      # MOD-09 enforcement at DB level — server tz UTC, client TIMESTAMPTZ
+      PGTZ: UTC
+      TZ: UTC
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    command: ["postgres", "-c", "timezone=UTC"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wnbd -d WellnessBuddy"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

@@ -1,0 +1,27 @@
+{
+  "name": "frontend",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --port 4173",
+    "typecheck": "tsc -b --noEmit",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css,md,json}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css,md,json}\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:axe": "playwright test --project=axe",
+    "test:visual": "playwright test --project=visual-light --project=visual-dark",
+    "test:pwa": "playwright test e2e/pwa.spec.ts",
+    "test:lighthouse-pwa": "lhci autorun --config=./lighthouserc.json",
+    "test:all": "pnpm test && pnpm test:axe && pnpm test:visual"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.6"
+  }
+}

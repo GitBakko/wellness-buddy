@@ -64,7 +64,7 @@ UI-01 â€” UI-20 (cross-cutting â€” foundations land here)
 **Plans:** 10 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Monorepo + tooling + Docker Compose dev postgres + GitHub Actions CI workflows
+- [x] 01-01-PLAN.md — Monorepo + tooling + Docker Compose dev postgres + GitHub Actions CI workflows (completed 2026-05-01, commits e9756c6, 2a9fb2e, 739de1d)
 - [ ] 01-02a-PLAN.md — Backend core: FastAPI + SQLAlchemy 2 async + 10 models + Alembic baseline + audit_service + Pydantic v2 base schemas + /api/health + /version.json
 - [ ] 01-02b-PLAN.md — Backend AI layer: AIProvider ABC + NullProvider + factory + DI lifespan + stub routers (auth/plans/today/weekly/workout/weight/shopping/admin) + AI endpoints
 - [ ] 01-05a-PLAN.md — Frontend build: Vite + React 19 + Tailwind 4 @theme tokens + shadcn/ui CLI + 17 customized primitives + dark mode + ESLint hex ban + 4 PWA icons
