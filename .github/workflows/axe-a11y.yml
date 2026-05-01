@@ -1,0 +1,23 @@
+name: Accessibility (axe-core + Lighthouse)
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  axe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 9 }
+      - uses: actions/setup-node@v4
+        with: { node-version: '20', cache: 'pnpm' }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter frontend exec playwright install --with-deps chromium
+      - run: pnpm --filter frontend build
+      - name: Run axe-core via Playwright (UI-10 ≥4.5:1 / ≥3:1)
+        run: pnpm --filter frontend test:axe
+      - name: Lighthouse PWA + a11y (UI-11 ≥95)
+        run: pnpm --filter frontend test:lighthouse-pwa

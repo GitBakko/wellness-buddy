@@ -18,7 +18,9 @@
   "devDependencies": {
     "concurrently": "^9",
     "husky": "^9",
-    "lint-staged": "^15"
+    "lint-staged": "^15",
+    "prettier": "^3",
+    "prettier-plugin-tailwindcss": "^0.6"
   },
   "packageManager": "pnpm@10.0.0"
 }
