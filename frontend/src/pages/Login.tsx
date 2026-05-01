@@ -1,10 +1,11 @@
-// Placeholder — Plan 03 ships real login (LoginForm + auth flow + iOS keyboard scroll-into-view).
-export default function Login() {
+// frontend/src/pages/Login.tsx
+// Plan 03 — login page wrapper. Composes LoginForm in a centered viewport layout.
+import { LoginForm } from '@/components/auth/LoginForm';
+
+export default function Login(): React.ReactElement {
   return (
-    <main className="flex min-h-dvh items-center justify-center p-6">
-      <p className="text-[var(--color-text-muted)] text-[var(--text-base)]">
-        Login — placeholder. Plan 03 lands real auth.
-      </p>
+    <main className="flex min-h-dvh items-center justify-center p-[var(--spacing-4)]">
+      <LoginForm />
     </main>
   );
 }
