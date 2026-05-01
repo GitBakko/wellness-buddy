@@ -256,39 +256,42 @@ Requirements per release v1 (Sprint 1-5). Ogni requisito mappa a una fase roadma
 
 ## Traceability
 
-Mappata durante creazione roadmap. Ogni requisito v1 mappato a esattamente una fase.
+**LOCKED 2026-05-01 during roadmap creation.** Ogni requisito v1 mappato a esattamente una fase. Cross-cutting UI-01 — UI-20 applicano a tutte le fasi come quality gate al pause gate di ogni fase.
 
-| Requirement | Phase | Status |
-|-------------|-------|--------|
-| FND-01 — FND-09 | Phase 1 | Pending |
-| AUTH-01 — AUTH-12 | Phase 1 | Pending |
-| MOD-01 — MOD-10 | Phase 1 | Pending |
-| PLAN-01 — PLAN-10 | Phase 1 | Pending |
-| TODAY-01 — TODAY-08 | Phase 1 | Pending |
-| WEIGHT-01, WEIGHT-02 | Phase 1 | Pending |
-| WEIGHT-03, WEIGHT-04, WEIGHT-05 | Phase 3 | Pending |
-| WORK-01, WORK-02 | Phase 1 | Pending |
-| WORK-03, WORK-04 | Phase 3 | Pending |
-| WEEK-01 — WEEK-05 | Phase 2 | Pending |
-| SHOP-01 — SHOP-08 | Phase 2 | Pending |
-| FAM-01 — FAM-09 | Phase 2 | Pending |
-| DASH-01 — DASH-08 | Phase 3 | Pending |
-| PUSH-01 — PUSH-07 | Phase 3 | Pending |
-| ENG-01 — ENG-06 | Phase 3 | Pending |
-| ADM-01 — ADM-07 | Phase 4 | Pending |
-| AI-01 — AI-07 | Phase 1 | Pending |
-| AI-08 — AI-16 | Phase 5 | Pending |
-| DEP-01 — DEP-05, DEP-08, DEP-09 | Phase 1 | Pending |
-| DEP-06 | Phase 2 | Pending |
-| DEP-07 | Phase 3 | Pending |
-| UI-01 — UI-20 | All Phases (cross-cutting) | Pending |
+| Requirement | Phase | Phase Name | Status |
+|-------------|-------|------------|--------|
+| FND-01 — FND-09 | Phase 1 | Foundation | Pending |
+| AUTH-01 — AUTH-12 | Phase 1 | Foundation | Pending |
+| MOD-01 — MOD-10 | Phase 1 | Foundation | Pending |
+| PLAN-01 — PLAN-10 | Phase 1 | Foundation | Pending |
+| TODAY-01 — TODAY-08 | Phase 1 | Foundation | Pending |
+| WEIGHT-01, WEIGHT-02 | Phase 1 | Foundation | Pending |
+| WEIGHT-03, WEIGHT-04, WEIGHT-05 | Phase 3 | Engagement & Polish | Pending |
+| WORK-01, WORK-02 | Phase 1 | Foundation | Pending |
+| WORK-03, WORK-04 | Phase 3 | Engagement & Polish | Pending |
+| WEEK-01 — WEEK-05 | Phase 2 | Differentiators | Pending |
+| SHOP-01 — SHOP-08 | Phase 2 | Differentiators | Pending |
+| FAM-01 — FAM-09 | Phase 2 | Differentiators | Pending |
+| DASH-01 — DASH-08 | Phase 3 | Engagement & Polish | Pending |
+| PUSH-01 — PUSH-07 | Phase 3 | Engagement & Polish | Pending |
+| ENG-01 — ENG-06 | Phase 3 | Engagement & Polish | Pending |
+| ADM-01 — ADM-07 | Phase 4 | Admin & Hardening | Pending |
+| AI-01 — AI-07 | Phase 1 | Foundation (ABC + NullProvider stub) | Pending |
+| AI-08 — AI-16 | Phase 5 | AI Activation | Pending |
+| DEP-01 — DEP-05, DEP-08, DEP-09 | Phase 1 | Foundation | Pending |
+| DEP-06 | Phase 2 | Differentiators (WeasyPrint GTK3 spike) | Pending |
+| DEP-07 | Phase 3 | Engagement & Polish (VAPID keys) | Pending |
+| UI-01 — UI-20 | All Phases | Cross-cutting WIN REQUISITE | Pending |
 
 **Coverage:**
 
 - v1 requirements: ~145 totali
 - Mapped to phases: 100%
 - Unmapped: 0
+- Duplicates: 0
+- Locked: 2026-05-01
 
 ---
 *Requirements defined: 2026-05-01*
-*Last updated: 2026-05-01 after initial definition*
+*Traceability locked: 2026-05-01 during roadmap creation*
+*Last updated: 2026-05-01 — traceability table verified and locked against ROADMAP.md*
