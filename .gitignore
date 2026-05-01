@@ -1,0 +1,63 @@
+# Real nutrition plans (privacy)
+/plans/*
+!/plans/.gitkeep
+!/plans/EXAMPLE.md
+
+# Env
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+.uv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Node
+node_modules/
+.pnpm-store/
+dist/
+build/
+.vite/
+.turbo/
+*.tsbuildinfo
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test artifacts
+playwright-report/
+test-results/
+coverage/
+
+# GSD checkpoint files
+.planning/HANDOFF.json
+.planning/**/*-DISCUSS-CHECKPOINT.json

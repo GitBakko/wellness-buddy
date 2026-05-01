@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-05-01T14:20:24.657Z",
+  "timestamp": "2026-05-01T14:21:48.393Z",
   "source": "auto-postool",
   "partial": false,
   "phase": "1",
@@ -18,10 +18,6 @@
   "uncommitted_files": [
     {
       "status": "??",
-      "path": ".planning/phase-01-foundation/01-CONTEXT.md"
-    },
-    {
-      "status": "??",
       "path": "CLAUDE.md"
     },
     {
@@ -34,5 +30,5 @@
     }
   ],
   "next_action": "Roadmap approved, awaiting plan generation for Phase 1",
-  "context_notes": "Status: Roadmap approved, awaiting plan generation for Phase 1\n\nRecent commits:\n6adaedb docs(01): UI-SPEC approved (6/6 dimensions PASS) .planning/phase-01-foundation/01-UI-SPEC.md\n3f53ff8 docs(01): UI-SPEC revision 1 — typography scale + focal points .planning/phase-01-foundation/01-UI-SPEC.md\n4524d55 docs(01): UI design contract .planning/phase-01-foundation/01-UI-SPEC.md\n88c1401 docs: create roadmap (5 phases) + CLAUDE.md .planning/ROADMAP.md .planning/STATE.md .planning/REQUIREMENTS.md CLAUDE.md\n2ef1cf4 docs: define v1 requirements .planning/REQUIREMENTS.md"
+  "context_notes": "Status: Roadmap approved, awaiting plan generation for Phase 1\n\nRecent commits:\nafd2d8d docs(01): capture phase context .planning/phase-01-foundation/01-CONTEXT.md .planning/phase-01-foundation/01-DISCUSSION-LOG.md\n6adaedb docs(01): UI-SPEC approved (6/6 dimensions PASS) .planning/phase-01-foundation/01-UI-SPEC.md\n3f53ff8 docs(01): UI-SPEC revision 1 — typography scale + focal points .planning/phase-01-foundation/01-UI-SPEC.md\n4524d55 docs(01): UI design contract .planning/phase-01-foundation/01-UI-SPEC.md\n88c1401 docs: create roadmap (5 phases) + CLAUDE.md .planning/ROADMAP.md .planning/STATE.md .planning/REQUIREMENTS.md CLAUDE.md"
 }
