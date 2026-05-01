@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Variante B — 50% / 50% bilanciata · Wellness Buddy</title>
+    <link rel="stylesheet" href="shared.css" />
+    <!--
+      Variant B — 50/50 (RECOMMENDED baseline)
+      Treatment intensity:
+        · Greeting uses Instrument Serif escape hatch (var(--text-display-serif), MAX 1/page)
+        · Coral on primary CTA + active tab + completed-meal coral edge accent
+        · One Storyset spot illustration on empty state
+        · KPI Mono tabular-nums on macro chips (already in shared.css)
+        · Subtle leaf-green border on completed meal-card
+        · Border radius medium (16px buttons & cards)
+      Focal points (UI-SPEC §8.3, locked):
+        · /today populated  → Instrument Serif greeting + first incomplete MealCard
+        · /today empty plan → Storyset illustration + CTA "Carica piano"
+    -->
+  </head>
+  <body class="variant-balanced">
+    <div class="legend">Variante B — 50 / 50 (raccomandata)</div>
+
+    <main class="showcase">
+      <!-- 1) Mobile — Light — Populated -->
+      <section class="showcase-section">
+        <h3>Mobile 390 · Light · Populated</h3>
+        <div class="device device-mobile">
+          <div class="today-page">
+            <header class="app-bar">
+              <span class="title">Oggi</span>
+              <span class="sync-pip">Sincronizzato</span>
+            </header>
+            <div class="scroll">
+              <div class="greeting-block">
+                <h1 class="greeting-serif">Buongiorno, Stefano</h1>
+                <span class="greeting-date">lunedì 5 maggio</span>
+              </div>
+
+              <section>
+                <h2 class="section-title" style="margin-bottom: var(--spacing-3)">Pasti di oggi</h2>
+                <div class="meals-list">
+                  <article class="meal-card coral-edge" data-completed="true">
+                    <div class="meal-row">
+                      <div>
+                        <h3 class="meal-name">Colazione</h3>
+                        <p class="meal-ingredients">Yogurt greco, fiocchi d'avena, mirtilli</p>
+                      </div>
+                      <span class="meal-time">07:30</span>
+                    </div>
+                    <div class="macro-row">
+                      <span class="macro-chip"><strong>320</strong> kcal</span>
+                      <span class="macro-chip"><strong>22</strong> prot</span>
+                      <span class="macro-chip"><strong>38</strong> carbo</span>
+                      <span class="macro-chip"><strong>9</strong> grassi</span>
+                    </div>
+                    <button class="cta cta-completed">Pasto registrato</button>
+                  </article>
+
+                  <article class="meal-card">
+                    <div class="meal-row">
+                      <div>
+                        <h3 class="meal-name">Pranzo</h3>
+                        <p class="meal-ingredients">Insalata di farro, tonno, pomodorini</p>
+                      </div>
+                      <span class="meal-time">13:00</span>
+                    </div>
+                    <div class="macro-row">
+                      <span class="macro-chip"><strong>540</strong> kcal</span>
+                      <span class="macro-chip"><strong>34</strong> prot</span>
+                      <span class="macro-chip"><strong>62</strong> carbo</span>
+                      <span class="macro-chip"><strong>14</strong> grassi</span>
+                    </div>
+                    <button class="cta">Segna pasto</button>
+                  </article>
+
+                  <article class="meal-card">
+                    <div class="meal-row">
+                      <div>
+                        <h3 class="meal-name">Cena</h3>
+                        <p class="meal-ingredients">Petto di pollo, verdure al vapore, riso integrale</p>
+                      </div>
+                      <span class="meal-time">19:30</span>
+                    </div>
+                    <div class="macro-row">
+                      <span class="macro-chip"><strong>610</strong> kcal</span>
+                      <span class="macro-chip"><strong>48</strong> prot</span>
+                      <span class="macro-chip"><strong>55</strong> carbo</span>
+                      <span class="macro-chip"><strong>16</strong> grassi</span>
+                    </div>
+                    <button class="cta">Segna pasto</button>
+                  </article>
+                </div>
+              </section>
+
+              <section class="subwidget">
+                <h3 class="subwidget-title">Pesata di oggi</h3>
+                <div class="weight-input-row">
+                  <input class="weight-input" placeholder="75,3" inputmode="decimal" />
+                  <button class="cta">Salva peso</button>
+                </div>
+              </section>
+
+              <section class="subwidget">
+                <h3 class="subwidget-title">Allenamento di oggi</h3>
+                <p style="margin: 0; font-size: var(--text-caption); color: var(--color-text-muted)">
+                  Hai allenato oggi?
+                </p>
+                <div class="cta-row">
+                  <button class="cta cta-secondary">Sì, registra</button>
+                  <button class="cta cta-ghost">Più tardi</button>
+                </div>
+              </section>
+
+              <section class="ai-widget" aria-label="AI in arrivo">
+                <span class="ai-glyph" aria-hidden="true">AI</span>
+                <div class="ai-widget-text">
+                  <h4>AI in arrivo</h4>
+                  <p>L'assistente AI sarà disponibile presto.</p>
+                </div>
+              </section>
+            </div>
+
+            <nav class="bottom-tabs" aria-label="Navigazione principale">
+              <span class="tab" data-active="true"><span class="tab-glyph">●</span>Oggi</span>
+              <span class="tab"><span class="tab-glyph">○</span>Storico</span>
+              <span class="tab"><span class="tab-glyph">○</span>Piano</span>
+              <span class="tab"><span class="tab-glyph">○</span>Impostazioni</span>
+            </nav>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2) Mobile — Light — Empty -->
+      <section class="showcase-section">
+        <h3>Mobile 390 · Light · Empty (nessun piano)</h3>
+        <div class="device device-mobile">
+          <div class="today-page">
+            <header class="app-bar">
+              <span class="title">Oggi</span>
+              <span class="sync-pip">Sincronizzato</span>
+            </header>
+            <div class="scroll" style="justify-content: center; align-items: center;">
+              <div class="empty">
+                <svg class="empty-illustration large" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <ellipse cx="120" cy="200" rx="90" ry="10" class="illust-bg-3" opacity="0.6" />
+                  <circle cx="120" cy="120" r="92" class="illust-bg-1" />
+                  <rect x="74" y="68" width="92" height="118" rx="8" fill="var(--color-bg-elev)" stroke="var(--color-neutral-700)" stroke-width="2" />
+                  <line x1="88" y1="92" x2="152" y2="92" class="illust-line" stroke-width="2" />
+                  <line x1="88" y1="106" x2="142" y2="106" class="illust-line" stroke-width="2" />
+                  <line x1="88" y1="120" x2="148" y2="120" class="illust-line" stroke-width="2" />
+                  <line x1="88" y1="134" x2="130" y2="134" class="illust-line" stroke-width="2" />
+                  <line x1="88" y1="148" x2="146" y2="148" class="illust-line" stroke-width="2" />
+                  <circle cx="166" cy="172" r="20" class="illust-accent" />
+                  <path d="M158 172 L165 179 L176 167" stroke="var(--color-text-inverse)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                  <circle cx="56" cy="78" r="6" class="illust-bg-2" />
+                  <circle cx="200" cy="86" r="4" class="illust-bg-2" />
+                </svg>
+                <h2 class="serif">Nessun piano attivo</h2>
+                <p>Carica il tuo piano nutrizionale per iniziare.</p>
+                <button class="cta">Carica piano</button>
+              </div>
+            </div>
+            <nav class="bottom-tabs" aria-label="Navigazione principale">
+              <span class="tab" data-active="true">Oggi</span>
+              <span class="tab">Storico</span>
+              <span class="tab">Piano</span>
+              <span class="tab">Impostazioni</span>
+            </nav>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3) Mobile — Dark — Populated -->
+      <section class="showcase-section" data-theme="dark">
+        <h3>Mobile 390 · Dark · Populated</h3>
+        <div class="device device-mobile">
+          <div class="today-page">
+            <header class="app-bar">
+              <span class="title">Oggi</span>
+              <span class="sync-pip">Sincronizzato</span>
+            </header>
+            <div class="scroll">
+              <div class="greeting-block">
+                <h1 class="greeting-serif">Buongiorno, Stefano</h1>
+                <span class="greeting-date">lunedì 5 maggio</span>
+              </div>
+
+              <section>
+                <h2 class="section-title" style="margin-bottom: var(--spacing-3)">Pasti di oggi</h2>
+                <div class="meals-list">
+                  <article class="meal-card coral-edge" data-completed="true">
+                    <div class="meal-row">
+                      <div>
+                        <h3 class="meal-name">Colazione</h3>
+                        <p class="meal-ingredients">Yogurt greco, fiocchi d'avena, mirtilli</p>
+                      </div>
+                      <span class="meal-time">07:30</span>
+                    </div>
+                    <div class="macro-row">
+                      <span class="macro-chip"><strong>320</strong> kcal</span>
+                      <span class="macro-chip"><strong>22</strong> prot</span>
+                      <span class="macro-chip"><strong>38</strong> carbo</span>
+                      <span class="macro-chip"><strong>9</strong> grassi</span>
+                    </div>
+                    <button class="cta cta-completed">Pasto registrato</button>
+                  </article>
+
+                  <article class="meal-card">
+                    <div class="meal-row">
+                      <div>
+                        <h3 class="meal-name">Pranzo</h3>
+                        <p class="meal-ingredients">Insalata di farro, tonno, pomodorini</p>
+                      </div>
+                      <span class="meal-time">13:00</span>
+                    </div>
+                    <div class="macro-row">
+                      <span class="macro-chip"><strong>540</strong> kcal</span>
+                      <span class="macro-chip"><strong>34</strong> prot</span>
+                      <span class="macro-chip"><strong>62</strong> carbo</span>
+                      <span class="macro-chip"><strong>14</strong> grassi</span>
+                    </div>
+                    <button class="cta">Segna pasto</button>
+                  </article>
+                </div>
+              </section>
+
+              <section class="subwidget">
+                <h3 class="subwidget-title">Pesata di oggi</h3>
+                <div class="weight-input-row">
+                  <input class="weight-input" placeholder="75,3" inputmode="decimal" />
+                  <button class="cta">Salva peso</button>
+                </div>
+              </section>
+
+              <section class="ai-widget" aria-label="AI in arrivo">
+                <span class="ai-glyph" aria-hidden="true">AI</span>
+                <div class="ai-widget-text">
+                  <h4>AI in arrivo</h4>
+                  <p>L'assistente AI sarà disponibile presto.</p>
+                </div>
+              </section>
+            </div>
+            <nav class="bottom-tabs">
+              <span class="tab" data-active="true">Oggi</span>
+              <span class="tab">Storico</span>
+              <span class="tab">Piano</span>
+              <span class="tab">Impostazioni</span>
+            </nav>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4) Desktop — Light — Populated (1280×800) -->
+      <section class="showcase-section" style="grid-column: 1 / -1;">
+        <h3>Desktop 1280 · Light · Populated</h3>
+        <div class="device device-desktop" style="height: 800px;">
+          <div class="today-page">
+            <div class="desktop-shell">
+              <aside class="nav-rail" aria-label="Navigazione laterale">
+                <h2 class="brand">Wellness Buddy</h2>
+                <a class="nav-link" data-active="true">Oggi</a>
+                <a class="nav-link">Storico</a>
+                <a class="nav-link">Piano</a>
+                <a class="nav-link">Impostazioni</a>
+              </aside>
+              <div class="desktop-content">
+                <div class="greeting-block">
+                  <h1 class="greeting-serif">Buongiorno, Stefano</h1>
+                  <span class="greeting-date">lunedì 5 maggio</span>
+                </div>
+
+                <div class="desktop-grid">
+                  <section>
+                    <h2 class="section-title" style="margin-bottom: var(--spacing-4)">Pasti di oggi</h2>
+                    <div class="meals-list">
+                      <article class="meal-card coral-edge" data-completed="true">
+                        <div class="meal-row">
+                          <div>
+                            <h3 class="meal-name">Colazione</h3>
+                            <p class="meal-ingredients">Yogurt greco, fiocchi d'avena, mirtilli</p>
+                          </div>
+                          <span class="meal-time">07:30</span>
+                        </div>
+                        <div class="macro-row">
+                          <span class="macro-chip"><strong>320</strong> kcal</span>
+                          <span class="macro-chip"><strong>22</strong> prot</span>
+                          <span class="macro-chip"><strong>38</strong> carbo</span>
+                          <span class="macro-chip"><strong>9</strong> grassi</span>
+                        </div>
+                        <button class="cta cta-completed">Pasto registrato</button>
+                      </article>
+                      <article class="meal-card">
+                        <div class="meal-row">
+                          <div>
+                            <h3 class="meal-name">Pranzo</h3>
+                            <p class="meal-ingredients">Insalata di farro, tonno, pomodorini</p>
+                          </div>
+                          <span class="meal-time">13:00</span>
+                        </div>
+                        <div class="macro-row">
+                          <span class="macro-chip"><strong>540</strong> kcal</span>
+                          <span class="macro-chip"><strong>34</strong> prot</span>
+                          <span class="macro-chip"><strong>62</strong> carbo</span>
+                          <span class="macro-chip"><strong>14</strong> grassi</span>
+                        </div>
+                        <button class="cta">Segna pasto</button>
+                      </article>
+                      <article class="meal-card">
+                        <div class="meal-row">
+                          <div>
+                            <h3 class="meal-name">Cena</h3>
+                            <p class="meal-ingredients">Petto di pollo, verdure al vapore, riso integrale</p>
+                          </div>
+                          <span class="meal-time">19:30</span>
+                        </div>
+                        <div class="macro-row">
+                          <span class="macro-chip"><strong>610</strong> kcal</span>
+                          <span class="macro-chip"><strong>48</strong> prot</span>
+                          <span class="macro-chip"><strong>55</strong> carbo</span>
+                          <span class="macro-chip"><strong>16</strong> grassi</span>
+                        </div>
+                        <button class="cta">Segna pasto</button>
+                      </article>
+                    </div>
+                  </section>
+                  <aside style="display: flex; flex-direction: column; gap: var(--spacing-4);">
+                    <section class="subwidget">
+                      <h3 class="subwidget-title">Pesata di oggi</h3>
+                      <div class="weight-input-row">
+                        <input class="weight-input" placeholder="75,3" inputmode="decimal" />
+                        <button class="cta">Salva peso</button>
+                      </div>
+                    </section>
+                    <section class="subwidget">
+                      <h3 class="subwidget-title">Allenamento di oggi</h3>
+                      <p style="margin: 0; font-size: var(--text-caption); color: var(--color-text-muted)">Hai allenato oggi?</p>
+                      <div class="cta-row">
+                        <button class="cta cta-secondary">Sì, registra</button>
+                        <button class="cta cta-ghost">Più tardi</button>
+                      </div>
+                    </section>
+                    <section class="ai-widget" aria-label="AI in arrivo">
+                      <span class="ai-glyph" aria-hidden="true">AI</span>
+                      <div class="ai-widget-text">
+                        <h4>AI in arrivo</h4>
+                        <p>L'assistente AI sarà disponibile presto.</p>
+                      </div>
+                    </section>
+                  </aside>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

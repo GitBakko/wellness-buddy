@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wellness Buddy — Tone Calibration Mockups</title>
+    <link rel="stylesheet" href="shared.css" />
+    <style>
+      .index-main {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: var(--spacing-12) var(--spacing-6);
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-8);
+      }
+      .index-hero {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-3);
+      }
+      .index-hero h1 {
+        font-family: var(--font-display);
+        font-size: var(--text-display-serif);
+        font-weight: 500;
+        letter-spacing: -0.02em;
+        line-height: var(--leading-tight);
+        margin: 0;
+      }
+      .index-hero p {
+        margin: 0;
+        font-size: var(--text-base);
+        color: var(--color-text-muted);
+        max-width: 60ch;
+      }
+      .variant-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: var(--spacing-4);
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .variant-card {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-3);
+        background: var(--color-bg-elev);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-card);
+        padding: var(--spacing-5);
+        text-decoration: none;
+        color: var(--color-text);
+        transition: transform var(--duration-fast) var(--ease-out-soft),
+          border-color var(--duration-fast) var(--ease-out-soft);
+      }
+      .variant-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--color-coral-300);
+        text-decoration: none;
+      }
+      .variant-card .label {
+        font-size: var(--text-caption);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--color-text-muted);
+        font-weight: 600;
+      }
+      .variant-card .name {
+        font-size: var(--text-heading);
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        margin: 0;
+      }
+      .variant-card .summary {
+        font-size: var(--text-base);
+        color: var(--color-text-muted);
+        margin: 0;
+      }
+      .ritual {
+        background: var(--color-surface-muted);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-card);
+        padding: var(--spacing-6);
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-3);
+      }
+      .ritual h2 {
+        margin: 0;
+        font-size: var(--text-heading);
+        font-weight: 600;
+      }
+      .ritual ol {
+        margin: 0;
+        padding-left: var(--spacing-5);
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-2);
+        color: var(--color-text);
+      }
+      .ritual a {
+        color: var(--color-coral-700);
+        font-weight: 600;
+      }
+      .meta {
+        font-size: var(--text-caption);
+        color: var(--color-text-muted);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="index-main">
+      <header class="index-hero">
+        <span class="meta">Phase 1 · Plan 08 · UI-20 exit gate</span>
+        <h1>Tone Calibration — /today</h1>
+        <p>
+          Tre varianti dello stesso schermo. I focal points sono identici (greeting → primo pasto incompleto).
+          Cambia solo l'intensità del trattamento: tipografia, illustrazioni, uso del coral.
+          Confrontale a coppie su iPhone reale e su desktop, poi compila la checklist.
+        </p>
+      </header>
+
+      <ul class="variant-list">
+        <li>
+          <a class="variant-card" href="A-75-25-elegant.html">
+            <span class="label">Variante A</span>
+            <p class="name">75 elegant / 25 playful</p>
+            <p class="summary">Più sobria. Geist Sans, illustrazione solo nello stato vuoto, coral solo sul CTA primario.</p>
+          </a>
+        </li>
+        <li>
+          <a class="variant-card" href="B-50-50-balanced.html">
+            <span class="label">Variante B · raccomandata</span>
+            <p class="name">50 / 50 bilanciata</p>
+            <p class="summary">Instrument Serif sul saluto. Una illustrazione Storyset nello stato vuoto. Coral su CTA + bordo coral su pasto completato.</p>
+          </a>
+        </li>
+        <li>
+          <a class="variant-card" href="C-25-75-playful.html">
+            <span class="label">Variante C</span>
+            <p class="name">25 elegant / 75 playful</p>
+            <p class="summary">Più espressiva. Illustrazioni anche nello stato popolato, coral diffuso, sottolineatura ondulata sulla data.</p>
+          </a>
+        </li>
+      </ul>
+
+      <section class="ritual" aria-labelledby="ritual-heading">
+        <h2 id="ritual-heading">Come confrontare</h2>
+        <ol>
+          <li>Apri ogni variante su iPhone reale (Safari) e su Chrome desktop.</li>
+          <li>Per ogni scena (populated, empty, light, dark) scegli quale variante senti tua.</li>
+          <li>Compila la <a href="../../.planning/phases/01-foundation/01-08-tone-calibration-checklist.md">checklist di sign-off</a> con le scelte scena per scena.</li>
+          <li>Firma la checklist (Stefano + Marta), poi rilascia il tag di chiusura Phase 1.</li>
+        </ol>
+        <p class="meta">
+          Server consigliato: <code>python -m http.server 8888</code> dalla cartella
+          <code>mockups/tone-calibration/</code>. Su iPhone funziona anche aprire
+          <code>file://</code> in Safari.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>
