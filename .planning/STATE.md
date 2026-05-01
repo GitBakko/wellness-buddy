@@ -1,6 +1,6 @@
 # State: Wellness Buddy
 
-**Last updated:** 2026-05-01 (Plan 01-04 MD parser + Plans API + frontend complete — Wave 4 done)
+**Last updated:** 2026-05-01 (Plan 01-07 /today + weight + workout complete — Wave 5 done)
 
 ## Project Reference
 
@@ -16,13 +16,13 @@
 ## Current Position
 
 - **Phase:** 1 — Foundation
-- **Plan:** 01-04 complete — MD parser + Plans API + frontend Plans page shipped (Wave 4)
-- **Status:** Wave 4 complete — Plan 04 merged to master at `5434925`; ready for Wave 5 (Plan 07 /today + Weight + Workout)
-- **Progress:** Phase 0/5 phases complete · Plans 8/10
+- **Plan:** 01-07 complete — /today aggregator + weight + workout CRUD + WeightChart + History + Settings (Wave 5)
+- **Status:** Wave 5 complete — Plan 07 lands on branch `plan-01-07-today` (4 atomic commits 417c093, 88c821a, ad2e835, a09131e); ready for Wave 6 (Plan 01-08 tone calibration mockups + DEPLOY.md)
+- **Progress:** Phase 0/5 phases complete · Plans 9/10
 - **Phase progress bar:**
 
   ```text
-  [########  ] 80% — Phase 1: Foundation (8/10 plans)
+  [######### ] 90% — Phase 1: Foundation (9/10 plans)
   ```
 
 ## Performance Metrics
@@ -30,7 +30,7 @@
 | Metric | Value |
 |--------|-------|
 | Phases complete | 0 / 5 |
-| Plans complete | 8 / 10 (Phase 1) |
+| Plans complete | 9 / 10 (Phase 1) |
 | v1 requirements mapped | 145 / 145 (100%) |
 | Orphan requirements | 0 |
 | Pause gates passed | 0 / 5 |
@@ -44,6 +44,7 @@
 | 01-06 pwa-shell  | 1 sess   | 2/2   | 22 created + 7 modified  | 2       |
 | 01-03 auth       | ~20 min  | 2/2   | 10 created + 11 modified | 4       |
 | 01-04 md-parser  | ~50 min  | 3/3   | 22 created +  4 modified | 5       |
+| 01-07 today      | ~75 min  | 3/3   | 20 created + 10 modified | 4       |
 
 ## Accumulated Context
 
@@ -77,6 +78,12 @@
 - (Plan 03) Test fixture isolation via `TRUNCATE ... RESTART IDENTITY CASCADE` BEFORE each `db_session` yield (committed rows otherwise persisted between tests)
 - (Plan 03) Coverage of SQLAlchemy async paths needs `concurrency = ["thread", "greenlet"]` — without it auth_service.py reported 51% instead of 93%
 - (Plan 03) Test emails use `*.example.com` because email-validator rejects `.local` as a special-use TLD
+- (Plan 07) Greeting period buckets server-computed in user IANA tz: morning 5-12, afternoon 12-18, evening 18-23, night 23-5 — UI-SPEC §7.2 honest greeting at 23:00 across DST flips
+- (Plan 07) Cross-user reads on shareable resources return 404 (not 403) — V13 information-disclosure mitigation; matches Plan 04 plan_service. /api/weight + /api/workout PATCH/DELETE never reveal existence of another user's row.
+- (Plan 07) Weight upsert uses manual IntegrityError race retry instead of pg-native ON CONFLICT — keeps service vendor-portable for Phase 4 RLS / SQLite test alternative
+- (Plan 07) WeightChart asserts CSS variables at the source level (read .tsx + grep) instead of jsdom SVG inspection — Recharts ResponsiveContainer collapses to 0×0 in headless DOM. Source-level check is the tighter PITFALLS#8 contract.
+- (Plan 07) ResizeObserver polyfill in `frontend/src/test/setup.ts` (Rule 3 — Radix primitives reference it via @radix-ui/react-use-size; jsdom doesn't ship it; without polyfill any test mounting Switch/Checkbox/Tabs throws ReferenceError)
+- (Plan 07) `--text-display-serif` Instrument Serif token usage verified by grep: theme.css (definition) + pages/Today.tsx (single consumer) — UI-SPEC §3.2 escape hatch honored
 
 ### Open Questions to Resolve in Plans
 
@@ -130,7 +137,7 @@
 
 ### Next Action
 
-Wave 5 — execute Plan 01-07 (/today landing + weight quick-log + workout form + Today/Weight/Workout APIs). Wave 6 (Plan 01-08 tone calibration mockups + DEPLOY.md, CHECKPOINT human-verify) follows.
+Wave 6 — execute Plan 01-08 (tone calibration mockups 3 variants + complete DEPLOY.md Windows Server 2019 + smoke test script). Final Phase 1 plan; CHECKPOINT human-verify on tone calibration sign-off blocks Phase 1 pause gate.
 
 ---
 *State initialized: 2026-05-01 — Phase 1 (Foundation) is the current focus.*

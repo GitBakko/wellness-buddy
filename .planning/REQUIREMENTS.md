@@ -62,27 +62,27 @@ Requirements per release v1 (Sprint 1-5). Ogni requisito mappa a una fase roadma
 
 ### Today View & Daily Tracking (Sprint 1)
 
-- [ ] **TODAY-01**: Vista `/today` come landing page mostra pasti del giorno con varianti default selezionate
-- [ ] **TODAY-02**: User può marcare pasto come completato (checkbox) — stato persistente
-- [ ] **TODAY-03**: User può registrare allenamento giornaliero: trained sì/no, durata minuti, calorie (opzionale), tipo (testo libero), note (testo libero)
-- [ ] **TODAY-04**: User può modificare/cancellare entry workout
-- [ ] **TODAY-05**: User può registrare peso corporeo con data (default oggi)
-- [ ] **TODAY-06**: User può modificare/cancellare entry peso
-- [ ] **TODAY-07**: Indicatore visivo stato giorno: completato / parziale / pianificato
-- [ ] **TODAY-08**: Vista `/today` accessibile offline da Dexie cache + mutation queue per write
+- [x] **TODAY-01**: Vista `/today` come landing page mostra pasti del giorno con varianti default selezionate (Plan 01-07)
+- [x] **TODAY-02**: User può marcare pasto come completato (checkbox) — stato persistente (Plan 01-07)
+- [x] **TODAY-03**: User può registrare allenamento giornaliero: trained sì/no, durata minuti, calorie (opzionale), tipo (testo libero), note (testo libero) (Plan 01-07)
+- [x] **TODAY-04**: User può modificare/cancellare entry workout (Plan 01-07)
+- [x] **TODAY-05**: User può registrare peso corporeo con data (default oggi) (Plan 01-07)
+- [x] **TODAY-06**: User può modificare/cancellare entry peso (Plan 01-07)
+- [x] **TODAY-07**: Indicatore visivo stato giorno: completato / parziale / pianificato (Plan 01-07 — DayStatusIndicator with leaf-green/neutral-half/neutral-outline tokens)
+- [x] **TODAY-08**: Vista `/today` accessibile offline da Dexie cache + mutation queue per write (Plan 01-07 — useToday mirrors to cache_today, useLogWeight/useLogWorkout enqueue when navigator.onLine=false)
 
 ### Weight Tracking (Sprint 1, projection band Sprint 3)
 
-- [ ] **WEIGHT-01**: Grafico linea peso nel tempo (Recharts) con punti reali rilevati
-- [ ] **WEIGHT-02**: Storico tabellare peso completo
+- [x] **WEIGHT-01**: Grafico linea peso nel tempo (Recharts) con punti reali rilevati (Plan 01-07 — WeightChart with var(--color-neutral-700) stroke per UI-08 + PITFALLS#8)
+- [x] **WEIGHT-02**: Storico tabellare peso completo (Plan 01-07 — WeightHistoryTable with edit-in-place + delete confirm; italianDateLong for row dates)
 - [ ] **WEIGHT-03**: Curva proiezione teorica dal piano nutrizionale visualizzata sul grafico
 - [ ] **WEIGHT-04**: Banda tolleranza ±0,5 kg/settimana (Recharts ReferenceArea)
 - [ ] **WEIGHT-05**: Indicatore delta vs proiezione: "In linea / +X kg sopra target / -X kg sotto target"
 
 ### Workout Tracking (Sprint 1, calendar view Sprint 3)
 
-- [ ] **WORK-01**: Form giornaliero workout con toggle allenato/non allenato
-- [ ] **WORK-02**: Storico workout filtrabile per range date
+- [x] **WORK-01**: Form giornaliero workout con toggle allenato/non allenato (Plan 01-07 — WorkoutForm with Switch toggle + conditional duration/type/calories/notes; trained=false alone is a valid minimal payload)
+- [x] **WORK-02**: Storico workout filtrabile per range date (Plan 01-07 — GET /api/workout?start=&end= + WorkoutHistoryTable month-grouped Italian view)
 - [ ] **WORK-03**: Calendario mensile con indicatori workout per giorno
 - [ ] **WORK-04**: Grafico settimanale minuti/calorie allenamento
 
@@ -264,10 +264,10 @@ Requirements per release v1 (Sprint 1-5). Ogni requisito mappa a una fase roadma
 | AUTH-01 — AUTH-12 | Phase 1 | Foundation | Complete (Plan 01-03) |
 | MOD-01 — MOD-10 | Phase 1 | Foundation | Pending |
 | PLAN-01 — PLAN-10 | Phase 1 | Foundation | Pending |
-| TODAY-01 — TODAY-08 | Phase 1 | Foundation | Pending |
-| WEIGHT-01, WEIGHT-02 | Phase 1 | Foundation | Pending |
+| TODAY-01 — TODAY-08 | Phase 1 | Foundation | Complete (Plan 01-07) |
+| WEIGHT-01, WEIGHT-02 | Phase 1 | Foundation | Complete (Plan 01-07) |
 | WEIGHT-03, WEIGHT-04, WEIGHT-05 | Phase 3 | Engagement & Polish | Pending |
-| WORK-01, WORK-02 | Phase 1 | Foundation | Pending |
+| WORK-01, WORK-02 | Phase 1 | Foundation | Complete (Plan 01-07) |
 | WORK-03, WORK-04 | Phase 3 | Engagement & Polish | Pending |
 | WEEK-01 — WEEK-05 | Phase 2 | Differentiators | Pending |
 | SHOP-01 — SHOP-08 | Phase 2 | Differentiators | Pending |
