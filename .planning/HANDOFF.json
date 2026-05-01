@@ -1,14 +1,14 @@
 {
   "version": "1.0",
-  "timestamp": "2026-05-01T14:21:48.393Z",
+  "timestamp": "2026-05-01T14:49:02.355Z",
   "source": "auto-postool",
   "partial": false,
   "phase": "1",
   "phase_name": "Foundation",
-  "phase_dir": null,
+  "phase_dir": ".planning/phases/01-foundation",
   "plan": "1",
   "task": null,
-  "total_tasks": null,
+  "total_tasks": 0,
   "status": "auto-checkpoint",
   "completed_tasks": [],
   "remaining_tasks": [],
@@ -17,18 +17,14 @@
   "decisions": [],
   "uncommitted_files": [
     {
-      "status": "??",
-      "path": "CLAUDE.md"
+      "status": "M",
+      "path": ".planning/HANDOFF.json"
     },
     {
       "status": "??",
-      "path": "docs/"
-    },
-    {
-      "status": "??",
-      "path": "plans/"
+      "path": ".planning/phases/01-foundation/01-RESEARCH.md"
     }
   ],
   "next_action": "Roadmap approved, awaiting plan generation for Phase 1",
-  "context_notes": "Status: Roadmap approved, awaiting plan generation for Phase 1\n\nRecent commits:\nafd2d8d docs(01): capture phase context .planning/phase-01-foundation/01-CONTEXT.md .planning/phase-01-foundation/01-DISCUSSION-LOG.md\n6adaedb docs(01): UI-SPEC approved (6/6 dimensions PASS) .planning/phase-01-foundation/01-UI-SPEC.md\n3f53ff8 docs(01): UI-SPEC revision 1 — typography scale + focal points .planning/phase-01-foundation/01-UI-SPEC.md\n4524d55 docs(01): UI design contract .planning/phase-01-foundation/01-UI-SPEC.md\n88c1401 docs: create roadmap (5 phases) + CLAUDE.md .planning/ROADMAP.md .planning/STATE.md .planning/REQUIREMENTS.md CLAUDE.md"
+  "context_notes": "Status: Roadmap approved, awaiting plan generation for Phase 1\n\nRecent commits:\n1e90e24 chore: relocate phase-01 dir to canonical .planning/phases/, add .gitignore for plans/, CLAUDE.md, contract\nafd2d8d docs(01): capture phase context .planning/phase-01-foundation/01-CONTEXT.md .planning/phase-01-foundation/01-DISCUSSION-LOG.md\n6adaedb docs(01): UI-SPEC approved (6/6 dimensions PASS) .planning/phase-01-foundation/01-UI-SPEC.md\n3f53ff8 docs(01): UI-SPEC revision 1 — typography scale + focal points .planning/phase-01-foundation/01-UI-SPEC.md\n4524d55 docs(01): UI design contract .planning/phase-01-foundation/01-UI-SPEC.md"
 }
