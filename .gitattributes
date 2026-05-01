@@ -2,3 +2,7 @@
 *.bat text eol=crlf
 *.ps1 text eol=crlf
 *.md text eol=lf
+
+# Evil-corpus MD fixtures must preserve byte-precision (BOM, CRLF, NBSP, NFD).
+# Treating them as binary prevents Git's autocrlf/eol normalization.
+backend/tests/fixtures/plans/evil/* -text
