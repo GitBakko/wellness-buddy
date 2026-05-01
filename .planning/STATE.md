@@ -1,6 +1,6 @@
 # State: Wellness Buddy
 
-**Last updated:** 2026-05-01 (Plan 01-03 auth complete — Wave 3 parallel landing alongside 01-06)
+**Last updated:** 2026-05-01 (Plan 01-04 MD parser + Plans API + frontend complete — Wave 4 done)
 
 ## Project Reference
 
@@ -16,12 +16,13 @@
 ## Current Position
 
 - **Phase:** 1 — Foundation
-- **Plan:** 01-03 complete (Wave 3 parallel branch alongside 01-06); auth fully wired both backend + frontend
-- **Status:** Wave 3 complete — both Plans 03 (auth) and 06 (PWA shell) shipped; ready for Wave 4 (Plans 04, 07, 08)
-- **Progress:** Phase 0/5 phases complete · Plans 4/10
+- **Plan:** 01-04 complete — MD parser + Plans API + frontend Plans page shipped (Wave 4)
+- **Status:** Wave 4 complete — Plan 04 merged to master at `5434925`; ready for Wave 5 (Plan 07 /today + Weight + Workout)
+- **Progress:** Phase 0/5 phases complete · Plans 8/10
 - **Phase progress bar:**
-  ```
-  [####      ] 40% — Phase 1: Foundation (4/10 plans)
+
+  ```text
+  [########  ] 80% — Phase 1: Foundation (8/10 plans)
   ```
 
 ## Performance Metrics
@@ -29,7 +30,7 @@
 | Metric | Value |
 |--------|-------|
 | Phases complete | 0 / 5 |
-| Plans complete | 4 / 10 (Phase 1) |
+| Plans complete | 8 / 10 (Phase 1) |
 | v1 requirements mapped | 145 / 145 (100%) |
 | Orphan requirements | 0 |
 | Pause gates passed | 0 / 5 |
@@ -42,6 +43,7 @@
 | 01-05b fe-behave | ~25 min  | 2/2   | 20 created + 3 modified  | 2       |
 | 01-06 pwa-shell  | 1 sess   | 2/2   | 22 created + 7 modified  | 2       |
 | 01-03 auth       | ~20 min  | 2/2   | 10 created + 11 modified | 4       |
+| 01-04 md-parser  | ~50 min  | 3/3   | 22 created +  4 modified | 5       |
 
 ## Accumulated Context
 
@@ -128,7 +130,7 @@
 
 ### Next Action
 
-Wave 4 — execute Plans 01-04 (MD parser pipeline) and 01-07 (/today landing) in parallel. Plan 01-08 (tone calibration mockups + DEPLOY.md) follows.
+Wave 5 — execute Plan 01-07 (/today landing + weight quick-log + workout form + Today/Weight/Workout APIs). Wave 6 (Plan 01-08 tone calibration mockups + DEPLOY.md, CHECKPOINT human-verify) follows.
 
 ---
 *State initialized: 2026-05-01 — Phase 1 (Foundation) is the current focus.*
