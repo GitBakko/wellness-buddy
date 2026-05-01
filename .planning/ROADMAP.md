@@ -68,7 +68,7 @@ Plans:
 - [ ] 01-02a-PLAN.md — Backend core: FastAPI + SQLAlchemy 2 async + 10 models + Alembic baseline + audit_service + Pydantic v2 base schemas + /api/health + /version.json
 - [ ] 01-02b-PLAN.md — Backend AI layer: AIProvider ABC + NullProvider + factory + DI lifespan + stub routers (auth/plans/today/weekly/workout/weight/shopping/admin) + AI endpoints
 - [ ] 01-05a-PLAN.md — Frontend build: Vite + React 19 + Tailwind 4 @theme tokens + shadcn/ui CLI + 17 customized primitives + dark mode + ESLint hex ban + 4 PWA icons
-- [ ] 01-05b-PLAN.md — Frontend behavior: Italian copy.it.ts + format.ts + hooks (useReducedMotion/useOnline/useTheme) + Zustand stores + Vitest + Playwright + axe + visual diff + Lighthouse CI
+- [x] 01-05b-PLAN.md — Frontend behavior: Italian copy.it.ts + format.ts + hooks (useReducedMotion/useOnline/useTheme) + Zustand stores + Vitest + Playwright + axe + visual diff + Lighthouse CI (completed 2026-05-01, commits 2434c6d, 92b996c)
 - [ ] 01-03-PLAN.md — Auth: JWT 15min + refresh 7d rotation + 10s grace + family revocation + invite-only signup + frontend Zustand + singleton refresh promise + Login/Register pages + PersistStorageWelcome
 - [ ] 01-06-PLAN.md — PWA shell: vite-plugin-pwa Workbox (NetworkFirst index, CacheFirst hashed, NetworkOnly auth+writes) + Dexie v1 schema + mutation_queue + persist() + update toast + AppShell layout + locked AIWidget
 - [ ] 01-04-PLAN.md — MD parser tolerant pipeline + strict Pydantic v2 schema + evil-corpus fixtures (BOM/CRLF/NFD/emoji/Obsidian/NBSP) + /api/plans/* + admin assign-plan + frontend Plans page (dropzone + diff view)

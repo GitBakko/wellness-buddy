@@ -1,6 +1,6 @@
 # State: Wellness Buddy
 
-**Last updated:** 2026-05-01 (Plan 01-01 complete)
+**Last updated:** 2026-05-01 (Plan 01-05b complete — Wave 2 frontend behavior + test infra in parallel branch)
 
 ## Project Reference
 
@@ -16,12 +16,12 @@
 ## Current Position
 
 - **Phase:** 1 — Foundation
-- **Plan:** 01-01 complete; next 02a/02b/05a/05b (Wave 2, parallelizable)
-- **Status:** Wave 1 complete — monorepo + tooling + CI workflows landed
-- **Progress:** Phase 0/5 phases complete · Plans 1/10
+- **Plan:** 01-05b complete (Wave 2 parallel branch); awaiting 02a/02b/05a parallel landings + merge
+- **Status:** Wave 2 in progress — Plan 05b (frontend behavior + i18n + test infra) shipped on parallel branch
+- **Progress:** Phase 0/5 phases complete · Plans 2/10
 - **Phase progress bar:**
   ```
-  [#         ] 10% — Phase 1: Foundation (1/10 plans)
+  [##        ] 20% — Phase 1: Foundation (2/10 plans)
   ```
 
 ## Performance Metrics
@@ -29,16 +29,17 @@
 | Metric | Value |
 |--------|-------|
 | Phases complete | 0 / 5 |
-| Plans complete | 1 / 10 (Phase 1) |
+| Plans complete | 2 / 10 (Phase 1) |
 | v1 requirements mapped | 145 / 145 (100%) |
 | Orphan requirements | 0 |
 | Pause gates passed | 0 / 5 |
 
 ### Plan execution metrics
 
-| Phase-Plan      | Duration | Tasks | Files                    | Commits |
-|-----------------|----------|-------|--------------------------|---------|
-| 01-01 monorepo  | ~10 min  | 3/3   | 30 created + 1 modified  | 3       |
+| Phase-Plan       | Duration | Tasks | Files                    | Commits |
+|------------------|----------|-------|--------------------------|---------|
+| 01-01 monorepo   | ~10 min  | 3/3   | 30 created + 1 modified  | 3       |
+| 01-05b fe-behave | ~25 min  | 2/2   | 20 created + 3 modified  | 2       |
 
 ## Accumulated Context
 
@@ -56,6 +57,10 @@
 - Italian-only Sprint 1 via constants file (refactor to react-i18next only if non-Italian users emerge)
 - AI provider DI via `Depends(get_ai_provider)` from Sprint 1, NullProvider default
 - Last-write-wins conflict resolution + 409 toast UX
+- (Plan 05b) Italian copy lives in `frontend/src/i18n/copy.it.ts` as single source of truth (114 strings, 13 namespaces, FND-09)
+- (Plan 05b) `useSyncExternalStore` adopted for `useMediaQuery` to satisfy `react-hooks/set-state-in-effect`
+- (Plan 05b) Visual diff via Playwright `toHaveScreenshot()` (no Percy); `maxDiffPixelRatio=0.02` per spec
+- (Plan 05b) Test infra runs against `pnpm preview` built bundle (Pitfall #12) — never `pnpm dev`
 
 ### Open Questions to Resolve in Plans
 
