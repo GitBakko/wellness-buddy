@@ -66,6 +66,12 @@ export const copy = {
     },
     mealMarkCta: 'Segna pasto',
     mealCompletedLabel: 'Pasto registrato',
+    mealLabels: {
+      breakfast: 'Colazione',
+      lunch: 'Pranzo',
+      dinner: 'Cena',
+      snack: 'Spuntino',
+    } as Record<string, string>,
     macroKcal: 'kcal',
     macroProtChip: 'prot',
     macroProtFull: 'proteine',
@@ -100,6 +106,9 @@ export const copy = {
     successToast: 'Allenamento registrato.',
     deleteConfirm: "Cancellare l'allenamento del {data}?",
     deleteCta: 'Elimina',
+    deleteSuccess: 'Allenamento eliminato.',
+    historyTrained: 'Allenamento',
+    historyRest: 'Riposo',
   },
 
   // ───── Plan upload (FND-09 + Plan 04) ─────

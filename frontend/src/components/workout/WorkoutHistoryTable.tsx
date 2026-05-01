@@ -33,12 +33,12 @@ function groupByMonth(rows: WorkoutLog[]): Map<string, WorkoutLog[]> {
 
 function describeWorkout(w: WorkoutLog): string {
   if (!w.trained) {
-    return 'Riposo';
+    return copy.workout.historyRest;
   }
   const parts: string[] = [];
   if (w.workout_type) parts.push(w.workout_type);
   if (w.duration_min != null) parts.push(`${w.duration_min} min`);
-  return parts.join(' · ') || 'Allenamento';
+  return parts.join(' · ') || copy.workout.historyTrained;
 }
 
 export function WorkoutHistoryTable(): React.ReactElement {
@@ -53,7 +53,7 @@ export function WorkoutHistoryTable(): React.ReactElement {
     if (!window.confirm(confirmMsg)) return;
     try {
       await del.mutateAsync(row.id);
-      toast.success('Allenamento eliminato.');
+      toast.success(copy.workout.deleteSuccess);
     } catch {
       toast.error(copy.errors.generic500);
     }

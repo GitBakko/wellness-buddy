@@ -15,13 +15,6 @@ import { MacroDisplay } from './MacroDisplay';
 import { copy } from '@/i18n/copy.it';
 import type { TodayMeal } from '@/services/today';
 
-const MEAL_LABEL: Record<string, string> = {
-  breakfast: 'Colazione',
-  lunch: 'Pranzo',
-  dinner: 'Cena',
-  snack: 'Spuntino',
-};
-
 interface Props {
   meal: TodayMeal;
   onToggle: () => void;
@@ -29,7 +22,7 @@ interface Props {
 }
 
 export function MealCard({ meal, onToggle, disabled }: Props): React.ReactElement {
-  const slotLabel = MEAL_LABEL[meal.meal_type] ?? meal.meal_type;
+  const slotLabel = copy.today.mealLabels[meal.meal_type] ?? meal.meal_type;
   const ariaLabel = `${slotLabel}: ${meal.title}`;
   return (
     <Card
