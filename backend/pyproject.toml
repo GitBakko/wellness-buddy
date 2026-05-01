@@ -37,7 +37,10 @@ dev = [
 asyncio_mode = "auto"
 testpaths = ["tests"]
 pythonpath = ["."]
-addopts = "-ra --strict-markers --strict-config"
+# -p no:postgresql disables pytest-postgresql plugin (Plan 02b: libpq not yet
+# installed in this worktree; Plan 02a will add psycopg[binary] and remove
+# this flag). All Plan 02b tests are unit + integration-without-DB.
+addopts = "-ra --strict-markers --strict-config -p no:postgresql"
 markers = [
     "integration: integration tests requiring postgres",
     "unit: pure unit tests, no I/O",
