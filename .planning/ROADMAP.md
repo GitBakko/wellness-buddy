@@ -72,7 +72,7 @@ Plans:
 - [x] 01-03-PLAN.md — Auth: JWT 15min + refresh 7d rotation + 10s grace + family revocation + invite-only signup + frontend Zustand + singleton refresh promise + Login/Register pages + PersistStorageWelcome (completed 2026-05-01, commits aec53fc, fb3c6be, 5c9a023, 17966f4)
 - [ ] 01-06-PLAN.md — PWA shell: vite-plugin-pwa Workbox (NetworkFirst index, CacheFirst hashed, NetworkOnly auth+writes) + Dexie v1 schema + mutation_queue + persist() + update toast + AppShell layout + locked AIWidget
 - [ ] 01-04-PLAN.md — MD parser tolerant pipeline + strict Pydantic v2 schema + evil-corpus fixtures (BOM/CRLF/NFD/emoji/Obsidian/NBSP) + /api/plans/* + admin assign-plan + frontend Plans page (dropzone + diff view)
-- [ ] 01-07-PLAN.md — /today landing (Italian greeting Instrument Serif escape hatch + MealCard + MacroDisplay + WeightQuickLog + WorkoutForm + AIWidget) + /api/today + /api/weight + /api/workout CRUD + WeightChart (UI-08 CSS variable colors) + History + Settings
+- [x] 01-07-PLAN.md — /today landing (Italian greeting Instrument Serif escape hatch + MealCard + MacroDisplay + WeightQuickLog + WorkoutForm + AIWidget) + /api/today + /api/weight + /api/workout CRUD + WeightChart (UI-08 CSS variable colors) + History + Settings (completed 2026-05-01, commits 417c093, 88c821a, ad2e835, a09131e)
 - [ ] 01-08-PLAN.md — Tone calibration mockups (3 variants A/B/C — Stefano+Marta sign-off blocking checkpoint) + complete DEPLOY.md (Windows Server 2019 + NSSM + IIS + win-acme) + smoke test script
 
 **UI hint**: yes

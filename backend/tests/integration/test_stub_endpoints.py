@@ -44,21 +44,30 @@ def test_plans_upload_stub_returns_envelope() -> None:
     _assert_envelope(r.json())
 
 
-def test_today_get_stub_returns_envelope() -> None:
+def test_today_get_returns_envelope_when_unauth() -> None:
+    """Plan 07 replaced the 501 stub with a real /today endpoint that requires auth.
+    A GET without auth returns 401 with the AUTH-12 envelope (no_token code).
+    """
     r = client.get("/api/today")
-    assert r.status_code == 501
+    assert r.status_code == 401
     _assert_envelope(r.json())
 
 
-def test_weight_post_stub_returns_envelope() -> None:
+def test_weight_post_returns_envelope_when_unauth() -> None:
+    """Plan 07 replaced the 501 stub with a real /weight endpoint that requires auth.
+    A POST without auth returns 401 (or 422 if validation runs first) with the envelope.
+    """
     r = client.post("/api/weight")
-    assert r.status_code == 501
+    assert r.status_code in (401, 422)
     _assert_envelope(r.json())
 
 
-def test_workout_post_stub_returns_envelope() -> None:
+def test_workout_post_returns_envelope_when_unauth() -> None:
+    """Plan 07 replaced the 501 stub with a real /workout endpoint that requires auth.
+    A POST without auth returns 401 (or 422 if validation runs first) with the envelope.
+    """
     r = client.post("/api/workout")
-    assert r.status_code == 501
+    assert r.status_code in (401, 422)
     _assert_envelope(r.json())
 
 
