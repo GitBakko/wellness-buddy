@@ -34,5 +34,15 @@ export default [
       ],
     },
   },
-  { ignores: ['dist/', 'node_modules/', 'src/styles/theme.css'] },
+  {
+    ignores: [
+      'dist/',
+      'node_modules/',
+      'src/styles/theme.css',
+      // Config files using CommonJS conventions — not part of source ESM tree.
+      '*.cjs',
+      '.prettierrc.cjs',
+      'lighthouserc.json',
+    ],
+  },
 ];
