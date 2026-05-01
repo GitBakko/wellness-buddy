@@ -46,7 +46,6 @@ async function fetchVersion(): Promise<string | null> {
 export function useVersionPolling(): void {
   const { updateServiceWorker } = useRegisterSW({
     onRegisterError(error: unknown) {
-      // eslint-disable-next-line no-console
       console.error('SW registration failed', error);
     },
   });

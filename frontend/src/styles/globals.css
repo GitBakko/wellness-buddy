@@ -53,6 +53,14 @@ textarea {
   color: inherit;
 }
 
+/* Safe-area utility classes — used by AppBar (top) + BottomTabBar (bottom). */
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
 /* Visible focus everywhere — UI-13 */
 :focus-visible {
   outline: var(--focus-ring-width) solid var(--color-focus-ring);
