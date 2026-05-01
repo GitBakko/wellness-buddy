@@ -16,23 +16,23 @@ Requirements per release v1 (Sprint 1-5). Ogni requisito mappa a una fase roadma
 - [ ] **FND-05**: PWA shell con vite-plugin-pwa, manifest (icons 192/512, theme color, display standalone), Service Worker con strategia NetworkFirst per `index.html` + CacheFirst hashed assets
 - [ ] **FND-06**: Update flow PWA con `/version.json` polling + toast "Nuova versione disponibile" + `skipWaiting` + postMessage
 - [ ] **FND-07**: Dexie schema con `cache_*` tables + `mutation_queue` + `drafts` (UUIDs server-generated), upgrade hooks documentate
-- [ ] **FND-08**: `navigator.storage.persist()` request flow dopo first login + rilevamento Dexie-empty-but-JWT-valid → full-resync da server
+- [x] **FND-08**: `navigator.storage.persist()` request flow dopo first login + rilevamento Dexie-empty-but-JWT-valid → full-resync da server (Plan 01-03 ships PersistStorageWelcome + lib/persistStorage; Plan 01-06 ships useDexieResync hook)
 - [x] **FND-09**: Italian-only constant file (`copy.it.ts`) con tutti label/messaggi/errori UI (Plan 01-05b — 114 strings, 13 namespaces, UI-SPEC §7.2 verbatim)
 
 ### Authentication (Sprint 1)
 
-- [ ] **AUTH-01**: User può effettuare login con email + password
-- [ ] **AUTH-02**: User può effettuare logout da qualunque pagina (revoca refresh token)
-- [ ] **AUTH-03**: Sessione utente persiste tra refresh browser (refresh token rotation)
-- [ ] **AUTH-04**: Access token JWT in memory (Zustand) con scadenza 15 minuti
-- [ ] **AUTH-05**: Refresh token in HttpOnly+Secure+SameSite=Lax cookie scoped `/api/auth` con scadenza 7 giorni
-- [ ] **AUTH-06**: Refresh token rotation con family-revocation su reuse detection
-- [ ] **AUTH-07**: Singleton refresh promise client-side (tutti 401 await in-flight refresh)
-- [ ] **AUTH-08**: Server-side 10s idempotent grace window per evitare logout storm iPhone resume
-- [ ] **AUTH-09**: User può registrarsi solo con token invito valido (no signup pubblico)
-- [ ] **AUTH-10**: Admin può generare token invito (24h expiry, single-use, revocable)
-- [ ] **AUTH-11**: Endpoint `GET /api/auth/me` ritorna profilo user corrente
-- [ ] **AUTH-12**: API errors sempre JSON `{detail: string, code: string}`
+- [x] **AUTH-01**: User può effettuare login con email + password (Plan 01-03)
+- [x] **AUTH-02**: User può effettuare logout da qualunque pagina (revoca refresh token) (Plan 01-03)
+- [x] **AUTH-03**: Sessione utente persiste tra refresh browser (refresh token rotation) (Plan 01-03)
+- [x] **AUTH-04**: Access token JWT in memory (Zustand) con scadenza 15 minuti (Plan 01-03)
+- [x] **AUTH-05**: Refresh token in HttpOnly+Secure+SameSite=Lax cookie scoped `/api/auth` con scadenza 7 giorni (Plan 01-03)
+- [x] **AUTH-06**: Refresh token rotation con family-revocation su reuse detection (Plan 01-03)
+- [x] **AUTH-07**: Singleton refresh promise client-side (tutti 401 await in-flight refresh) (Plan 01-03)
+- [x] **AUTH-08**: Server-side 10s idempotent grace window per evitare logout storm iPhone resume (Plan 01-03)
+- [x] **AUTH-09**: User può registrarsi solo con token invito valido (no signup pubblico) (Plan 01-03)
+- [x] **AUTH-10**: Admin può generare token invito (24h expiry, single-use, revocable) (Plan 01-03)
+- [x] **AUTH-11**: Endpoint `GET /api/auth/me` ritorna profilo user corrente (Plan 01-03)
+- [x] **AUTH-12**: API errors sempre JSON `{detail: string, code: string}` (Plan 01-03)
 
 ### Data Models (Sprint 1)
 
@@ -261,7 +261,7 @@ Requirements per release v1 (Sprint 1-5). Ogni requisito mappa a una fase roadma
 | Requirement | Phase | Phase Name | Status |
 |-------------|-------|------------|--------|
 | FND-01 — FND-09 | Phase 1 | Foundation | Pending |
-| AUTH-01 — AUTH-12 | Phase 1 | Foundation | Pending |
+| AUTH-01 — AUTH-12 | Phase 1 | Foundation | Complete (Plan 01-03) |
 | MOD-01 — MOD-10 | Phase 1 | Foundation | Pending |
 | PLAN-01 — PLAN-10 | Phase 1 | Foundation | Pending |
 | TODAY-01 — TODAY-08 | Phase 1 | Foundation | Pending |

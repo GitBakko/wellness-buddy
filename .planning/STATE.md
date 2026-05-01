@@ -1,6 +1,6 @@
 # State: Wellness Buddy
 
-**Last updated:** 2026-05-01 (Plan 01-06 complete — Wave 3 PWA shell + Dexie + AppShell + locked AIWidget on parallel branch)
+**Last updated:** 2026-05-01 (Plan 01-03 auth complete — Wave 3 parallel landing alongside 01-06)
 
 ## Project Reference
 
@@ -16,12 +16,12 @@
 ## Current Position
 
 - **Phase:** 1 — Foundation
-- **Plan:** 01-06 complete (Wave 3 parallel branch); awaiting 03 parallel landing + merge
-- **Status:** Wave 3 in progress — Plan 06 (PWA shell + Dexie v1 + AppShell + locked AIWidget) shipped on parallel branch
-- **Progress:** Phase 0/5 phases complete · Plans 3/10
+- **Plan:** 01-03 complete (Wave 3 parallel branch alongside 01-06); auth fully wired both backend + frontend
+- **Status:** Wave 3 complete — both Plans 03 (auth) and 06 (PWA shell) shipped; ready for Wave 4 (Plans 04, 07, 08)
+- **Progress:** Phase 0/5 phases complete · Plans 4/10
 - **Phase progress bar:**
   ```
-  [###       ] 30% — Phase 1: Foundation (3/10 plans)
+  [####      ] 40% — Phase 1: Foundation (4/10 plans)
   ```
 
 ## Performance Metrics
@@ -29,7 +29,7 @@
 | Metric | Value |
 |--------|-------|
 | Phases complete | 0 / 5 |
-| Plans complete | 3 / 10 (Phase 1) |
+| Plans complete | 4 / 10 (Phase 1) |
 | v1 requirements mapped | 145 / 145 (100%) |
 | Orphan requirements | 0 |
 | Pause gates passed | 0 / 5 |
@@ -41,6 +41,7 @@
 | 01-01 monorepo   | ~10 min  | 3/3   | 30 created + 1 modified  | 3       |
 | 01-05b fe-behave | ~25 min  | 2/2   | 20 created + 3 modified  | 2       |
 | 01-06 pwa-shell  | 1 sess   | 2/2   | 22 created + 7 modified  | 2       |
+| 01-03 auth       | ~20 min  | 2/2   | 10 created + 11 modified | 4       |
 
 ## Accumulated Context
 
@@ -67,6 +68,13 @@
 - (Plan 06) TanStack Query persister uses sync localStorage Phase 1; Phase 2 hard requirement upgrades to Dexie-backed async persister
 - (Plan 06) Forward-compat stubs for auth/api/persistStorage shipped — Plan 03 owns canonical impls (MERGE EXPECTED at 03 integration)
 - (Plan 06) AIWidget Phase 1 ships locked placeholder with SSE/WebSocket scaffold COMMENTED — zero data interpolation, zero network calls (T-AI-01); D-26 negative invariant honored (no VAPID, no pywebpush, no push API surface)
+- (Plan 03) Refresh-rotation 10s grace lives in `auth_service.rotate_refresh` (cached_access/cached_refresh on the row) — middleware passthrough; backend coverage 96% on auth surface (≥80% gate)
+- (Plan 03) Frontend singleton refresh promise in `lib/refreshTokenAtomic.ts` — 5 concurrent 401s coalesce to 1 fetch (Vitest verified); resets via `setTimeout(0)` so subsequent batches refetch
+- (Plan 03) `bcrypt<4.1` pinned because passlib 1.7.4 reads `bcrypt.__about__.__version__` removed in 4.1
+- (Plan 03) Test DB on port 5434 via `docker-compose.override.yml` (5432 occupied by another project's container on dev box) — production wiring unaffected
+- (Plan 03) Test fixture isolation via `TRUNCATE ... RESTART IDENTITY CASCADE` BEFORE each `db_session` yield (committed rows otherwise persisted between tests)
+- (Plan 03) Coverage of SQLAlchemy async paths needs `concurrency = ["thread", "greenlet"]` — without it auth_service.py reported 51% instead of 93%
+- (Plan 03) Test emails use `*.example.com` because email-validator rejects `.local` as a special-use TLD
 
 ### Open Questions to Resolve in Plans
 
@@ -120,7 +128,7 @@
 
 ### Next Action
 
-Run `/gsd:plan-phase 1` to decompose Phase 1 (Foundation) into plans.
+Wave 4 — execute Plans 01-04 (MD parser pipeline) and 01-07 (/today landing) in parallel. Plan 01-08 (tone calibration mockups + DEPLOY.md) follows.
 
 ---
 *State initialized: 2026-05-01 — Phase 1 (Foundation) is the current focus.*
