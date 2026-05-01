@@ -1,11 +1,12 @@
 ---
 phase: 1
 slug: foundation
-status: draft
+status: approved
 shadcn_initialized: pending
 preset: custom (Tailwind 4 @theme + shadcn/ui CLI init Sprint 1)
 created: 2026-05-01
 revised: 2026-05-01
+reviewed_at: 2026-05-01
 revision: 1
 ---
 
