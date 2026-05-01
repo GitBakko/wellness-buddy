@@ -77,7 +77,7 @@ L'app **deve avere aspetto a metà tra eleganza/minimal e giocoso/friendly**. Se
 
 ## Constraints
 
-- **Stack frontend**: React 19 + Vite 7 + TailwindCSS 3 + Zustand + TanStack Query v5 + Dexie.js — coerenza ecosistema NXTLink
+- **Stack frontend**: React 19 + Vite 7 + **TailwindCSS 4** (deviazione da contract v3 — vedi Key Decision) + Zustand + TanStack Query v5 + Dexie.js + shadcn/ui + Motion v12 + Geist Sans/Mono + lucide-react + sonner — coerenza ecosistema NXTLink
 - **Stack backend**: FastAPI Python 3.12 + SQLAlchemy 2 + PostgreSQL + Alembic + JWT/bcrypt — coerenza MANTIS/ePartner
 - **Deployment**: Windows Server 2019 (Uvicorn + NSSM + IIS reverse proxy) — ambiente target produzione
 - **Database**: PostgreSQL già installato; database `WellnessBuddy` creato manualmente prima primo avvio (`CREATE DATABASE WellnessBuddy;`)
@@ -102,6 +102,13 @@ L'app **deve avere aspetto a metà tra eleganza/minimal e giocoso/friendly**. Se
 | Registrazione su invito | Max 100 utenti, controllo qualità community | — Pending |
 | Dexie.js per offline state | IndexedDB wrapper maturo, supporta sync ottimistica | — Pending |
 | TanStack Query v5 + Zustand | Coerenza Notiq, separazione server/client state | — Pending |
+| **TailwindCSS 4** (deviazione da contract v3) | Oxide engine 2-5x faster, container queries, CSS-first `@theme` tokens, shadcn/ui v4 native — fondazione WIN REQUISITE UI/UX | — Pending |
+| **WeasyPrint** primary + ReportLab fallback | Shopping list data-driven HTML+CSS→PDF, riusa Tailwind tokens per brand consistency, Italian accents nativi. Sprint 2 spike valida GTK3 su Windows Server | — Pending |
+| Auth: access in-memory + refresh HttpOnly cookie + rotation + 10s grace | Previene logout storm su iPhone resume-from-background, mitiga JWT refresh race | — Pending |
+| Server canonical truth, Dexie cache + outbox | Risolve iOS storage eviction, schema migration, conflict in un solo principio | — Pending |
+| Group entity in schema Sprint 1 | Evita migrazione FK costosa quando family sync arriva Sprint 2 | — Pending |
+| TIMESTAMPTZ + IANA tz su User da Sprint 1 | DST correctness per push lunedì mattina dipende da disciplina schema giorno uno | — Pending |
+| Italian-only Sprint 1, no react-i18next | Overhead non giustificato per 100 utenti famiglia; refactor a i18n se non-italiani emergono | — Pending |
 
 ## Evolution
 
