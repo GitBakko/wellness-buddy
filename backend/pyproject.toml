@@ -53,6 +53,10 @@ markers = [
 [tool.coverage.run]
 source = ["app"]
 omit = ["app/main.py", "*/tests/*"]
+# greenlet concurrency is required for SQLAlchemy 2 async — without it coverage
+# misses lines that execute inside the asyncpg/greenlet bridge (e.g. auth_service
+# routines invoked via FastAPI Depends + httpx ASGI client).
+concurrency = ["thread", "greenlet"]
 
 [tool.coverage.report]
 fail_under = 80

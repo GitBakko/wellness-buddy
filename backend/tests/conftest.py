@@ -34,7 +34,7 @@ os.environ.setdefault(
     "test-secret-key-32-bytes-minimum-padding-padding",
 )
 os.environ.setdefault("CORS_ORIGINS", "http://localhost:5173")
-os.environ.setdefault("ADMIN_EMAIL", "admin@test.local")
+os.environ.setdefault("ADMIN_EMAIL", "admin@test.example.com")
 os.environ.setdefault("AI_PROVIDER", "null")
 os.environ.setdefault("LOG_LEVEL", "WARNING")
 os.environ.setdefault("APP_VERSION", "0.1.0-test")
@@ -107,10 +107,41 @@ async def test_engine() -> AsyncIterator[AsyncEngine]:
         await engine.dispose()
 
 
+# Tables truncated between every integration test that touches user-scoped data.
+# Order matters: child tables before parent (FK cascade-aware list sufficient — we use
+# `TRUNCATE ... CASCADE` which the DB resolves in dependency order anyway).
+_TRUNCATE_TABLES = (
+    "audit_log",
+    "refresh_tokens",
+    "invite_tokens",
+    "weight_log",
+    "workout_log",
+    "shopping_list_state",
+    "weekly_plan_variants",
+    "nutrition_plans",
+    "users",
+    "groups",
+)
+
+
+async def _truncate_all(engine: AsyncEngine) -> None:
+    """TRUNCATE the per-test mutable tables. Cascades clear FK refs."""
+    from sqlalchemy import text
+
+    table_list = ", ".join(f'"{t}"' for t in _TRUNCATE_TABLES)
+    async with engine.begin() as conn:
+        await conn.execute(text(f"TRUNCATE TABLE {table_list} RESTART IDENTITY CASCADE"))
+
+
 @pytest_asyncio.fixture
 async def db_session(test_engine: AsyncEngine) -> AsyncIterator[AsyncSession]:
-    """Per-test session that rolls back after use to keep DB clean between tests."""
-    SessionLocal = async_sessionmaker(test_engine, expire_on_commit=False)
+    """Per-test async session.
+
+    Tests that commit (e.g. seed users via fixtures) need isolation. We TRUNCATE the
+    mutable tables BEFORE each test so committed state from a previous test is erased.
+    """
+    await _truncate_all(test_engine)
+    SessionLocal = async_sessionmaker(test_engine, expire_on_commit=False)  # noqa: N806
     async with SessionLocal() as session:
         try:
             yield session
@@ -119,8 +150,13 @@ async def db_session(test_engine: AsyncEngine) -> AsyncIterator[AsyncSession]:
 
 
 @pytest_asyncio.fixture
-async def async_client() -> AsyncIterator[AsyncClient]:
-    """Async HTTPX client mounted directly on the FastAPI ASGI app — no real network."""
+async def async_client(test_engine: AsyncEngine) -> AsyncIterator[AsyncClient]:
+    """Async HTTPX client mounted directly on the FastAPI ASGI app — no real network.
+
+    Depends on `test_engine` to ensure the alembic migration has been applied before any
+    request. Tables are NOT truncated here because tests that need both `db_session`
+    fixtures + `async_client` get truncation via `db_session`.
+    """
     from app.main import app
 
     transport = ASGITransport(app=app)

@@ -26,9 +26,12 @@ def _assert_envelope(body: dict[str, object]) -> None:
     assert isinstance(body["code"], str)
 
 
-def test_auth_login_stub_returns_envelope() -> None:
+def test_auth_login_validation_error_returns_envelope() -> None:
+    """Plan 03 replaced the 501 stub with a real /login. Posting an empty body now
+    returns 422 with the AUTH-12 envelope (validation_error code).
+    """
     r = client.post("/api/auth/login")
-    assert r.status_code == 501
+    assert r.status_code == 422
     _assert_envelope(r.json())
 
 

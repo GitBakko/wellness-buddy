@@ -2,11 +2,11 @@
 
 Verifies:
 1. /api/ai/_provider_probe (test-only, no auth) returns NullProvider class.
-2. The 4 real AI endpoints return 501 with the AUTH-12 envelope shape
-   ({detail, code}). With NullProvider currently bound, the response surface
-   is the 501 from the auth dependency stub (auth_not_implemented). Once
-   Plan 03 wires real auth, this 501 will move to ai_unavailable from the
-   NullProvider — but the envelope shape remains identical.
+2. The 4 real AI endpoints sit behind `Depends(get_current_user)`. Hitting them
+   without a Bearer token returns 401 with the AUTH-12 envelope shape
+   ({detail, code}). Plan 03 replaced 02a's 501 stub with the real JWT dependency,
+   so 401 (no_token) is the gate now. The 501 ai_unavailable surface from
+   NullProvider only appears with a valid Bearer token bound — covered by Plan 04+.
 
 NOTE: Plan 02a's register_exception_handlers flattens AppException's
 detail dict into the top-level response body, so the AUTH-12 envelope
@@ -37,29 +37,29 @@ def test_provider_probe_returns_null_provider() -> None:
         assert body["is_available"] is False
 
 
-def test_meal_suggestion_returns_envelope() -> None:
+def test_meal_suggestion_requires_auth_envelope() -> None:
     with TestClient(app) as client:
         r = client.post("/api/ai/meal-suggestion")
-        assert r.status_code == 501
+        assert r.status_code == 401
         _assert_envelope(r.json())
 
 
-def test_week_analysis_returns_envelope() -> None:
+def test_week_analysis_requires_auth_envelope() -> None:
     with TestClient(app) as client:
         r = client.post("/api/ai/week-analysis")
-        assert r.status_code == 501
+        assert r.status_code == 401
         _assert_envelope(r.json())
 
 
-def test_shopping_tips_returns_envelope() -> None:
+def test_shopping_tips_requires_auth_envelope() -> None:
     with TestClient(app) as client:
         r = client.post("/api/ai/shopping-tips")
-        assert r.status_code == 501
+        assert r.status_code == 401
         _assert_envelope(r.json())
 
 
-def test_chat_returns_envelope() -> None:
+def test_chat_requires_auth_envelope() -> None:
     with TestClient(app) as client:
         r = client.post("/api/ai/chat")
-        assert r.status_code == 501
+        assert r.status_code == 401
         _assert_envelope(r.json())

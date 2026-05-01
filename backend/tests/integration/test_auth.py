@@ -38,7 +38,7 @@ async def test_user(db_session: AsyncSession) -> User:
     """Seed a known user with a known password (cleaned up via session rollback)."""
     user = User(
         id=uuid4(),
-        email="user@test.local",
+        email="user@test.example.com",
         username="user1",
         hashed_password=hash_password("Password123!"),
         role="user",
@@ -54,7 +54,7 @@ async def admin_user(db_session: AsyncSession) -> User:
     """Seed an admin user for /invite tests."""
     user = User(
         id=uuid4(),
-        email="admin@test.local",
+        email="admin@test.example.com",
         username="admin",
         hashed_password=hash_password("Admin1234!"),
         role="admin",
@@ -75,7 +75,7 @@ async def test_login_success_returns_access_and_sets_refresh_cookie(
 ) -> None:
     r = await async_client.post(
         "/api/auth/login",
-        json={"email": "user@test.local", "password": "Password123!"},
+        json={"email": "user@test.example.com", "password": "Password123!"},
     )
     assert r.status_code == 200, r.text
     body = r.json()
@@ -95,7 +95,7 @@ async def test_login_invalid_creds_returns_envelope(
 ) -> None:
     r = await async_client.post(
         "/api/auth/login",
-        json={"email": "user@test.local", "password": "WRONG"},
+        json={"email": "user@test.example.com", "password": "WRONG"},
     )
     assert r.status_code == 401
     body = r.json()
@@ -109,7 +109,7 @@ async def test_login_unknown_email_same_envelope(async_client: AsyncClient) -> N
     """V13: identical envelope for unknown email vs wrong password (no enumeration)."""
     r = await async_client.post(
         "/api/auth/login",
-        json={"email": "nope@test.local", "password": "whatever"},
+        json={"email": "nope@test.example.com", "password": "whatever"},
     )
     assert r.status_code == 401
     assert r.json()["code"] == "invalid_credentials"
@@ -136,7 +136,7 @@ async def test_refresh_rotation_issues_new_pair(
 ) -> None:
     login_r = await async_client.post(
         "/api/auth/login",
-        json={"email": "user@test.local", "password": "Password123!"},
+        json={"email": "user@test.example.com", "password": "Password123!"},
     )
     cookie = login_r.cookies.get("wb_refresh")
     assert cookie
@@ -154,7 +154,7 @@ async def test_refresh_grace_window_returns_cached_pair(
     """PITFALLS#4: reusing the same old refresh token within 10s returns cached new pair."""
     login_r = await async_client.post(
         "/api/auth/login",
-        json={"email": "user@test.local", "password": "Password123!"},
+        json={"email": "user@test.example.com", "password": "Password123!"},
     )
     cookie = login_r.cookies.get("wb_refresh")
 
@@ -175,7 +175,7 @@ async def test_refresh_reuse_outside_grace_revokes_family(
     """Reuse beyond 10s grace window → 401 + family revoked."""
     login_r = await async_client.post(
         "/api/auth/login",
-        json={"email": "user@test.local", "password": "Password123!"},
+        json={"email": "user@test.example.com", "password": "Password123!"},
     )
     cookie = login_r.cookies.get("wb_refresh")
 
@@ -191,6 +191,7 @@ async def test_refresh_reuse_outside_grace_revokes_family(
     ).all()
     revoked_row = next((row for row in rows if row.revoked), None)
     assert revoked_row is not None
+    family_id_value = revoked_row.family_id  # capture before expiration
     revoked_row.replaced_at = datetime.now(UTC) - timedelta(seconds=30)
     await db_session.commit()
 
@@ -199,14 +200,15 @@ async def test_refresh_reuse_outside_grace_revokes_family(
     body = r2.json()
     assert body["code"] == "family_revoked"
 
-    # All tokens in the family should be revoked now
-    await db_session.expire_all()
-    family_id = revoked_row.family_id
+    # All tokens in the family should be revoked now — re-query fresh
     family_rows = (
         await db_session.scalars(
-            select(RefreshToken).where(RefreshToken.family_id == family_id)
+            select(RefreshToken).where(RefreshToken.family_id == family_id_value)
         )
     ).all()
+    # Refresh state from DB explicitly via session.refresh per row
+    for row in family_rows:
+        await db_session.refresh(row)
     assert all(row.revoked for row in family_rows)
 
 
@@ -227,7 +229,7 @@ async def test_logout_revokes_family(
 ) -> None:
     login_r = await async_client.post(
         "/api/auth/login",
-        json={"email": "user@test.local", "password": "Password123!"},
+        json={"email": "user@test.example.com", "password": "Password123!"},
     )
     cookie = login_r.cookies.get("wb_refresh")
 
@@ -249,7 +251,7 @@ async def test_me_returns_profile(
 ) -> None:
     login_r = await async_client.post(
         "/api/auth/login",
-        json={"email": "user@test.local", "password": "Password123!"},
+        json={"email": "user@test.example.com", "password": "Password123!"},
     )
     access = login_r.json()["access_token"]
 
@@ -258,7 +260,7 @@ async def test_me_returns_profile(
     )
     assert r.status_code == 200
     body = r.json()
-    assert body["email"] == "user@test.local"
+    assert body["email"] == "user@test.example.com"
     assert body["username"] == "user1"
     assert body["role"] == "user"
     assert body["timezone"] == "Europe/Rome"

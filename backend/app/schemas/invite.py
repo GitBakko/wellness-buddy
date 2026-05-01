@@ -1,16 +1,12 @@
-"""Invite schemas — minimal placeholders. Plan 03 owns real impl."""
+"""Invite schemas — Plan 03 real impl. Admin generates 24h single-use tokens."""
 
 from __future__ import annotations
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 
-class InviteCreateRequest(BaseModel):
-    email: EmailStr
-    role: str = "user"
-    group_id: str | None = None
+class InviteCreateResponse(BaseModel):
+    """POST /api/auth/invite returns the freshly generated token + ISO expiry."""
 
-
-class InviteResponse(BaseModel):
     token: str
-    expires_at: str  # ISO datetime
+    expires_at: str  # ISO datetime (timezone-aware)

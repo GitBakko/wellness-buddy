@@ -35,7 +35,7 @@ pytestmark = [pytest.mark.integration, pytest.mark.asyncio(loop_scope="session")
 async def test_user(db_session: AsyncSession) -> User:
     user = User(
         id=uuid4(),
-        email="user2@test.local",
+        email="user2@test.example.com",
         username="user2",
         hashed_password=hash_password("Password123!"),
         role="user",
@@ -50,7 +50,7 @@ async def test_user(db_session: AsyncSession) -> User:
 async def admin_user(db_session: AsyncSession) -> User:
     user = User(
         id=uuid4(),
-        email="admin2@test.local",
+        email="admin2@test.example.com",
         username="admin2",
         hashed_password=hash_password("Admin1234!"),
         role="admin",
@@ -71,7 +71,7 @@ async def test_invite_create_admin_only_403_for_non_admin(
 ) -> None:
     login_r = await async_client.post(
         "/api/auth/login",
-        json={"email": "user2@test.local", "password": "Password123!"},
+        json={"email": "user2@test.example.com", "password": "Password123!"},
     )
     access = login_r.json()["access_token"]
     r = await async_client.post(
@@ -86,7 +86,7 @@ async def test_invite_create_admin_succeeds(
 ) -> None:
     login_r = await async_client.post(
         "/api/auth/login",
-        json={"email": "admin2@test.local", "password": "Admin1234!"},
+        json={"email": "admin2@test.example.com", "password": "Admin1234!"},
     )
     access = login_r.json()["access_token"]
     r = await async_client.post(
@@ -112,7 +112,7 @@ async def test_register_with_valid_token_creates_user_and_logs_in(
     # Admin generates an invite
     login_r = await async_client.post(
         "/api/auth/login",
-        json={"email": "admin2@test.local", "password": "Admin1234!"},
+        json={"email": "admin2@test.example.com", "password": "Admin1234!"},
     )
     access = login_r.json()["access_token"]
     invite_r = await async_client.post(
@@ -125,7 +125,7 @@ async def test_register_with_valid_token_creates_user_and_logs_in(
         "/api/auth/register",
         json={
             "token": token,
-            "email": "new@test.local",
+            "email": "new@test.example.com",
             "username": "newuser",
             "password": "NewPwd123!",
         },
@@ -152,7 +152,7 @@ async def test_register_expired_token(
         "/api/auth/register",
         json={
             "token": invite.token,
-            "email": "expired@test.local",
+            "email": "expired@test.example.com",
             "username": "expireduser",
             "password": "Password123!",
         },
@@ -177,7 +177,7 @@ async def test_register_revoked_token(
         "/api/auth/register",
         json={
             "token": invite.token,
-            "email": "revoked@test.local",
+            "email": "revoked@test.example.com",
             "username": "revokeduser",
             "password": "Password123!",
         },
@@ -193,13 +193,14 @@ async def test_register_reuse_blocked(
     used_user_id = uuid4()
     used_user = User(
         id=used_user_id,
-        email="used@test.local",
+        email="used@test.example.com",
         username="useduser",
         hashed_password=hash_password("Password123!"),
         role="user",
         timezone="Europe/Rome",
     )
     db_session.add(used_user)
+    await db_session.flush()  # make used_user_id visible to FK
 
     invite = InviteToken(
         token="used-token-1234567890abcdefghij1234",
@@ -214,7 +215,7 @@ async def test_register_reuse_blocked(
         "/api/auth/register",
         json={
             "token": invite.token,
-            "email": "another@test.local",
+            "email": "another@test.example.com",
             "username": "anotheruser",
             "password": "Password123!",
         },
@@ -228,7 +229,7 @@ async def test_register_unknown_token(async_client: AsyncClient) -> None:
         "/api/auth/register",
         json={
             "token": "completely-bogus-token-not-in-db-12345",
-            "email": "ghost@test.local",
+            "email": "ghost@test.example.com",
             "username": "ghost",
             "password": "Password123!",
         },
