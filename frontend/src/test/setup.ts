@@ -15,6 +15,21 @@ afterEach(() => {
   cleanup();
 });
 
+// ── ResizeObserver polyfill ─────────────────────────────────────────────────────
+// jsdom lacks ResizeObserver. Radix primitives (Switch, Checkbox, Tabs) use
+// `@radix-ui/react-use-size` which calls `new ResizeObserver(...)` on layout effect.
+// Without this polyfill any test that mounts a Radix primitive throws
+// `ReferenceError: ResizeObserver is not defined` (real Plan 07 + Plan 08 tests hit this).
+if (typeof globalThis.ResizeObserver === 'undefined') {
+  class ResizeObserverMock {
+    observe(): void {}
+    unobserve(): void {}
+    disconnect(): void {}
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (globalThis as any).ResizeObserver = ResizeObserverMock;
+}
+
 // ── matchMedia mock ─────────────────────────────────────────────────────────────
 // jsdom lacks matchMedia. Tests that exercise prefers-reduced-motion override
 // `window.matchMedia` per-test (motion.test.ts does this).
