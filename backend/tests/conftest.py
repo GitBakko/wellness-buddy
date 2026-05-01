@@ -60,10 +60,15 @@ def event_loop() -> Iterator[asyncio.AbstractEventLoop]:
 
 @pytest_asyncio.fixture(scope="session")
 async def test_engine() -> AsyncIterator[AsyncEngine]:
-    """Drop+create `WellnessBuddy_test`, run `alembic upgrade head`, yield engine."""
+    """Drop+create `WellnessBuddy_test`, run `alembic upgrade head`, yield engine.
+
+    Alembic env.py calls `asyncio.run(...)` which conflicts with pytest-asyncio's running loop.
+    We run `alembic upgrade head` in a subprocess (clean loop context) instead of via
+    `command.upgrade(...)`.
+    """
+    import subprocess
+
     import asyncpg
-    from alembic import command
-    from alembic.config import Config
 
     # Connect to default 'postgres' DB to create/drop the test DB.
     sys_dsn_async = TEST_DATABASE_URL.replace("postgresql+asyncpg", "postgresql")
@@ -77,14 +82,20 @@ async def test_engine() -> AsyncIterator[AsyncEngine]:
     finally:
         await sys_conn.close()
 
-    # Alembic uses sync driver — strip +asyncpg for the migration command.
-    sync_url = TEST_DATABASE_URL.replace("postgresql+asyncpg", "postgresql+psycopg2") \
-        if False else TEST_DATABASE_URL.replace("+asyncpg", "")
-    cfg = Config("alembic.ini")
-    cfg.set_main_option("sqlalchemy.url", sync_url)
-    # env.py reads settings.DATABASE_URL — async variant is fine since alembic env uses async_engine_from_config
-    os.environ["DATABASE_URL"] = TEST_DATABASE_URL
-    command.upgrade(cfg, "head")
+    # Run alembic in a subprocess to avoid nested-event-loop with pytest-asyncio.
+    env = {**os.environ, "DATABASE_URL": TEST_DATABASE_URL}
+    result = subprocess.run(
+        ["uv", "run", "alembic", "upgrade", "head"],
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"alembic upgrade failed (rc={result.returncode}): "
+            f"stdout={result.stdout!r} stderr={result.stderr!r}"
+        )
 
     engine = create_async_engine(TEST_DATABASE_URL, pool_pre_ping=True)
     try:

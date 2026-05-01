@@ -35,6 +35,9 @@ dev = [
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+# Match async test loop to the session-scoped engine fixture so connections stay valid.
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
 testpaths = ["tests"]
 pythonpath = ["."]
 # Disable pytest-postgresql plugin: we use our own asyncpg-based ephemeral DB fixture in conftest.
@@ -68,6 +71,11 @@ ignore = ["S101"]  # allow assert in tests
 # FastAPI uses `Depends()` as a default arg — that's the idiomatic DI pattern.
 "app/core/deps.py" = ["B008"]
 "app/api/**" = ["B008"]
+# SQLAlchemy idioms: `UUID as PgUUID` (N811) and `date as DateType` (N812) are widespread
+# conventions in the SQLAlchemy ecosystem to disambiguate stdlib vs dialect-specific types.
+# UP042 (str, Enum -> StrEnum) is suggested but `class Visibility(str, PyEnum)` is the
+# documented pattern for SQLAlchemy SAEnum + Pydantic v2 interop pre-3.11 StrEnum.
+"app/models/**" = ["N811", "N812", "UP042"]
 
 [tool.mypy]
 python_version = "3.12"

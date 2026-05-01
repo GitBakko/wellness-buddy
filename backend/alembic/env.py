@@ -23,7 +23,9 @@ from app.models.base import Base  # type: ignore[import-not-found]  # provided b
 import app.models  # type: ignore[import-not-found]  # noqa: F401 — register all models
 
 config = context.config
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+# alembic.ini uses configparser interpolation; '%' in DATABASE_URL (e.g. URL-encoded chars
+# like %40 for '@') triggers InterpolationSyntaxError unless escaped as '%%'.
+config.set_main_option("sqlalchemy.url", settings.DATABASE_URL.replace("%", "%%"))
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 target_metadata = Base.metadata
