@@ -1,16 +1,16 @@
 # Phase 1: Foundation - Research
 
 **Researched:** 2026-05-01
-**Domain:** Greenfield monorepo PWA — React 19 + FastAPI + PostgreSQL, offline-first, multi-user, AI-pluggable, Italian-only
+**Domain:** Greenfield monorepo PWA â€” React 19 + FastAPI + PostgreSQL, offline-first, multi-user, AI-pluggable, Italian-only
 **Confidence:** HIGH
 
 ## Summary
 
-Phase 1 lays foundations that every later phase inherits without retrofit. Stack and architecture are pre-locked by upstream research (`STACK.md`, `ARCHITECTURE.md`) and CONTEXT.md (33 user decisions). Research role here is **prescriptive specification** — concrete file structures, exact CLI commands, exact code snippets, library version pins re-confirmed, CI/CD configs, and Phase 1-specific pitfall preventions — so the planner can decompose into 5-8 plans without re-investigating.
+Phase 1 lays foundations that every later phase inherits without retrofit. Stack and architecture are pre-locked by upstream research (`STACK.md`, `ARCHITECTURE.md`) and CONTEXT.md (33 user decisions). Research role here is **prescriptive specification** â€” concrete file structures, exact CLI commands, exact code snippets, library version pins re-confirmed, CI/CD configs, and Phase 1-specific pitfall preventions â€” so the planner can decompose into 5-8 plans without re-investigating.
 
 The phase divides into 8 natural plan units: (1) Monorepo + tooling scaffolding, (2) Backend skeleton + DB + Alembic baseline, (3) Auth + JWT refresh rotation + invite tokens, (4) MD parser + plan upload/activate/diff, (5) Frontend skeleton + Tailwind 4 @theme + shadcn/ui + UI tokens + axe-core CI, (6) PWA shell + Dexie + mutation queue + version polling + persistence, (7) /today landing + weight + workout + AI placeholder, (8) Tone calibration mockups + Stefano+Marta exit gate review. Deploy to Windows Server 2019 happens at end-of-phase only when all 7 plans land green.
 
-**Primary recommendation:** Execute the 8 plans in dependency order with 3 parallelizable Wave 1 streams (backend skeleton ‖ frontend skeleton ‖ tone mockup), then converge into auth + parser + features + PWA + deploy. WIN REQUISITE foundations (Tailwind 4 @theme tokens, axe-core CI gate ≥95, dark-mode CI screenshots, Italian copy lock, motion budget enforced) MUST land in Plan 5 (Frontend Skeleton) before any feature plan touches UI — otherwise hardcoded hex/font-sizes proliferate and retrofit is expensive.
+**Primary recommendation:** Execute the 8 plans in dependency order with 3 parallelizable Wave 1 streams (backend skeleton â€– frontend skeleton â€– tone mockup), then converge into auth + parser + features + PWA + deploy. WIN REQUISITE foundations (Tailwind 4 @theme tokens, axe-core CI gate â‰¥95, dark-mode CI screenshots, Italian copy lock, motion budget enforced) MUST land in Plan 5 (Frontend Skeleton) before any feature plan touches UI â€” otherwise hardcoded hex/font-sizes proliferate and retrofit is expensive.
 
 <user_constraints>
 ## User Constraints (from CONTEXT.md)
@@ -18,8 +18,8 @@ The phase divides into 8 natural plan units: (1) Monorepo + tooling scaffolding,
 ### Locked Decisions
 
 **Repo Structure:**
-- **D-01:** Monorepo pnpm workspaces — `frontend/` (React 19 + Vite 7 + TypeScript 5.6) + `backend/` (FastAPI Python 3.12). Backend NON in pnpm workspace — gestito separatamente.
-- **D-02:** Python tooling: **uv** (Astral) per dependency management — lock file deterministico, install velocissimo, sostituisce pip+venv+pip-tools
+- **D-01:** Monorepo pnpm workspaces â€” `frontend/` (React 19 + Vite 7 + TypeScript 5.6) + `backend/` (FastAPI Python 3.12). Backend NON in pnpm workspace â€” gestito separatamente.
+- **D-02:** Python tooling: **uv** (Astral) per dependency management â€” lock file deterministico, install velocissimo, sostituisce pip+venv+pip-tools
 - **D-03:** `.env` files: `backend/.env` + `frontend/.env.local`, entrambi in `.gitignore`. `backend/.env.example` + `frontend/.env.example` versionati con placeholder
 - **D-04:** Plan MD reali Stefano+Marta vivono in **`/plans/` dir nel repo, gitignored** per privacy. `/plans/.gitkeep` + `/plans/EXAMPLE.md` (sintetico) versionati. CI test corpus usa fixture sintetici in `backend/tests/fixtures/plans/` (versionati, non sensibili)
 
@@ -31,21 +31,21 @@ The phase divides into 8 natural plan units: (1) Monorepo + tooling scaffolding,
 **CI/CD:**
 - **D-08:** **GitHub Actions** runners ubuntu-latest per backend/frontend lint+test+build
 - **D-09:** Pipelines Sprint 1: `pr.yml`, `axe-a11y.yml`, `dark-mode-screenshot.yml`. Husky + lint-staged pre-commit
-- **D-10:** Deploy CI/CD setup deferred Sprint 4 — manual deploy Sprint 1
+- **D-10:** Deploy CI/CD setup deferred Sprint 4 â€” manual deploy Sprint 1
 
 **Testing Strategy:**
-- **D-11:** Backend: **pytest + pytest-asyncio + httpx AsyncClient + pytest-postgresql**. Coverage ≥80% per `services/`, `parsers/`, `auth/`
+- **D-11:** Backend: **pytest + pytest-asyncio + httpx AsyncClient + pytest-postgresql**. Coverage â‰¥80% per `services/`, `parsers/`, `auth/`
 - **D-12:** Frontend: **Vitest + Playwright + axe-core/playwright + vitest visual snapshots**
 - **D-13:** Test DB: Docker postgres ephemeral. Mai sqlite
 - **D-14:** Plan parser test corpus evil-input in `backend/tests/fixtures/plans/evil/`
 
 **Auth & Onboarding Flow:**
-- **D-15:** First-login UX: full-screen welcome con CTA "Abilita storage offline" → `navigator.storage.persist()`
+- **D-15:** First-login UX: full-screen welcome con CTA "Abilita storage offline" â†’ `navigator.storage.persist()`
 - **D-16:** PWA install prompt: NO auto-prompt. Banner sottile dopo 2nd visit. iOS Safari bottom sheet illustrato
-- **D-17:** Token invito flow: admin → `POST /api/auth/invite` → `/register?token=XXX`
+- **D-17:** Token invito flow: admin â†’ `POST /api/auth/invite` â†’ `/register?token=XXX`
 
 **Error Handling & Resilience:**
-- **D-18:** Global ErrorBoundary + per-route Suspense fallback. Errors → backend `/api/errors`
+- **D-18:** Global ErrorBoundary + per-route Suspense fallback. Errors â†’ backend `/api/errors`
 - **D-19:** Offline UX: toast italiano + banner persistente >30s offline
 - **D-20:** API errors sempre JSON `{detail: string, code: string}`. Frontend traduce via `copy.it.ts`
 
@@ -68,7 +68,7 @@ The phase divides into 8 natural plan units: (1) Monorepo + tooling scaffolding,
 **AI Layer Stub:**
 - **D-31:** `AIProvider` ABC in `backend/app/ai/base.py`. `NullProvider` returns 501 "AI non disponibile"
 - **D-32:** Provider DI: factory `get_ai_provider()`, lifespan startup, `app.state.ai_provider`
-- **D-33:** Frontend `AIWidget` placeholder UI "AI non disponibile — coming soon"
+- **D-33:** Frontend `AIWidget` placeholder UI "AI non disponibile â€” coming soon"
 
 ### Claude's Discretion
 
@@ -77,25 +77,25 @@ The phase divides into 8 natural plan units: (1) Monorepo + tooling scaffolding,
 - Esatto folder structure FastAPI (api/ vs routers/, services/ vs business/)
 - Workbox config dettagliato per ogni asset type
 - Dexie schema versioning + upgrade hooks pattern
-- shadcn/ui components da installare via CLI (UI-SPEC §6 17 components)
-- Lottie animations Sprint 1 (welcome screen + meal-completion ≤800ms)
+- shadcn/ui components da installare via CLI (UI-SPEC Â§6 17 components)
+- Lottie animations Sprint 1 (welcome screen + meal-completion â‰¤800ms)
 - Storyset/Open Doodles illustration scelta finale empty states + login hero
 
 ### Deferred Ideas (OUT OF SCOPE)
 
-- WebSocket vs SSE vs polling decisione finale `condiviso` badge → Phase 2
-- WeasyPrint GTK3 spike Windows Server → Phase 2
-- VAPID keys + push notifications → Phase 3
-- Mascot character design final + Lottie+Rive integration → Phase 3
-- PostgreSQL Row-Level Security → Phase 4
-- k6 load test connection pool sizing → Phase 4
-- Vite 7 → 8 upgrade decision → Phase 4
-- Sentry/Plausible frontend observability → Phase 4
-- Automated deploy CI/CD pipeline → Phase 4
-- Concrete AI providers → Phase 5
-- AI cost caps + prompt-injection corpus → Phase 5
-- Recharts performance optimization → Phase 3+
-- i18n refactor a `react-i18next` → v2
+- WebSocket vs SSE vs polling decisione finale `condiviso` badge â†’ Phase 2
+- WeasyPrint GTK3 spike Windows Server â†’ Phase 2
+- VAPID keys + push notifications â†’ Phase 3
+- Mascot character design final + Lottie+Rive integration â†’ Phase 3
+- PostgreSQL Row-Level Security â†’ Phase 4
+- k6 load test connection pool sizing â†’ Phase 4
+- Vite 7 â†’ 8 upgrade decision â†’ Phase 4
+- Sentry/Plausible frontend observability â†’ Phase 4
+- Automated deploy CI/CD pipeline â†’ Phase 4
+- Concrete AI providers â†’ Phase 5
+- AI cost caps + prompt-injection corpus â†’ Phase 5
+- Recharts performance optimization â†’ Phase 3+
+- i18n refactor a `react-i18next` â†’ v2
 
 </user_constraints>
 
@@ -104,24 +104,24 @@ The phase divides into 8 natural plan units: (1) Monorepo + tooling scaffolding,
 
 | ID | Description | Research Support |
 |----|-------------|------------------|
-| FND-01 | Monorepo pnpm workspaces frontend+backend con linter | §Standard Stack + §Monorepo Layout — exact pnpm-workspace.yaml + ESLint flat + ruff/mypy configs |
-| FND-02 | Database PostgreSQL `WellnessBuddy` + Alembic init baseline | §Database — `CREATE DATABASE` + Alembic env.py async config + `0000_baseline.py` |
-| FND-03 | Backend FastAPI skeleton + SQLAlchemy 2 async + asyncpg pool 15/10 + lifespan | §Backend File Structure + §Models §Code Examples — `main.py` lifespan + `core/database.py` |
-| FND-04 | Frontend Vite + React 19 + Tailwind 4 @theme + shadcn/ui CLI + Geist + lucide + sonner + Motion v12 | §Frontend File Structure + §Tailwind 4 Theme + §shadcn/ui Install Order |
-| FND-05 | PWA shell vite-plugin-pwa + manifest + SW NetworkFirst index + CacheFirst hashed | §PWA Workbox Config + UI-SPEC §10.4 manifest |
-| FND-06 | Update flow `/version.json` polling + toast skipWaiting | §Workbox Update Flow + UI-SPEC §10.2 toast copy |
-| FND-07 | Dexie schema cache_* + mutation_queue + drafts UUIDs server | §Dexie Schema with Versioning |
-| FND-08 | `navigator.storage.persist()` flow first-login + Dexie-empty-but-JWT-valid resync | §Persistent Storage Flow |
-| FND-09 | Italian copy.it.ts struttura | §Italian copy.it.ts + UI-SPEC §7.2 (~80 strings) |
-| AUTH-01 — AUTH-12 | Login/logout/refresh/JWT/invite tokens/auth errors | §Auth Concrete Implementation §JWT Refresh §Invite Flow |
-| MOD-01 — MOD-10 | Models User/Group/NutritionPlan/WeeklyPlanVariant/WorkoutLog/WeightLog/ShoppingListState/InviteToken/AuditLog + indexes + TIMESTAMPTZ + IANA tz | §SQLAlchemy 2 Models + §Alembic Baseline |
-| PLAN-01 — PLAN-10 | MD parser tollerante + Pydantic strict + upload + activate + diff + assign | §MD Parser Concrete + §Plans API |
-| TODAY-01 — TODAY-08 | `/today` landing + meal completion + workout + weight + status indicator + offline | §Today View + §Components UI-SPEC §6.4 |
-| WEIGHT-01, WEIGHT-02 | Grafico Recharts + storico tabellare | §Weight + Recharts pattern |
-| WORK-01, WORK-02 | Form workout + storico filtrabile | §Workout |
-| AI-01 — AI-07 | AI ABC + NullProvider + DI + endpoints 501 + Frontend locked widget + WebSocket predisposto + .env config | §AI Provider DI Sketch |
-| DEP-01 — DEP-05, DEP-08, DEP-09 | NSSM + IIS reverse proxy + win-acme + .env + Docker Compose + DEPLOY.md | §Deployment Architecture + §Docker Compose Dev |
-| UI-01 — UI-20 | WIN REQUISITE: tokens + mobile-first + shadcn customizzato + motion + dark mode + axe-core + Lighthouse + dark-mode CI + VoiceOver + illustrations + form errors + iOS keyboard + tone + Italian formatting + emoji budget + impeccable | §Tailwind 4 Theme + §axe-core CI + §Motion Budget + §Tone Calibration |
+| FND-01 | Monorepo pnpm workspaces frontend+backend con linter | Â§Standard Stack + Â§Monorepo Layout â€” exact pnpm-workspace.yaml + ESLint flat + ruff/mypy configs |
+| FND-02 | Database PostgreSQL `WellnessBuddy` + Alembic init baseline | Â§Database â€” `CREATE DATABASE` + Alembic env.py async config + `0000_baseline.py` |
+| FND-03 | Backend FastAPI skeleton + SQLAlchemy 2 async + asyncpg pool 15/10 + lifespan | Â§Backend File Structure + Â§Models Â§Code Examples â€” `main.py` lifespan + `core/database.py` |
+| FND-04 | Frontend Vite + React 19 + Tailwind 4 @theme + shadcn/ui CLI + Geist + lucide + sonner + Motion v12 | Â§Frontend File Structure + Â§Tailwind 4 Theme + Â§shadcn/ui Install Order |
+| FND-05 | PWA shell vite-plugin-pwa + manifest + SW NetworkFirst index + CacheFirst hashed | Â§PWA Workbox Config + UI-SPEC Â§10.4 manifest |
+| FND-06 | Update flow `/version.json` polling + toast skipWaiting | Â§Workbox Update Flow + UI-SPEC Â§10.2 toast copy |
+| FND-07 | Dexie schema cache_* + mutation_queue + drafts UUIDs server | Â§Dexie Schema with Versioning |
+| FND-08 | `navigator.storage.persist()` flow first-login + Dexie-empty-but-JWT-valid resync | Â§Persistent Storage Flow |
+| FND-09 | Italian copy.it.ts struttura | Â§Italian copy.it.ts + UI-SPEC Â§7.2 (~80 strings) |
+| AUTH-01 â€” AUTH-12 | Login/logout/refresh/JWT/invite tokens/auth errors | Â§Auth Concrete Implementation Â§JWT Refresh Â§Invite Flow |
+| MOD-01 â€” MOD-10 | Models User/Group/NutritionPlan/WeeklyPlanVariant/WorkoutLog/WeightLog/ShoppingListState/InviteToken/AuditLog + indexes + TIMESTAMPTZ + IANA tz | Â§SQLAlchemy 2 Models + Â§Alembic Baseline |
+| PLAN-01 â€” PLAN-10 | MD parser tollerante + Pydantic strict + upload + activate + diff + assign | Â§MD Parser Concrete + Â§Plans API |
+| TODAY-01 â€” TODAY-08 | `/today` landing + meal completion + workout + weight + status indicator + offline | Â§Today View + Â§Components UI-SPEC Â§6.4 |
+| WEIGHT-01, WEIGHT-02 | Grafico Recharts + storico tabellare | Â§Weight + Recharts pattern |
+| WORK-01, WORK-02 | Form workout + storico filtrabile | Â§Workout |
+| AI-01 â€” AI-07 | AI ABC + NullProvider + DI + endpoints 501 + Frontend locked widget + WebSocket predisposto + .env config | Â§AI Provider DI Sketch |
+| DEP-01 â€” DEP-05, DEP-08, DEP-09 | NSSM + IIS reverse proxy + win-acme + .env + Docker Compose + DEPLOY.md | Â§Deployment Architecture + Â§Docker Compose Dev |
+| UI-01 â€” UI-20 | WIN REQUISITE: tokens + mobile-first + shadcn customizzato + motion + dark mode + axe-core + Lighthouse + dark-mode CI + VoiceOver + illustrations + form errors + iOS keyboard + tone + Italian formatting + emoji budget + impeccable | Â§Tailwind 4 Theme + Â§axe-core CI + Â§Motion Budget + Â§Tone Calibration |
 </phase_requirements>
 
 ## Architectural Responsibility Map
@@ -130,18 +130,18 @@ The phase divides into 8 natural plan units: (1) Monorepo + tooling scaffolding,
 |------------|-------------|----------------|-----------|
 | User authentication (login/logout) | API / Backend | Browser (Zustand auth-in-mem + HttpOnly cookie) | Token issuance + rotation server-only; client holds access token in memory |
 | Refresh token rotation + family revocation | API / Backend | Database (refresh_tokens table) | Server is sole authority on token validity; family tracking requires DB |
-| MD plan parsing + validation | API / Backend | — | Tolerant parser + strict Pydantic v2 validation must be reusable from CLI; never client-side |
+| MD plan parsing + validation | API / Backend | â€” | Tolerant parser + strict Pydantic v2 validation must be reusable from CLI; never client-side |
 | Plan storage + active flag | Database | API | Canonical truth lives in PostgreSQL; partial unique index `WHERE is_active = true` |
 | Daily meal completion state | API / Backend | Browser (Dexie cache + mutation queue) | Server canonical; Dexie mirror for offline writes |
 | Weight logging + chart | API / Backend | Browser (Dexie cache, Recharts render) | Server stores points; Recharts renders client-side from cache |
 | Workout logging | API / Backend | Browser (Dexie cache + mutation queue) | Same offline-first pattern as weight |
 | App shell (PWA install + offline) | Browser / Service Worker | CDN/IIS Static (immutable hashed assets) | NetworkFirst index.html + CacheFirst /assets/* |
 | `/version.json` polling | Browser | API / Backend (serves `{version, build_hash}`) | Backend generates at build, frontend polls every 5min |
-| `navigator.storage.persist()` request | Browser | — | Pure client API; cannot be granted server-side |
-| Italian localization | Browser (copy.it.ts) | — | All UI strings client-side; backend errors send `code` only, frontend translates |
+| `navigator.storage.persist()` request | Browser | â€” | Pure client API; cannot be granted server-side |
+| Italian localization | Browser (copy.it.ts) | â€” | All UI strings client-side; backend errors send `code` only, frontend translates |
 | AI provider stub (NullProvider 501) | API / Backend | Browser (locked AIWidget placeholder) | Backend factory + DI; frontend shows placeholder UI |
 | Audit log | API / Backend | Database | Mutations logged on write paths; retrieval Phase 4 |
-| Dark mode | Browser (CSS @media + ThemeToggle in Zustand) | — | Pure client concern; PWA manifest theme-color via media queries |
+| Dark mode | Browser (CSS @media + ThemeToggle in Zustand) | â€” | Pure client concern; PWA manifest theme-color via media queries |
 | axe-core a11y CI gate | CI / GitHub Actions | Browser (Playwright runtime) | Playwright runs in CI against built dist/; blocks PR merge |
 | Dark-mode screenshot tests | CI / GitHub Actions | Browser (Playwright runtime) | Visual diff in CI; blocks PR if regression |
 
@@ -172,7 +172,7 @@ The phase divides into 8 natural plan units: (1) Monorepo + tooling scaffolding,
 |---------|---------|---------|-------------|
 | Zustand | `^5.0` | Client state | UI state, auth-in-mem token, theme. [VERIFIED: STACK.md] |
 | @tanstack/react-query | `^5.x` | Server state | All API caching, optimistic mutations. [VERIFIED: STACK.md] |
-| @tanstack/query-sync-storage-persister | latest | Persist Query cache | Cache survives reload — Phase 1 stretch, Phase 2 hard requirement. [CITED: tanstack docs] |
+| @tanstack/query-sync-storage-persister | latest | Persist Query cache | Cache survives reload â€” Phase 1 stretch, Phase 2 hard requirement. [CITED: tanstack docs] |
 | dexie | `^4.4` | IndexedDB wrapper | Cache + mutation queue + drafts. [VERIFIED: STACK.md] |
 | react-router | `^7.x` | Routing | v7 unified data router. [VERIFIED: STACK.md] |
 | vite-plugin-pwa | `^0.21` | PWA manifest + SW | Workbox 7 zero-config. [VERIFIED: STACK.md] |
@@ -180,7 +180,7 @@ The phase divides into 8 natural plan units: (1) Monorepo + tooling scaffolding,
 | motion | `^12.x` | Component animation | Hybrid native/JS, spring physics. Use `motion/react`. [VERIFIED: STACK.md] |
 | lucide-react | `^0.460+` | Icons | 1600 stroke icons, tree-shakable, friendly. [VERIFIED: STACK.md] |
 | geist | latest | Geist Sans + Mono fonts | npm-installable variable fonts. [VERIFIED: STACK.md] |
-| @vercel/style-guide or font-loader | — | Instrument Serif (escape hatch) | UI-SPEC §3.2 — `/today` greeting only, max 1 per page |
+| @vercel/style-guide or font-loader | â€” | Instrument Serif (escape hatch) | UI-SPEC Â§3.2 â€” `/today` greeting only, max 1 per page |
 | sonner | `^1.7` | Toasts | 47M weekly, beautiful default. [VERIFIED: STACK.md] |
 | react-hook-form | `^7.53` | Form state | Min re-renders, shadcn/ui native. [VERIFIED: STACK.md] |
 | zod | `^3.23` | Schema validation | Type-safe, share with backend Pydantic shape. [VERIFIED: STACK.md] |
@@ -199,7 +199,7 @@ The phase divides into 8 natural plan units: (1) Monorepo + tooling scaffolding,
 
 | Library | Version | Purpose | When to Use |
 |---------|---------|---------|-------------|
-| structlog | `^24.x` | JSON structured logging | D-21 — Request ID middleware [CITED: structlog docs] |
+| structlog | `^24.x` | JSON structured logging | D-21 â€” Request ID middleware [CITED: structlog docs] |
 | python-markdown | `^3.7` | MD AST | Used by parser. [VERIFIED: STACK.md] |
 | python-dotenv | `^1.0` | `.env` loading | Standard. [VERIFIED: STACK.md] |
 | httpx | `^0.27` | Async HTTP | Phase 5 AI providers; not used Phase 1. [VERIFIED: STACK.md] |
@@ -215,7 +215,7 @@ The phase divides into 8 natural plan units: (1) Monorepo + tooling scaffolding,
 |------|---------|-------|
 | Vitest `^2.x` | Frontend unit + component | Built-in Vite ecosystem |
 | Playwright `^1.x` | E2E + axe-core integration | Test PWA + a11y |
-| @axe-core/playwright | latest | a11y CI gate ≥4.5:1 / ≥3:1 |
+| @axe-core/playwright | latest | a11y CI gate â‰¥4.5:1 / â‰¥3:1 |
 | ESLint `^9` (flat config) | Lint | `eslint-plugin-react`, `eslint-plugin-react-hooks` |
 | Prettier `^3` | Format | + `prettier-plugin-tailwindcss` |
 | Husky `^9` | Git hooks | pre-commit lint-staged |
@@ -227,10 +227,10 @@ The phase divides into 8 natural plan units: (1) Monorepo + tooling scaffolding,
 
 | Instead of | Could Use | Tradeoff |
 |------------|-----------|----------|
-| pnpm workspaces | Turborepo | Turborepo adds caching only with multiple JS packages. Single frontend → overhead Phase 1. Re-evaluate Phase 4. |
+| pnpm workspaces | Turborepo | Turborepo adds caching only with multiple JS packages. Single frontend â†’ overhead Phase 1. Re-evaluate Phase 4. |
 | Tailwind 4 | Tailwind 3 | v3 = no `@theme`, no Oxide, no first-class container queries. Materially worse for WIN REQUISITE. |
 | Vite 7 | Vite 8 | v8 stable but Rolldown plugin ecosystem still settling. Hold v7. |
-| ReportLab | WeasyPrint (Phase 2) | WeasyPrint = HTML+CSS reuse Tailwind tokens. Phase 1 doesn't ship PDF — decision deferred Phase 2 GTK3 spike. |
+| ReportLab | WeasyPrint (Phase 2) | WeasyPrint = HTML+CSS reuse Tailwind tokens. Phase 1 doesn't ship PDF â€” decision deferred Phase 2 GTK3 spike. |
 | Geist | Inter | Inter = neutral SaaS. Geist = friendlier apertures, slightly rounder, maps to elegant+playful brief. |
 | date-fns v4 | Day.js / Temporal | Day.js smaller but less TZ. Temporal needs polyfill. date-fns v4 = best 2026 baseline. |
 | Lucide | Phosphor | Lucide 16x dominant 2026, default in shadcn/ui. |
@@ -329,375 +329,375 @@ Versions in `STACK.md` were verified 2026-05-01. If any version drift detected d
 ### System Architecture Diagram
 
 ```
-                    ┌──────────────────────────────────────────────────┐
-                    │  iPhone / Android / Desktop Browser              │
-                    │                                                   │
-   user input  ─→   │  ┌─────────────────┐    ┌──────────────────┐     │
-                    │  │ React 19 UI     │    │ Service Worker   │     │
-                    │  │ (Vite 7 build)  │    │ (vite-plugin-pwa)│     │
-                    │  │ Tailwind 4 CSS  │    │ Workbox 7 SW     │     │
-                    │  └────────┬────────┘    └─────────┬────────┘     │
-                    │           │                       │              │
-                    │  ┌────────▼────────┐    ┌─────────▼────────┐     │
-                    │  │ Zustand stores  │    │ NetworkFirst     │     │
-                    │  │ (auth/ui/theme) │    │ /index.html      │     │
-                    │  └────────┬────────┘    │ CacheFirst       │     │
-                    │           │             │ /assets/*-hash.* │     │
-                    │  ┌────────▼────────┐    └─────────┬────────┘     │
-                    │  │ TanStack Query  │              │              │
-                    │  │ (server cache,  │              │              │
-                    │  │ optimistic mut) │              │              │
-                    │  └────────┬────────┘              │              │
-                    │           │                       │              │
-                    │  ┌────────▼────────┐              │              │
-                    │  │ Dexie.js v4.4   │              │              │
-                    │  │ ▸ cache_*       │              │              │
-                    │  │ ▸ mutation_q    │              │              │
-                    │  │ ▸ drafts        │              │              │
-                    │  └─────────────────┘              │              │
-                    │           │                       │              │
-                    │           │ /version.json poll    │              │
-                    │           │ skipWaiting+toast     │              │
-                    │           │                       │              │
-                    └───────────┼───────────────────────┼──────────────┘
-                                │                       │
-                  HTTPS (JWT Bearer in header,          │
-                  refresh in HttpOnly cookie scoped     │
-                  /api/auth)                            │
-                                │                       │
-   Phase 1 dev:                 ▼                       ▼
-   ┌─────────────────────────────────────────────────────────────┐
-   │  Phase 1 dev: Vite dev server (5173) ←→ Uvicorn (8000)      │
-   │     (proxy /api → 8000, /* → vite)                          │
-   │                                                              │
-   │  End of Phase 1 deploy: IIS reverse proxy                   │
-   │     /api/* → 127.0.0.1:8000 (Uvicorn via NSSM)              │
-   │     /*     → frontend/dist/ (static)                        │
-   │     SSL terminated at IIS (win-acme cert)                   │
-   └─────────────────────────────────────────────────────────────┘
-                                │
-                                ▼
-   ┌─────────────────────────────────────────────────────────────┐
-   │  FastAPI 0.136 (Python 3.12, uv-managed)                    │
-   │  ┌────────┐  ┌──────────┐  ┌──────────┐  ┌────────────┐    │
-   │  │ api/   │→ │ services/│→ │ models/  │  │ ai/        │    │
-   │  │ routes │  │ biz logic│  │ SQLAlch  │  │ ABC + Null │    │
-   │  └────────┘  └──────────┘  └──────────┘  └────────────┘    │
-   │      │            │             │              │           │
-   │  ┌───▼───┐    ┌───▼───┐    ┌────▼────┐  ┌─────▼─────┐     │
-   │  │ core/ │    │parsers│    │ schemas/│  │ NullProvider     │
-   │  │ auth+ │    │ MD→   │    │ Pydantic│  │ → 501 Italian│   │
-   │  │ DI +  │    │ JSON  │    │ v2 strict  │  └───────────┘   │
-   │  │ config│    │ tolerant   │  └─────────┘                  │
-   │  └───────┘    └───────┘                                     │
-   │      │                                                      │
-   │  ┌───▼───────────────────────┐                              │
-   │  │ Lifespan startup:          │                              │
-   │  │ ▸ build_provider() → state │                              │
-   │  │ ▸ engine + sessionmaker    │                              │
-   │  │ ▸ structlog config         │                              │
-   │  └────────────────────────────┘                              │
-   └────────────┬────────────────────────────────────────────────┘
-                │
-                │ asyncpg pool 15/10
-                │
-                ▼
-   ┌─────────────────────────────────────────────────────────────┐
-   │  PostgreSQL — DATABASE: WellnessBuddy (canonical truth)     │
-   │  ▸ TIMESTAMPTZ everywhere (UTC storage)                     │
-   │  ▸ IANA tz on User                                          │
-   │  ▸ Group + visibility enum (Phase 1 schema, Phase 2 use)    │
-   │  ▸ Indexes: (user_id, week_start), (user_id, date), etc.    │
-   │  ▸ refresh_tokens table for rotation + family revocation    │
-   │  ▸ audit_log table (Phase 1 minimal)                        │
-   └─────────────────────────────────────────────────────────────┘
+                    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+                    â”‚  iPhone / Android / Desktop Browser              â”‚
+                    â”‚                                                   â”‚
+   user input  â”€â†’   â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”     â”‚
+                    â”‚  â”‚ React 19 UI     â”‚    â”‚ Service Worker   â”‚     â”‚
+                    â”‚  â”‚ (Vite 7 build)  â”‚    â”‚ (vite-plugin-pwa)â”‚     â”‚
+                    â”‚  â”‚ Tailwind 4 CSS  â”‚    â”‚ Workbox 7 SW     â”‚     â”‚
+                    â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”˜    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”˜     â”‚
+                    â”‚           â”‚                       â”‚              â”‚
+                    â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”€â”€â”€â”    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”€â”€â”€â”     â”‚
+                    â”‚  â”‚ Zustand stores  â”‚    â”‚ NetworkFirst     â”‚     â”‚
+                    â”‚  â”‚ (auth/ui/theme) â”‚    â”‚ /index.html      â”‚     â”‚
+                    â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”˜    â”‚ CacheFirst       â”‚     â”‚
+                    â”‚           â”‚             â”‚ /assets/*-hash.* â”‚     â”‚
+                    â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”€â”€â”€â”    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”˜     â”‚
+                    â”‚  â”‚ TanStack Query  â”‚              â”‚              â”‚
+                    â”‚  â”‚ (server cache,  â”‚              â”‚              â”‚
+                    â”‚  â”‚ optimistic mut) â”‚              â”‚              â”‚
+                    â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”˜              â”‚              â”‚
+                    â”‚           â”‚                       â”‚              â”‚
+                    â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”€â”€â”€â”              â”‚              â”‚
+                    â”‚  â”‚ Dexie.js v4.4   â”‚              â”‚              â”‚
+                    â”‚  â”‚ â–¸ cache_*       â”‚              â”‚              â”‚
+                    â”‚  â”‚ â–¸ mutation_q    â”‚              â”‚              â”‚
+                    â”‚  â”‚ â–¸ drafts        â”‚              â”‚              â”‚
+                    â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜              â”‚              â”‚
+                    â”‚           â”‚                       â”‚              â”‚
+                    â”‚           â”‚ /version.json poll    â”‚              â”‚
+                    â”‚           â”‚ skipWaiting+toast     â”‚              â”‚
+                    â”‚           â”‚                       â”‚              â”‚
+                    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                                â”‚                       â”‚
+                  HTTPS (JWT Bearer in header,          â”‚
+                  refresh in HttpOnly cookie scoped     â”‚
+                  /api/auth)                            â”‚
+                                â”‚                       â”‚
+   Phase 1 dev:                 â–¼                       â–¼
+   â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+   â”‚  Phase 1 dev: Vite dev server (5173) â†â†’ Uvicorn (8000)      â”‚
+   â”‚     (proxy /api â†’ 8000, /* â†’ vite)                          â”‚
+   â”‚                                                              â”‚
+   â”‚  End of Phase 1 deploy: IIS reverse proxy                   â”‚
+   â”‚     /api/* â†’ 127.0.0.1:8000 (Uvicorn via NSSM)              â”‚
+   â”‚     /*     â†’ frontend/dist/ (static)                        â”‚
+   â”‚     SSL terminated at IIS (win-acme cert)                   â”‚
+   â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                                â”‚
+                                â–¼
+   â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+   â”‚  FastAPI 0.136 (Python 3.12, uv-managed)                    â”‚
+   â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”    â”‚
+   â”‚  â”‚ api/   â”‚â†’ â”‚ services/â”‚â†’ â”‚ models/  â”‚  â”‚ ai/        â”‚    â”‚
+   â”‚  â”‚ routes â”‚  â”‚ biz logicâ”‚  â”‚ SQLAlch  â”‚  â”‚ ABC + Null â”‚    â”‚
+   â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜    â”‚
+   â”‚      â”‚            â”‚             â”‚              â”‚           â”‚
+   â”‚  â”Œâ”€â”€â”€â–¼â”€â”€â”€â”    â”Œâ”€â”€â”€â–¼â”€â”€â”€â”    â”Œâ”€â”€â”€â”€â–¼â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”     â”‚
+   â”‚  â”‚ core/ â”‚    â”‚parsersâ”‚    â”‚ schemas/â”‚  â”‚ NullProvider     â”‚
+   â”‚  â”‚ auth+ â”‚    â”‚ MDâ†’   â”‚    â”‚ Pydanticâ”‚  â”‚ â†’ 501 Italianâ”‚   â”‚
+   â”‚  â”‚ DI +  â”‚    â”‚ JSON  â”‚    â”‚ v2 strict  â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜   â”‚
+   â”‚  â”‚ configâ”‚    â”‚ tolerant   â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜                  â”‚
+   â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”˜    â””â”€â”€â”€â”€â”€â”€â”€â”˜                                     â”‚
+   â”‚      â”‚                                                      â”‚
+   â”‚  â”Œâ”€â”€â”€â–¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”                              â”‚
+   â”‚  â”‚ Lifespan startup:          â”‚                              â”‚
+   â”‚  â”‚ â–¸ build_provider() â†’ state â”‚                              â”‚
+   â”‚  â”‚ â–¸ engine + sessionmaker    â”‚                              â”‚
+   â”‚  â”‚ â–¸ structlog config         â”‚                              â”‚
+   â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜                              â”‚
+   â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                â”‚
+                â”‚ asyncpg pool 15/10
+                â”‚
+                â–¼
+   â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+   â”‚  PostgreSQL â€” DATABASE: WellnessBuddy (canonical truth)     â”‚
+   â”‚  â–¸ TIMESTAMPTZ everywhere (UTC storage)                     â”‚
+   â”‚  â–¸ IANA tz on User                                          â”‚
+   â”‚  â–¸ Group + visibility enum (Phase 1 schema, Phase 2 use)    â”‚
+   â”‚  â–¸ Indexes: (user_id, week_start), (user_id, date), etc.    â”‚
+   â”‚  â–¸ refresh_tokens table for rotation + family revocation    â”‚
+   â”‚  â–¸ audit_log table (Phase 1 minimal)                        â”‚
+   â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 ### Recommended Project Structure
 
 ```
 wellness-buddy/                      # monorepo root
-├── package.json                     # pnpm workspace root (frontend only)
-├── pnpm-workspace.yaml              # workspaces: ['frontend']
-├── pnpm-lock.yaml                   # versioned
-├── docker-compose.yml               # dev postgres
-├── .gitignore                       # backend/.env, frontend/.env.local, /plans/, dist/, .venv/
-├── .gitattributes                   # text=auto eol=lf, *.md text eol=lf
-├── README.md                        # project overview + dev setup
-├── CLAUDE.md                        # already exists
-├── DEPLOY.md                        # Windows Server 2019 deploy guide (Phase 1 end)
-├── .github/
-│   └── workflows/
-│       ├── pr.yml                   # lint + type-check + unit + build
-│       ├── axe-a11y.yml             # Playwright + axe-core
-│       └── dark-mode-screenshot.yml # Playwright visual diff
-├── .husky/
-│   └── pre-commit                   # lint-staged
-├── plans/                           # MD plans Stefano+Marta — gitignored
-│   ├── .gitkeep                     # versioned
-│   └── EXAMPLE.md                   # synthetic, versioned
-├── frontend/
-│   ├── package.json                 # frontend deps
-│   ├── pnpm-lock.yaml -> ../        # via workspace
-│   ├── vite.config.ts               # vite-plugin-pwa registered
-│   ├── tsconfig.json
-│   ├── eslint.config.js             # flat config
-│   ├── .prettierrc.cjs              # + prettier-plugin-tailwindcss
-│   ├── components.json              # shadcn/ui CLI config
-│   ├── playwright.config.ts         # axe + visual snapshots
-│   ├── vitest.config.ts
-│   ├── .env.example                 # versioned, placeholder
-│   ├── .env.local                   # gitignored
-│   ├── public/
-│   │   ├── icons/
-│   │   │   ├── icon-192.png
-│   │   │   ├── icon-512.png
-│   │   │   ├── icon-maskable-512.png
-│   │   │   └── apple-touch-icon-180.png
-│   │   ├── illustrations/           # Storyset SVGs colorized via tokens
-│   │   │   ├── empty-today.svg
-│   │   │   ├── empty-plan.svg
-│   │   │   ├── login-hero.svg
-│   │   │   └── error-fallback.svg
-│   │   └── version.json             # generated at build, {version, build_hash}
-│   ├── index.html                   # manifest link, theme-color media queries
-│   └── src/
-│       ├── main.tsx                 # entry, registers SW via virtual:pwa-register/react
-│       ├── App.tsx                  # router shell, ErrorBoundary wrap
-│       ├── router.tsx               # react-router v7 createBrowserRouter
-│       ├── pages/
-│       │   ├── Login.tsx
-│       │   ├── InviteSignup.tsx
-│       │   ├── Today.tsx            # /today landing
-│       │   ├── Plans.tsx            # plan upload + diff
-│       │   ├── History.tsx          # weight + workout history
-│       │   └── Settings.tsx
-│       ├── components/
-│       │   ├── ui/                  # shadcn/ui customized primitives
-│       │   │   ├── button.tsx
-│       │   │   ├── input.tsx
-│       │   │   ├── textarea.tsx
-│       │   │   ├── label.tsx
-│       │   │   ├── checkbox.tsx
-│       │   │   ├── switch.tsx
-│       │   │   ├── select.tsx
-│       │   │   ├── radio-group.tsx
-│       │   │   ├── dialog.tsx
-│       │   │   ├── sheet.tsx
-│       │   │   ├── dropdown-menu.tsx
-│       │   │   ├── form.tsx
-│       │   │   ├── card.tsx
-│       │   │   ├── tabs.tsx
-│       │   │   ├── calendar.tsx
-│       │   │   ├── sonner.tsx
-│       │   │   └── skeleton.tsx
-│       │   ├── layout/
-│       │   │   ├── AppShell.tsx
-│       │   │   ├── AppBar.tsx
-│       │   │   ├── BottomTabBar.tsx
-│       │   │   ├── NavigationRail.tsx
-│       │   │   ├── ErrorBoundary.tsx
-│       │   │   ├── SyncStatusPip.tsx
-│       │   │   ├── UpdatePromptToast.tsx
-│       │   │   └── IOSInstallBanner.tsx
-│       │   ├── today/
-│       │   │   ├── MealCard.tsx
-│       │   │   ├── MacroDisplay.tsx
-│       │   │   ├── DayStatusIndicator.tsx
-│       │   │   ├── WeightQuickLog.tsx
-│       │   │   └── WorkoutForm.tsx
-│       │   ├── plans/
-│       │   │   ├── PlanUploadDropzone.tsx
-│       │   │   ├── PlanDiffView.tsx
-│       │   │   └── PlanPreviewMd.tsx
-│       │   ├── weight/
-│       │   │   ├── WeightChart.tsx
-│       │   │   └── WeightHistoryTable.tsx
-│       │   ├── workout/
-│       │   │   └── WorkoutHistoryTable.tsx
-│       │   ├── auth/
-│       │   │   ├── LoginForm.tsx
-│       │   │   ├── InviteSignupForm.tsx
-│       │   │   └── PersistStorageWelcome.tsx   # full-screen welcome D-15
-│       │   └── ai/
-│       │       └── AIWidget.tsx     # locked placeholder
-│       ├── stores/                  # Zustand
-│       │   ├── auth.ts              # access token in-mem
-│       │   ├── theme.ts             # light/dark/system
-│       │   ├── ui.ts                # current week, modal state
-│       │   └── sync.ts              # online/offline, pending count
-│       ├── services/                # TanStack Query hooks + API client
-│       │   ├── api.ts               # fetch wrapper, JWT injection, refresh interceptor
-│       │   ├── auth.ts              # login/logout/refresh/me/invite
-│       │   ├── plans.ts             # upload/list/activate/diff
-│       │   ├── today.ts             # /today data
-│       │   ├── weekly.ts            # /api/weekly (Phase 2 stub Phase 1)
-│       │   ├── workout.ts           # log/list
-│       │   ├── weight.ts            # log/list
-│       │   └── version.ts           # /version.json polling
-│       ├── lib/
-│       │   ├── refreshTokenAtomic.ts # singleton refresh promise
-│       │   ├── mutationQueue.ts     # Dexie outbox helpers
-│       │   ├── persistStorage.ts    # navigator.storage.persist() flow
-│       │   ├── queryClient.ts       # TanStack QueryClient + Dexie persister
-│       │   ├── cn.ts                # clsx + tailwind-merge
-│       │   └── format.ts            # Intl.NumberFormat('it-IT'), Intl.Collator('it')
-│       ├── db/
-│       │   ├── dexie.ts             # Dexie schema definition
-│       │   ├── schema.ts            # TypeScript table types
-│       │   └── migrations.ts        # version().upgrade() hooks
-│       ├── hooks/
-│       │   ├── useOnline.ts
-│       │   ├── useReducedMotion.ts  # wraps motion useReducedMotion
-│       │   ├── useMediaQuery.ts
-│       │   └── useTheme.ts
-│       ├── i18n/
-│       │   └── copy.it.ts           # ~80 strings UI-SPEC §7.2
-│       ├── styles/
-│       │   ├── theme.css            # Tailwind 4 @theme block
-│       │   └── globals.css          # base resets + utilities
-│       └── tests/
-│           ├── e2e/                 # Playwright
-│           │   ├── auth.spec.ts
-│           │   ├── pwa.spec.ts
-│           │   ├── today.spec.ts
-│           │   └── a11y.spec.ts
-│           ├── visual/              # dark-mode screenshot diff
-│           │   └── routes.spec.ts
-│           └── unit/                # Vitest
-│               ├── components/
-│               └── lib/
-├── backend/
-│   ├── pyproject.toml               # uv-managed, ruff/mypy/pytest config
-│   ├── uv.lock
-│   ├── .python-version              # 3.12
-│   ├── .env.example                 # versioned
-│   ├── .env                         # gitignored
-│   ├── alembic.ini
-│   ├── alembic/
-│   │   ├── env.py                   # async config
-│   │   ├── script.py.mako
-│   │   └── versions/
-│   │       └── 0000_baseline.py     # full Phase 1 schema
-│   └── app/
-│       ├── __init__.py
-│       ├── main.py                  # FastAPI app factory + lifespan
-│       ├── core/
-│       │   ├── __init__.py
-│       │   ├── config.py            # Pydantic settings BaseSettings
-│       │   ├── security.py          # JWT encode/decode, password hash
-│       │   ├── database.py          # async engine + sessionmaker
-│       │   ├── deps.py              # get_current_user, get_session, get_ai_provider
-│       │   ├── exceptions.py        # custom exception → HTTP error mapping
-│       │   ├── logging.py           # structlog config
-│       │   └── middleware.py        # request ID, idempotent grace window
-│       ├── models/
-│       │   ├── __init__.py
-│       │   ├── base.py              # Base, common columns (TIMESTAMPTZ created_at)
-│       │   ├── user.py
-│       │   ├── group.py
-│       │   ├── plan.py              # NutritionPlan
-│       │   ├── variant.py           # WeeklyPlanVariant
-│       │   ├── workout.py           # WorkoutLog
-│       │   ├── weight.py            # WeightLog
-│       │   ├── shopping.py          # ShoppingListState
-│       │   ├── invite.py            # InviteToken
-│       │   ├── refresh.py           # RefreshToken (rotation + family)
-│       │   └── audit.py             # AuditLog
-│       ├── schemas/
-│       │   ├── __init__.py
-│       │   ├── auth.py              # LoginRequest, RefreshResponse, etc.
-│       │   ├── plan.py              # PlanCreate, PlanResponse
-│       │   ├── plan_parsed.py       # PlanParsedSchema strict (parser output)
-│       │   ├── today.py             # TodayResponse aggregate
-│       │   ├── workout.py
-│       │   ├── weight.py
-│       │   ├── invite.py
-│       │   └── ai.py                # AIRequest/Response shapes (501 stub)
-│       ├── api/
-│       │   ├── __init__.py
-│       │   ├── deps.py              # local auth deps re-export
-│       │   ├── auth.py              # /api/auth/*
-│       │   ├── plans.py             # /api/plans/*
-│       │   ├── today.py             # /api/today
-│       │   ├── weekly.py            # /api/weekly/* (stub Phase 1)
-│       │   ├── workout.py
-│       │   ├── weight.py
-│       │   ├── shopping.py          # stub Phase 2
-│       │   ├── ai.py                # /api/ai/* all 501
-│       │   ├── admin.py             # invite gen, plan assign
-│       │   ├── errors.py            # /api/errors (frontend error log)
-│       │   └── version.py           # /version.json (also static)
-│       ├── services/
-│       │   ├── __init__.py
-│       │   ├── auth_service.py      # token issue/rotate/revoke
-│       │   ├── plan_service.py      # upload, activate, diff
-│       │   ├── today_service.py     # aggregate today's data
-│       │   ├── workout_service.py
-│       │   ├── weight_service.py
-│       │   └── audit_service.py
-│       ├── parsers/
-│       │   ├── __init__.py
-│       │   ├── normalizer.py        # BOM/CRLF/NFC/NBSP/smart-punct pipeline
-│       │   ├── plan_parser.py       # tolerant section parser
-│       │   └── plan_sections.py     # individual section parsers
-│       ├── ai/
-│       │   ├── __init__.py
-│       │   ├── base.py              # AIProvider ABC
-│       │   ├── null_provider.py     # NullProvider (501 Italian)
-│       │   └── factory.py           # build_provider() reads AI_PROVIDER env
-│       └── tests/
-│           ├── __init__.py
-│           ├── conftest.py          # pytest-postgresql fixture, async client
-│           ├── fixtures/
-│           │   └── plans/
-│           │       ├── valid/
-│           │       │   ├── stefano_synthetic.md
-│           │       │   └── marta_synthetic.md
-│           │       └── evil/        # corpus
-│           │           ├── word_export.md         # CRLF + smart quotes
-│           │           ├── notes_app.md           # NFD decomposed
-│           │           ├── notion_export.md       # emoji headings
-│           │           ├── obsidian_export.md
-│           │           ├── notepad_bom.md         # UTF-8 BOM
-│           │           └── nbsp_in_headings.md
-│           ├── unit/
-│           │   ├── test_normalizer.py
-│           │   ├── test_plan_parser.py
-│           │   ├── test_plan_parsed_schema.py
-│           │   ├── test_security.py             # JWT encode/decode/rotate
-│           │   └── test_models.py
-│           └── integration/
-│               ├── test_auth_api.py
-│               ├── test_plans_api.py
-│               ├── test_today_api.py
-│               ├── test_weight_api.py
-│               ├── test_workout_api.py
-│               └── test_ai_api.py               # 501 stub
-└── deploy/                          # ops scripts (Phase 1 end)
-    ├── nssm/
-    │   └── install-service.ps1
-    ├── iis/
-    │   └── web.config               # reverse proxy
-    └── win-acme/
-        └── README.md
+â”œâ”€â”€ package.json                     # pnpm workspace root (frontend only)
+â”œâ”€â”€ pnpm-workspace.yaml              # workspaces: ['frontend']
+â”œâ”€â”€ pnpm-lock.yaml                   # versioned
+â”œâ”€â”€ docker-compose.yml               # dev postgres
+â”œâ”€â”€ .gitignore                       # backend/.env, frontend/.env.local, /plans/, dist/, .venv/
+â”œâ”€â”€ .gitattributes                   # text=auto eol=lf, *.md text eol=lf
+â”œâ”€â”€ README.md                        # project overview + dev setup
+â”œâ”€â”€ CLAUDE.md                        # already exists
+â”œâ”€â”€ DEPLOY.md                        # Windows Server 2019 deploy guide (Phase 1 end)
+â”œâ”€â”€ .github/
+â”‚   â””â”€â”€ workflows/
+â”‚       â”œâ”€â”€ pr.yml                   # lint + type-check + unit + build
+â”‚       â”œâ”€â”€ axe-a11y.yml             # Playwright + axe-core
+â”‚       â””â”€â”€ dark-mode-screenshot.yml # Playwright visual diff
+â”œâ”€â”€ .husky/
+â”‚   â””â”€â”€ pre-commit                   # lint-staged
+â”œâ”€â”€ plans/                           # MD plans Stefano+Marta â€” gitignored
+â”‚   â”œâ”€â”€ .gitkeep                     # versioned
+â”‚   â””â”€â”€ EXAMPLE.md                   # synthetic, versioned
+â”œâ”€â”€ frontend/
+â”‚   â”œâ”€â”€ package.json                 # frontend deps
+â”‚   â”œâ”€â”€ pnpm-lock.yaml -> ../        # via workspace
+â”‚   â”œâ”€â”€ vite.config.ts               # vite-plugin-pwa registered
+â”‚   â”œâ”€â”€ tsconfig.json
+â”‚   â”œâ”€â”€ eslint.config.js             # flat config
+â”‚   â”œâ”€â”€ .prettierrc.cjs              # + prettier-plugin-tailwindcss
+â”‚   â”œâ”€â”€ components.json              # shadcn/ui CLI config
+â”‚   â”œâ”€â”€ playwright.config.ts         # axe + visual snapshots
+â”‚   â”œâ”€â”€ vitest.config.ts
+â”‚   â”œâ”€â”€ .env.example                 # versioned, placeholder
+â”‚   â”œâ”€â”€ .env.local                   # gitignored
+â”‚   â”œâ”€â”€ public/
+â”‚   â”‚   â”œâ”€â”€ icons/
+â”‚   â”‚   â”‚   â”œâ”€â”€ icon-192.png
+â”‚   â”‚   â”‚   â”œâ”€â”€ icon-512.png
+â”‚   â”‚   â”‚   â”œâ”€â”€ icon-maskable-512.png
+â”‚   â”‚   â”‚   â””â”€â”€ apple-touch-icon-180.png
+â”‚   â”‚   â”œâ”€â”€ illustrations/           # Storyset SVGs colorized via tokens
+â”‚   â”‚   â”‚   â”œâ”€â”€ empty-today.svg
+â”‚   â”‚   â”‚   â”œâ”€â”€ empty-plan.svg
+â”‚   â”‚   â”‚   â”œâ”€â”€ login-hero.svg
+â”‚   â”‚   â”‚   â””â”€â”€ error-fallback.svg
+â”‚   â”‚   â””â”€â”€ version.json             # generated at build, {version, build_hash}
+â”‚   â”œâ”€â”€ index.html                   # manifest link, theme-color media queries
+â”‚   â””â”€â”€ src/
+â”‚       â”œâ”€â”€ main.tsx                 # entry, registers SW via virtual:pwa-register/react
+â”‚       â”œâ”€â”€ App.tsx                  # router shell, ErrorBoundary wrap
+â”‚       â”œâ”€â”€ router.tsx               # react-router v7 createBrowserRouter
+â”‚       â”œâ”€â”€ pages/
+â”‚       â”‚   â”œâ”€â”€ Login.tsx
+â”‚       â”‚   â”œâ”€â”€ InviteSignup.tsx
+â”‚       â”‚   â”œâ”€â”€ Today.tsx            # /today landing
+â”‚       â”‚   â”œâ”€â”€ Plans.tsx            # plan upload + diff
+â”‚       â”‚   â”œâ”€â”€ History.tsx          # weight + workout history
+â”‚       â”‚   â””â”€â”€ Settings.tsx
+â”‚       â”œâ”€â”€ components/
+â”‚       â”‚   â”œâ”€â”€ ui/                  # shadcn/ui customized primitives
+â”‚       â”‚   â”‚   â”œâ”€â”€ button.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ input.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ textarea.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ label.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ checkbox.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ switch.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ select.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ radio-group.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ dialog.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ sheet.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ dropdown-menu.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ form.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ card.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ tabs.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ calendar.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ sonner.tsx
+â”‚       â”‚   â”‚   â””â”€â”€ skeleton.tsx
+â”‚       â”‚   â”œâ”€â”€ layout/
+â”‚       â”‚   â”‚   â”œâ”€â”€ AppShell.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ AppBar.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ BottomTabBar.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ NavigationRail.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ ErrorBoundary.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ SyncStatusPip.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ UpdatePromptToast.tsx
+â”‚       â”‚   â”‚   â””â”€â”€ IOSInstallBanner.tsx
+â”‚       â”‚   â”œâ”€â”€ today/
+â”‚       â”‚   â”‚   â”œâ”€â”€ MealCard.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ MacroDisplay.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ DayStatusIndicator.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ WeightQuickLog.tsx
+â”‚       â”‚   â”‚   â””â”€â”€ WorkoutForm.tsx
+â”‚       â”‚   â”œâ”€â”€ plans/
+â”‚       â”‚   â”‚   â”œâ”€â”€ PlanUploadDropzone.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ PlanDiffView.tsx
+â”‚       â”‚   â”‚   â””â”€â”€ PlanPreviewMd.tsx
+â”‚       â”‚   â”œâ”€â”€ weight/
+â”‚       â”‚   â”‚   â”œâ”€â”€ WeightChart.tsx
+â”‚       â”‚   â”‚   â””â”€â”€ WeightHistoryTable.tsx
+â”‚       â”‚   â”œâ”€â”€ workout/
+â”‚       â”‚   â”‚   â””â”€â”€ WorkoutHistoryTable.tsx
+â”‚       â”‚   â”œâ”€â”€ auth/
+â”‚       â”‚   â”‚   â”œâ”€â”€ LoginForm.tsx
+â”‚       â”‚   â”‚   â”œâ”€â”€ InviteSignupForm.tsx
+â”‚       â”‚   â”‚   â””â”€â”€ PersistStorageWelcome.tsx   # full-screen welcome D-15
+â”‚       â”‚   â””â”€â”€ ai/
+â”‚       â”‚       â””â”€â”€ AIWidget.tsx     # locked placeholder
+â”‚       â”œâ”€â”€ stores/                  # Zustand
+â”‚       â”‚   â”œâ”€â”€ auth.ts              # access token in-mem
+â”‚       â”‚   â”œâ”€â”€ theme.ts             # light/dark/system
+â”‚       â”‚   â”œâ”€â”€ ui.ts                # current week, modal state
+â”‚       â”‚   â””â”€â”€ sync.ts              # online/offline, pending count
+â”‚       â”œâ”€â”€ services/                # TanStack Query hooks + API client
+â”‚       â”‚   â”œâ”€â”€ api.ts               # fetch wrapper, JWT injection, refresh interceptor
+â”‚       â”‚   â”œâ”€â”€ auth.ts              # login/logout/refresh/me/invite
+â”‚       â”‚   â”œâ”€â”€ plans.ts             # upload/list/activate/diff
+â”‚       â”‚   â”œâ”€â”€ today.ts             # /today data
+â”‚       â”‚   â”œâ”€â”€ weekly.ts            # /api/weekly (Phase 2 stub Phase 1)
+â”‚       â”‚   â”œâ”€â”€ workout.ts           # log/list
+â”‚       â”‚   â”œâ”€â”€ weight.ts            # log/list
+â”‚       â”‚   â””â”€â”€ version.ts           # /version.json polling
+â”‚       â”œâ”€â”€ lib/
+â”‚       â”‚   â”œâ”€â”€ refreshTokenAtomic.ts # singleton refresh promise
+â”‚       â”‚   â”œâ”€â”€ mutationQueue.ts     # Dexie outbox helpers
+â”‚       â”‚   â”œâ”€â”€ persistStorage.ts    # navigator.storage.persist() flow
+â”‚       â”‚   â”œâ”€â”€ queryClient.ts       # TanStack QueryClient + Dexie persister
+â”‚       â”‚   â”œâ”€â”€ cn.ts                # clsx + tailwind-merge
+â”‚       â”‚   â””â”€â”€ format.ts            # Intl.NumberFormat('it-IT'), Intl.Collator('it')
+â”‚       â”œâ”€â”€ db/
+â”‚       â”‚   â”œâ”€â”€ dexie.ts             # Dexie schema definition
+â”‚       â”‚   â”œâ”€â”€ schema.ts            # TypeScript table types
+â”‚       â”‚   â””â”€â”€ migrations.ts        # version().upgrade() hooks
+â”‚       â”œâ”€â”€ hooks/
+â”‚       â”‚   â”œâ”€â”€ useOnline.ts
+â”‚       â”‚   â”œâ”€â”€ useReducedMotion.ts  # wraps motion useReducedMotion
+â”‚       â”‚   â”œâ”€â”€ useMediaQuery.ts
+â”‚       â”‚   â””â”€â”€ useTheme.ts
+â”‚       â”œâ”€â”€ i18n/
+â”‚       â”‚   â””â”€â”€ copy.it.ts           # ~80 strings UI-SPEC Â§7.2
+â”‚       â”œâ”€â”€ styles/
+â”‚       â”‚   â”œâ”€â”€ theme.css            # Tailwind 4 @theme block
+â”‚       â”‚   â””â”€â”€ globals.css          # base resets + utilities
+â”‚       â””â”€â”€ tests/
+â”‚           â”œâ”€â”€ e2e/                 # Playwright
+â”‚           â”‚   â”œâ”€â”€ auth.spec.ts
+â”‚           â”‚   â”œâ”€â”€ pwa.spec.ts
+â”‚           â”‚   â”œâ”€â”€ today.spec.ts
+â”‚           â”‚   â””â”€â”€ a11y.spec.ts
+â”‚           â”œâ”€â”€ visual/              # dark-mode screenshot diff
+â”‚           â”‚   â””â”€â”€ routes.spec.ts
+â”‚           â””â”€â”€ unit/                # Vitest
+â”‚               â”œâ”€â”€ components/
+â”‚               â””â”€â”€ lib/
+â”œâ”€â”€ backend/
+â”‚   â”œâ”€â”€ pyproject.toml               # uv-managed, ruff/mypy/pytest config
+â”‚   â”œâ”€â”€ uv.lock
+â”‚   â”œâ”€â”€ .python-version              # 3.12
+â”‚   â”œâ”€â”€ .env.example                 # versioned
+â”‚   â”œâ”€â”€ .env                         # gitignored
+â”‚   â”œâ”€â”€ alembic.ini
+â”‚   â”œâ”€â”€ alembic/
+â”‚   â”‚   â”œâ”€â”€ env.py                   # async config
+â”‚   â”‚   â”œâ”€â”€ script.py.mako
+â”‚   â”‚   â””â”€â”€ versions/
+â”‚   â”‚       â””â”€â”€ 0000_baseline.py     # full Phase 1 schema
+â”‚   â””â”€â”€ app/
+â”‚       â”œâ”€â”€ __init__.py
+â”‚       â”œâ”€â”€ main.py                  # FastAPI app factory + lifespan
+â”‚       â”œâ”€â”€ core/
+â”‚       â”‚   â”œâ”€â”€ __init__.py
+â”‚       â”‚   â”œâ”€â”€ config.py            # Pydantic settings BaseSettings
+â”‚       â”‚   â”œâ”€â”€ security.py          # JWT encode/decode, password hash
+â”‚       â”‚   â”œâ”€â”€ database.py          # async engine + sessionmaker
+â”‚       â”‚   â”œâ”€â”€ deps.py              # get_current_user, get_session, get_ai_provider
+â”‚       â”‚   â”œâ”€â”€ exceptions.py        # custom exception â†’ HTTP error mapping
+â”‚       â”‚   â”œâ”€â”€ logging.py           # structlog config
+â”‚       â”‚   â””â”€â”€ middleware.py        # request ID, idempotent grace window
+â”‚       â”œâ”€â”€ models/
+â”‚       â”‚   â”œâ”€â”€ __init__.py
+â”‚       â”‚   â”œâ”€â”€ base.py              # Base, common columns (TIMESTAMPTZ created_at)
+â”‚       â”‚   â”œâ”€â”€ user.py
+â”‚       â”‚   â”œâ”€â”€ group.py
+â”‚       â”‚   â”œâ”€â”€ plan.py              # NutritionPlan
+â”‚       â”‚   â”œâ”€â”€ variant.py           # WeeklyPlanVariant
+â”‚       â”‚   â”œâ”€â”€ workout.py           # WorkoutLog
+â”‚       â”‚   â”œâ”€â”€ weight.py            # WeightLog
+â”‚       â”‚   â”œâ”€â”€ shopping.py          # ShoppingListState
+â”‚       â”‚   â”œâ”€â”€ invite.py            # InviteToken
+â”‚       â”‚   â”œâ”€â”€ refresh.py           # RefreshToken (rotation + family)
+â”‚       â”‚   â””â”€â”€ audit.py             # AuditLog
+â”‚       â”œâ”€â”€ schemas/
+â”‚       â”‚   â”œâ”€â”€ __init__.py
+â”‚       â”‚   â”œâ”€â”€ auth.py              # LoginRequest, RefreshResponse, etc.
+â”‚       â”‚   â”œâ”€â”€ plan.py              # PlanCreate, PlanResponse
+â”‚       â”‚   â”œâ”€â”€ plan_parsed.py       # PlanParsedSchema strict (parser output)
+â”‚       â”‚   â”œâ”€â”€ today.py             # TodayResponse aggregate
+â”‚       â”‚   â”œâ”€â”€ workout.py
+â”‚       â”‚   â”œâ”€â”€ weight.py
+â”‚       â”‚   â”œâ”€â”€ invite.py
+â”‚       â”‚   â””â”€â”€ ai.py                # AIRequest/Response shapes (501 stub)
+â”‚       â”œâ”€â”€ api/
+â”‚       â”‚   â”œâ”€â”€ __init__.py
+â”‚       â”‚   â”œâ”€â”€ deps.py              # local auth deps re-export
+â”‚       â”‚   â”œâ”€â”€ auth.py              # /api/auth/*
+â”‚       â”‚   â”œâ”€â”€ plans.py             # /api/plans/*
+â”‚       â”‚   â”œâ”€â”€ today.py             # /api/today
+â”‚       â”‚   â”œâ”€â”€ weekly.py            # /api/weekly/* (stub Phase 1)
+â”‚       â”‚   â”œâ”€â”€ workout.py
+â”‚       â”‚   â”œâ”€â”€ weight.py
+â”‚       â”‚   â”œâ”€â”€ shopping.py          # stub Phase 2
+â”‚       â”‚   â”œâ”€â”€ ai.py                # /api/ai/* all 501
+â”‚       â”‚   â”œâ”€â”€ admin.py             # invite gen, plan assign
+â”‚       â”‚   â”œâ”€â”€ errors.py            # /api/errors (frontend error log)
+â”‚       â”‚   â””â”€â”€ version.py           # /version.json (also static)
+â”‚       â”œâ”€â”€ services/
+â”‚       â”‚   â”œâ”€â”€ __init__.py
+â”‚       â”‚   â”œâ”€â”€ auth_service.py      # token issue/rotate/revoke
+â”‚       â”‚   â”œâ”€â”€ plan_service.py      # upload, activate, diff
+â”‚       â”‚   â”œâ”€â”€ today_service.py     # aggregate today's data
+â”‚       â”‚   â”œâ”€â”€ workout_service.py
+â”‚       â”‚   â”œâ”€â”€ weight_service.py
+â”‚       â”‚   â””â”€â”€ audit_service.py
+â”‚       â”œâ”€â”€ parsers/
+â”‚       â”‚   â”œâ”€â”€ __init__.py
+â”‚       â”‚   â”œâ”€â”€ normalizer.py        # BOM/CRLF/NFC/NBSP/smart-punct pipeline
+â”‚       â”‚   â”œâ”€â”€ plan_parser.py       # tolerant section parser
+â”‚       â”‚   â””â”€â”€ plan_sections.py     # individual section parsers
+â”‚       â”œâ”€â”€ ai/
+â”‚       â”‚   â”œâ”€â”€ __init__.py
+â”‚       â”‚   â”œâ”€â”€ base.py              # AIProvider ABC
+â”‚       â”‚   â”œâ”€â”€ null_provider.py     # NullProvider (501 Italian)
+â”‚       â”‚   â””â”€â”€ factory.py           # build_provider() reads AI_PROVIDER env
+â”‚       â””â”€â”€ tests/
+â”‚           â”œâ”€â”€ __init__.py
+â”‚           â”œâ”€â”€ conftest.py          # pytest-postgresql fixture, async client
+â”‚           â”œâ”€â”€ fixtures/
+â”‚           â”‚   â””â”€â”€ plans/
+â”‚           â”‚       â”œâ”€â”€ valid/
+â”‚           â”‚       â”‚   â”œâ”€â”€ stefano_synthetic.md
+â”‚           â”‚       â”‚   â””â”€â”€ marta_synthetic.md
+â”‚           â”‚       â””â”€â”€ evil/        # corpus
+â”‚           â”‚           â”œâ”€â”€ word_export.md         # CRLF + smart quotes
+â”‚           â”‚           â”œâ”€â”€ notes_app.md           # NFD decomposed
+â”‚           â”‚           â”œâ”€â”€ notion_export.md       # emoji headings
+â”‚           â”‚           â”œâ”€â”€ obsidian_export.md
+â”‚           â”‚           â”œâ”€â”€ notepad_bom.md         # UTF-8 BOM
+â”‚           â”‚           â””â”€â”€ nbsp_in_headings.md
+â”‚           â”œâ”€â”€ unit/
+â”‚           â”‚   â”œâ”€â”€ test_normalizer.py
+â”‚           â”‚   â”œâ”€â”€ test_plan_parser.py
+â”‚           â”‚   â”œâ”€â”€ test_plan_parsed_schema.py
+â”‚           â”‚   â”œâ”€â”€ test_security.py             # JWT encode/decode/rotate
+â”‚           â”‚   â””â”€â”€ test_models.py
+â”‚           â””â”€â”€ integration/
+â”‚               â”œâ”€â”€ test_auth_api.py
+â”‚               â”œâ”€â”€ test_plans_api.py
+â”‚               â”œâ”€â”€ test_today_api.py
+â”‚               â”œâ”€â”€ test_weight_api.py
+â”‚               â”œâ”€â”€ test_workout_api.py
+â”‚               â””â”€â”€ test_ai_api.py               # 501 stub
+â””â”€â”€ deploy/                          # ops scripts (Phase 1 end)
+    â”œâ”€â”€ nssm/
+    â”‚   â””â”€â”€ install-service.ps1
+    â”œâ”€â”€ iis/
+    â”‚   â””â”€â”€ web.config               # reverse proxy
+    â””â”€â”€ win-acme/
+        â””â”€â”€ README.md
 ```
 
 ### Pattern 1: Tailwind 4 `@theme` Token Block (UI-01, UI-07)
 
-**What:** Single CSS file (`frontend/src/styles/theme.css`) declaring all design tokens via `@theme` directive. Components reference via `var(--token-name)` or `theme(...)` Tailwind utility — never hardcoded hex/font-size/radius.
+**What:** Single CSS file (`frontend/src/styles/theme.css`) declaring all design tokens via `@theme` directive. Components reference via `var(--token-name)` or `theme(...)` Tailwind utility â€” never hardcoded hex/font-size/radius.
 
 **When to use:** Always. Imported in `main.tsx` before any other CSS.
 
-**Example (concrete tokens locked from UI-SPEC §2-5, §12):**
+**Example (concrete tokens locked from UI-SPEC Â§2-5, Â§12):**
 
 ```css
 /* frontend/src/styles/theme.css */
-/* Source: UI-SPEC §12 Final Lock List + §2 spacing + §3 typography + §4 colors + §5 motion */
+/* Source: UI-SPEC Â§12 Final Lock List + Â§2 spacing + Â§3 typography + Â§4 colors + Â§5 motion */
 @import "tailwindcss";
 
 @theme {
-  /* ───── Spacing ───── */
+  /* â”€â”€â”€â”€â”€ Spacing â”€â”€â”€â”€â”€ */
   --spacing-0: 0;
   --spacing-px: 1px;
   --spacing-1: 4px;
@@ -712,7 +712,7 @@ wellness-buddy/                      # monorepo root
   --spacing-16: 64px;
   --spacing-20: 80px;
 
-  /* ───── Radius ───── */
+  /* â”€â”€â”€â”€â”€ Radius â”€â”€â”€â”€â”€ */
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-button: 12px;
@@ -720,17 +720,17 @@ wellness-buddy/                      # monorepo root
   --radius-sheet: 20px;
   --radius-pill: 9999px;
 
-  /* ───── Font families ───── */
+  /* â”€â”€â”€â”€â”€ Font families â”€â”€â”€â”€â”€ */
   --font-sans: "Geist Sans", system-ui, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, monospace;
   --font-display: "Instrument Serif", "Geist Sans", serif;
 
-  /* ───── Type scale (4 base + 1 escape hatch) ───── */
+  /* â”€â”€â”€â”€â”€ Type scale (4 base + 1 escape hatch) â”€â”€â”€â”€â”€ */
   --text-caption: 0.75rem;        /* 12px */
   --text-base: 1rem;              /* 16px */
   --text-heading: 1.375rem;       /* 22px */
   --text-display: 1.75rem;        /* 28px */
-  --text-display-serif: 2.25rem;  /* 36px — /today greeting only */
+  --text-display-serif: 2.25rem;  /* 36px â€” /today greeting only */
 
   --leading-tight: 1.1;
   --leading-display: 1.2;
@@ -738,7 +738,7 @@ wellness-buddy/                      # monorepo root
   --leading-caption: 1.4;
   --leading-base: 1.5;
 
-  /* ───── Colors (light) ───── */
+  /* â”€â”€â”€â”€â”€ Colors (light) â”€â”€â”€â”€â”€ */
   --color-bg: oklch(98.5% 0.005 80);
   --color-bg-elev: oklch(100% 0 0);
   --color-surface: oklch(99% 0.005 80);
@@ -786,12 +786,12 @@ wellness-buddy/                      # monorepo root
   --color-text-muted: var(--color-neutral-500);
   --color-text-inverse: var(--color-neutral-50);
 
-  /* ───── Elevation ───── */
+  /* â”€â”€â”€â”€â”€ Elevation â”€â”€â”€â”€â”€ */
   --shadow-1: 0 1px 2px oklch(0% 0 0 / 0.04), 0 1px 3px oklch(0% 0 0 / 0.06);
   --shadow-2: 0 4px 8px oklch(0% 0 0 / 0.06), 0 2px 4px oklch(0% 0 0 / 0.04);
   --shadow-3: 0 12px 24px oklch(0% 0 0 / 0.08), 0 4px 8px oklch(0% 0 0 / 0.04);
 
-  /* ───── Motion ───── */
+  /* â”€â”€â”€â”€â”€ Motion â”€â”€â”€â”€â”€ */
   --duration-instant: 80ms;
   --duration-fast: 150ms;
   --duration-base: 250ms;
@@ -801,7 +801,7 @@ wellness-buddy/                      # monorepo root
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Dark mode — explicit dark variants, not auto-inversion */
+/* Dark mode â€” explicit dark variants, not auto-inversion */
 @media (prefers-color-scheme: dark) {
   @theme {
     --color-bg: oklch(13% 0.006 250);
@@ -821,7 +821,7 @@ wellness-buddy/                      # monorepo root
   }
 }
 
-/* prefers-reduced-motion gate — UI-05 */
+/* prefers-reduced-motion gate â€” UI-05 */
 :root { --motion-scale: 1; }
 @media (prefers-reduced-motion: reduce) {
   :root { --motion-scale: 0; }
@@ -840,25 +840,25 @@ wellness-buddy/                      # monorepo root
 
 ### Pattern 2: shadcn/ui CLI Init + 17 Component Install Order
 
-**What:** Initialize shadcn/ui CLI v4 against Tailwind 4 `@theme`, then install 17 components from UI-SPEC §6 inventory.
+**What:** Initialize shadcn/ui CLI v4 against Tailwind 4 `@theme`, then install 17 components from UI-SPEC Â§6 inventory.
 
 **When to use:** After Tailwind 4 `@theme` block is in place. Order matters: form depends on input/label/button.
 
 ```bash
-# Init shadcn/ui CLI v4 (interactive — answer prompts)
+# Init shadcn/ui CLI v4 (interactive â€” answer prompts)
 cd frontend
 pnpm dlx shadcn@latest init
 # Prompts:
-#   ✓ Style: New York   (cleaner default per shadcn 2026)
-#   ✓ Base color: Neutral
-#   ✓ CSS variables: Yes (we provide them via @theme)
-#   ✓ Components dir: src/components/ui
-#   ✓ Utils dir: src/lib/cn.ts
-#   ✓ React Server Components: No (Vite SPA)
-#   ✓ tailwind.config: skipped (Tailwind 4 = @theme only)
+#   âœ“ Style: New York   (cleaner default per shadcn 2026)
+#   âœ“ Base color: Neutral
+#   âœ“ CSS variables: Yes (we provide them via @theme)
+#   âœ“ Components dir: src/components/ui
+#   âœ“ Utils dir: src/lib/cn.ts
+#   âœ“ React Server Components: No (Vite SPA)
+#   âœ“ tailwind.config: skipped (Tailwind 4 = @theme only)
 # Generates: components.json + cn.ts + tweaks tsconfig paths
 
-# Add primitives (UI-SPEC §6.1)
+# Add primitives (UI-SPEC Â§6.1)
 pnpm dlx shadcn@latest add button
 pnpm dlx shadcn@latest add input
 pnpm dlx shadcn@latest add textarea
@@ -868,7 +868,7 @@ pnpm dlx shadcn@latest add switch
 pnpm dlx shadcn@latest add select
 pnpm dlx shadcn@latest add radio-group
 
-# Add composites (UI-SPEC §6.2)
+# Add composites (UI-SPEC Â§6.2)
 pnpm dlx shadcn@latest add dialog
 pnpm dlx shadcn@latest add sheet
 pnpm dlx shadcn@latest add dropdown-menu
@@ -879,7 +879,7 @@ pnpm dlx shadcn@latest add calendar       # depends on react-day-picker
 pnpm dlx shadcn@latest add sonner         # toast component
 pnpm dlx shadcn@latest add skeleton
 
-# After install: customize each per UI-SPEC §6 variants — replace default classes
+# After install: customize each per UI-SPEC Â§6 variants â€” replace default classes
 # with Tailwind 4 @theme tokens (no hardcoded shadcn colors).
 ```
 
@@ -923,7 +923,7 @@ pnpm dlx shadcn@latest add skeleton
 
 ### Pattern 3: PWA Workbox Config (FND-05, FND-06)
 
-**What:** `vite.config.ts` registers `vite-plugin-pwa` with Workbox `generateSW` strategy. Per-pattern caching aligned with PITFALLS #2 (NetworkFirst index.html) + UI-SPEC §10.
+**What:** `vite.config.ts` registers `vite-plugin-pwa` with Workbox `generateSW` strategy. Per-pattern caching aligned with PITFALLS #2 (NetworkFirst index.html) + UI-SPEC Â§10.
 
 **When to use:** Single config, applies app-wide.
 
@@ -935,13 +935,13 @@ import { VitePWA } from 'vite-plugin-pwa';
 import tailwindcss from '@tailwindcss/vite';
 import path from 'node:path';
 
-// Source: STACK.md vite-plugin-pwa, PITFALLS #2 NetworkFirst, UI-SPEC §10
+// Source: STACK.md vite-plugin-pwa, PITFALLS #2 NetworkFirst, UI-SPEC Â§10
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: 'prompt',           // user opt-in via toast (UI-SPEC §10.2) — never auto
+      registerType: 'prompt',           // user opt-in via toast (UI-SPEC Â§10.2) â€” never auto
       strategies: 'generateSW',
       injectRegister: 'auto',
       manifest: {
@@ -962,7 +962,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // PITFALL #2: never precache index.html — NetworkFirst it instead
+        // PITFALL #2: never precache index.html â€” NetworkFirst it instead
         globPatterns: ['**/*.{js,css,woff2,svg,png}'],     // exclude index.html intentionally
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api\//],
@@ -970,7 +970,7 @@ export default defineConfig({
         skipWaiting: false,                                  // user-prompt-controlled (FND-06)
         clientsClaim: false,
         runtimeCaching: [
-          // App shell — NetworkFirst with 3s timeout
+          // App shell â€” NetworkFirst with 3s timeout
           {
             urlPattern: ({ request }) => request.mode === 'navigate',
             handler: 'NetworkFirst',
@@ -980,7 +980,7 @@ export default defineConfig({
               expiration: { maxEntries: 10, maxAgeSeconds: 7 * 24 * 3600 },
             },
           },
-          // Hashed assets — CacheFirst long-term immutable
+          // Hashed assets â€” CacheFirst long-term immutable
           {
             urlPattern: /\/assets\/.*\.(js|css|woff2)$/,
             handler: 'CacheFirst',
@@ -999,7 +999,7 @@ export default defineConfig({
               expiration: { maxEntries: 50, maxAgeSeconds: 30 * 24 * 3600 },
             },
           },
-          // Read API — NetworkFirst with 3s timeout
+          // Read API â€” NetworkFirst with 3s timeout
           {
             urlPattern: /\/api\/(plans|weekly|today)\/.*$/,
             handler: 'NetworkFirst',
@@ -1010,7 +1010,7 @@ export default defineConfig({
               cacheableResponse: { statuses: [0, 200] },
             },
           },
-          // Auth + writes — NetworkOnly (mutation queue handles offline)
+          // Auth + writes â€” NetworkOnly (mutation queue handles offline)
           {
             urlPattern: /\/api\/auth\/.*$/,
             handler: 'NetworkOnly',
@@ -1019,7 +1019,7 @@ export default defineConfig({
             urlPattern: /\/api\/(workout|weight|errors)$/,
             handler: 'NetworkOnly',
           },
-          // /version.json — NetworkOnly (always fresh)
+          // /version.json â€” NetworkOnly (always fresh)
           {
             urlPattern: /\/version\.json$/,
             handler: 'NetworkOnly',
@@ -1047,7 +1047,7 @@ export default defineConfig({
 
 ```python
 # backend/app/api/version.py
-# Source: FND-06, UI-SPEC §10.2
+# Source: FND-06, UI-SPEC Â§10.2
 from fastapi import APIRouter
 from app.core.config import settings
 
@@ -1065,7 +1065,7 @@ async def version():
 
 ```typescript
 // frontend/src/services/version.ts
-// Source: FND-06, UI-SPEC §10.2 — Italian copy "Nuova versione disponibile"
+// Source: FND-06, UI-SPEC Â§10.2 â€” Italian copy "Nuova versione disponibile"
 import { useEffect } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import { toast } from 'sonner';
@@ -1127,10 +1127,10 @@ export function useVersionPolling() {
 
 ```typescript
 // frontend/src/db/dexie.ts
-// Source: FND-07, ARCHITECTURE.md §5.4, PITFALLS #5
+// Source: FND-07, ARCHITECTURE.md Â§5.4, PITFALLS #5
 import Dexie, { type EntityTable } from 'dexie';
 
-// All IDs are server-issued UUIDs — never auto-increment (PITFALLS #5)
+// All IDs are server-issued UUIDs â€” never auto-increment (PITFALLS #5)
 export interface CachedUser {
   id: string;              // server UUID
   email: string;
@@ -1152,7 +1152,7 @@ export interface CachedPlan {
 export interface CachedToday {
   date: string;            // YYYY-MM-DD user TZ
   user_id: string;
-  meals_completed: Record<string, boolean>;  // meal_type → completed
+  meals_completed: Record<string, boolean>;  // meal_type â†’ completed
   fetched_at: string;      // ISO 8601
 }
 
@@ -1177,7 +1177,7 @@ export interface CachedWeightLog {
 }
 
 export interface QueuedMutation {
-  id: string;              // crypto.randomUUID() — local only
+  id: string;              // crypto.randomUUID() â€” local only
   endpoint: string;
   method: 'POST' | 'PATCH' | 'DELETE';
   body: unknown;
@@ -1205,7 +1205,7 @@ export class WellnessBuddyDB extends Dexie {
   constructor() {
     super('wellness-buddy');
 
-    // v1 — Phase 1 baseline
+    // v1 â€” Phase 1 baseline
     this.version(1).stores({
       cache_users: 'id, email',
       cache_plans: 'id, user_id, is_active',
@@ -1217,7 +1217,7 @@ export class WellnessBuddyDB extends Dexie {
     });
 
     // PITFALL #5: Future schema bumps DROP cache_* and re-fetch from server
-    // (mutation_queue stores opaque HTTP requests — survives schema changes)
+    // (mutation_queue stores opaque HTTP requests â€” survives schema changes)
     // Example future v2 upgrade:
     // this.version(2).stores({
     //   cache_today: 'date, user_id, status_indicator',  // new field
@@ -1227,7 +1227,7 @@ export class WellnessBuddyDB extends Dexie {
   }
 
   /**
-   * Phase 1 helper: detect Dexie-empty-but-JWT-valid → trigger full resync
+   * Phase 1 helper: detect Dexie-empty-but-JWT-valid â†’ trigger full resync
    * Source: FND-08, PITFALLS #1
    */
   async isEmptyButShouldHaveData(): Promise<boolean> {
@@ -1276,7 +1276,7 @@ export async function flushQueue() {
       }
       if (item.retries >= 5) {
         await db.mutation_queue.update(item.id, { last_error: String(e), retries: item.retries + 1 });
-        // dead-letter — surface to user
+        // dead-letter â€” surface to user
         toast.error(copy.errors.syncFailed);
         break;
       }
@@ -1317,7 +1317,7 @@ export async function getStorageEstimate(): Promise<{ used: number; quota: numbe
 }
 ```
 
-**When called:** From `<PersistStorageWelcome />` full-screen welcome that appears post-first-login (D-15). Component shows hero illustration + Italian CTA "Abilita storage offline" → on click calls `requestPersistentStorage()`. Show "Ultima sincronizzazione" trust signal in `SyncStatusPip` using `getStorageEstimate()` for telemetry.
+**When called:** From `<PersistStorageWelcome />` full-screen welcome that appears post-first-login (D-15). Component shows hero illustration + Italian CTA "Abilita storage offline" â†’ on click calls `requestPersistentStorage()`. Show "Ultima sincronizzazione" trust signal in `SyncStatusPip` using `getStorageEstimate()` for telemetry.
 
 ### Pattern 7: SQLAlchemy 2 Async Models + Mapped Declarative
 
@@ -1347,7 +1347,7 @@ TimestampTZ = Annotated[
 
 ```python
 # backend/app/models/user.py
-# Source: MOD-01, MOD-09, ARCHITECTURE.md §4 Pattern 4
+# Source: MOD-01, MOD-09, ARCHITECTURE.md Â§4 Pattern 4
 from __future__ import annotations
 from datetime import datetime
 from uuid import UUID, uuid4
@@ -1504,7 +1504,7 @@ mv alembic/versions/*_baseline.py alembic/versions/0000_baseline.py
 uv run alembic upgrade head
 ```
 
-### Pattern 9: Auth — JWT Refresh Rotation + Singleton Promise + 10s Grace Window
+### Pattern 9: Auth â€” JWT Refresh Rotation + Singleton Promise + 10s Grace Window
 
 **Backend security.py:**
 
@@ -1540,7 +1540,7 @@ def decode_token(token: str) -> dict:
     return jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
 ```
 
-**Refresh rotation service (10s grace window — PITFALLS #4):**
+**Refresh rotation service (10s grace window â€” PITFALLS #4):**
 
 ```python
 # backend/app/services/auth_service.py
@@ -1578,10 +1578,10 @@ async def rotate_refresh(session: AsyncSession, refresh_jwt: str) -> tuple[str, 
         raise HTTPException(401, {"detail": "Token scaduto", "code": "expired"})
 
     if row.revoked:
-        # Reuse detection within grace window — return cached new pair (idempotent)
+        # Reuse detection within grace window â€” return cached new pair (idempotent)
         if row.replaced_at and (datetime.now(timezone.utc) - row.replaced_at) < GRACE_WINDOW:
             return row.cached_access, row.cached_refresh
-        # Real reuse → revoke entire family
+        # Real reuse â†’ revoke entire family
         await session.execute(
             select(RefreshToken).where(RefreshToken.family_id == family_id)
             .execution_options(synchronize_session=False)
@@ -1610,7 +1610,7 @@ async def rotate_refresh(session: AsyncSession, refresh_jwt: str) -> tuple[str, 
 
 ```typescript
 // frontend/src/lib/refreshTokenAtomic.ts
-// Source: AUTH-07, PITFALLS #4 — single in-flight promise resolves all 401 awaiters
+// Source: AUTH-07, PITFALLS #4 â€” single in-flight promise resolves all 401 awaiters
 import { useAuthStore } from '@/stores/auth';
 
 let inflightRefresh: Promise<string> | null = null;
@@ -1659,7 +1659,7 @@ export const apiClient = {
       credentials: 'include',
     });
     if (res.status === 401 && access) {
-      // Single concurrent refresh — all parallel 401s await the same promise
+      // Single concurrent refresh â€” all parallel 401s await the same promise
       const newAccess = await refreshTokenAtomic();
       res = await fetch(opts.url, {
         method: opts.method ?? 'GET',
@@ -1715,17 +1715,17 @@ import re
 # When reading bytes from UploadFile, use:
 #   text = raw_bytes.decode('utf-8-sig')   # NOT 'utf-8'
 
-_NBSP_REGEX = re.compile(r'[   ⁠]')        # NBSP variants
+_NBSP_REGEX = re.compile(r'[Â â€‡â€¯â ]')        # NBSP variants
 _SMART_QUOTE_MAP = str.maketrans({
-    '‘': "'", '’': "'", '‚': "'", '‛': "'",
-    '“': '"', '”': '"', '„': '"', '‟': '"',
-    '–': '-', '—': '-',                   # en/em dash
-    '…': '...',                                # ellipsis
+    'â€˜': "'", 'â€™': "'", 'â€š': "'", 'â€›': "'",
+    'â€œ': '"', 'â€': '"', 'â€ž': '"', 'â€Ÿ': '"',
+    'â€“': '-', 'â€”': '-',                   # en/em dash
+    'â€¦': '...',                                # ellipsis
 })
 
 def normalize_md(raw_bytes: bytes) -> str:
     """Normalize MD bytes to clean parseable text.
-    Pipeline: utf-8-sig decode → CRLF→LF → NFC → NBSP→space → smart-punct→ASCII
+    Pipeline: utf-8-sig decode â†’ CRLFâ†’LF â†’ NFC â†’ NBSPâ†’space â†’ smart-punctâ†’ASCII
     """
     # 1. BOM strip (PITFALL: must use 'utf-8-sig' not 'utf-8')
     text = raw_bytes.decode('utf-8-sig', errors='replace')
@@ -1733,9 +1733,9 @@ def normalize_md(raw_bytes: bytes) -> str:
     text = text.replace('\r\n', '\n').replace('\r', '\n')
     # 3. NFC normalize (macOS often emits NFD)
     text = unicodedata.normalize('NFC', text)
-    # 4. NBSP → regular space
+    # 4. NBSP â†’ regular space
     text = _NBSP_REGEX.sub(' ', text)
-    # 5. Smart punctuation → ASCII
+    # 5. Smart punctuation â†’ ASCII
     text = text.translate(_SMART_QUOTE_MAP)
     return text
 ```
@@ -1786,7 +1786,7 @@ def parse_and_validate(raw_bytes: bytes) -> tuple[PlanParsedSchema, ParseReport]
     raw_dict = {}
     for heading, body in sections.items():
         stem = _heading_stem(heading)
-        # Match by stem prefix — "calcolo calorico" matches "calcolo calorico e macro target"
+        # Match by stem prefix â€” "calcolo calorico" matches "calcolo calorico e macro target"
         matched = next((target for s, target in SECTION_STEMS.items() if stem.startswith(s)), None)
         if matched:
             raw_dict[matched] = _parse_section(matched, body, report)
@@ -1805,7 +1805,7 @@ def _split_sections(text: str) -> dict[str, str]:
     return dict(parts)
 
 def _parse_section(name: str, body: str, report: ParseReport) -> dict:
-    # Per-section regex parsers — implementation deferred to plan_sections.py
+    # Per-section regex parsers â€” implementation deferred to plan_sections.py
     # Stub returns raw body for now
     return {"raw": body}
 ```
@@ -1877,7 +1877,7 @@ class AIProvider(ABC):
 
 ```python
 # backend/app/ai/null_provider.py
-# Source: AI-02, AI-04 — 501 Italian
+# Source: AI-02, AI-04 â€” 501 Italian
 from fastapi import HTTPException
 from app.ai.base import AIProvider
 
@@ -1940,7 +1940,7 @@ def get_ai_provider(request: Request) -> AIProvider:
 
 ```python
 # backend/app/api/ai.py
-# Source: AI-04 — endpoints exist Phase 1, return 501 via NullProvider
+# Source: AI-04 â€” endpoints exist Phase 1, return 501 via NullProvider
 from fastapi import APIRouter, Depends
 from app.ai.base import AIProvider
 from app.core.deps import get_ai_provider, get_current_user
@@ -1981,7 +1981,7 @@ async def chat(
 
 ```typescript
 // frontend/src/i18n/copy.it.ts
-// Source: FND-09, UI-SPEC §7.2 — ~80 strings locked
+// Source: FND-09, UI-SPEC Â§7.2 â€” ~80 strings locked
 // Type-safe via `as const` + literal types. Refactor to react-i18next deferred v2.
 
 export const copy = {
@@ -1995,7 +1995,7 @@ export const copy = {
     invalidCreds: 'Email o password non corretti. Riprova.',
     locked: 'Account momentaneamente non disponibile. Riprova tra qualche minuto.',
     offlineLogin: 'Nessuna connessione. Controlla la rete e riprova.',
-    sessionExpired: 'Sessione scaduta dopo 7 giorni di inattività. Accedi di nuovo.',
+    sessionExpired: 'Sessione scaduta dopo 7 giorni di inattivitÃ . Accedi di nuovo.',
     logoutConfirm: 'Vuoi davvero uscire?',
     logoutCta: 'Esci',
     logoutCancel: 'Annulla',
@@ -2006,8 +2006,8 @@ export const copy = {
     subheading: 'Sei stato invitato a Wellness Buddy.',
     nameLabel: 'Come ti chiami',
     submitCta: 'Crea account',
-    tokenExpired: 'Questo invito è scaduto. Chiedi all\'amministratore un nuovo link.',
-    tokenInvalid: 'Questo invito non è valido. Chiedi all\'amministratore un nuovo link.',
+    tokenExpired: 'Questo invito Ã¨ scaduto. Chiedi all\'amministratore un nuovo link.',
+    tokenInvalid: 'Questo invito non Ã¨ valido. Chiedi all\'amministratore un nuovo link.',
   },
   today: {
     greeting: {
@@ -2051,11 +2051,11 @@ export const copy = {
     dropzoneDragging: 'Rilascia per caricare',
     parsingState: 'Sto leggendo il piano...',
     parseWarningsHeading: 'Sezioni non riconosciute',
-    parseWarningsBody: 'Il piano è stato letto, ma queste sezioni non sono state riconosciute: {list}. Puoi attivarlo comunque o annullare.',
+    parseWarningsBody: 'Il piano Ã¨ stato letto, ma queste sezioni non sono state riconosciute: {list}. Puoi attivarlo comunque o annullare.',
     diffHeading: 'Differenze rispetto al piano attivo',
     activateCta: 'Attiva piano',
     cancelCta: 'Annulla',
-    activateConfirm: 'Sostituire il piano attivo con quello caricato? Il piano precedente verrà archiviato.',
+    activateConfirm: 'Sostituire il piano attivo con quello caricato? Il piano precedente verrÃ  archiviato.',
     activateSuccess: 'Piano attivato.',
     errorBadFileType: 'Solo file .md sono supportati.',
     errorTooLarge: 'Il file supera il limite di 1 MB.',
@@ -2068,17 +2068,17 @@ export const copy = {
     installStep1: 'Tocca il pulsante Condividi nella barra di Safari.',
     installStep2: 'Scorri e tocca "Aggiungi a Home".',
     installStep3: 'Conferma toccando "Aggiungi".',
-    installDismiss: 'Più tardi',
+    installDismiss: 'PiÃ¹ tardi',
     updateHeading: 'Nuova versione disponibile',
     updateBody: 'Ricarica per aggiornare.',
     updateAction: 'Ricarica',
-    updateDismiss: 'Più tardi',
+    updateDismiss: 'PiÃ¹ tardi',
     persistDeniedHeading: 'Storage offline non abilitato',
-    persistDeniedBody: 'I tuoi dati potrebbero essere cancellati dopo 7 giorni di inattività. Apri l\'app regolarmente.',
+    persistDeniedBody: 'I tuoi dati potrebbero essere cancellati dopo 7 giorni di inattivitÃ . Apri l\'app regolarmente.',
   },
   ai: {
     placeholderHeading: 'AI in arrivo',
-    placeholderBody: 'L\'assistente AI sarà disponibile presto. Puoi usare l\'app senza problemi anche ora.',
+    placeholderBody: 'L\'assistente AI sarÃ  disponibile presto. Puoi usare l\'app senza problemi anche ora.',
   },
   sync: {
     synced: 'Sincronizzato',
@@ -2099,7 +2099,7 @@ export const copy = {
     boundaryHomeCta: 'Torna a Oggi',
     conflict: 'Modificato da un altro utente',
     conflictHint: 'Ricarica per vedere l\'ultima versione.',
-    syncFailed: 'Sincronizzazione non riuscita. Riprova più tardi.',
+    syncFailed: 'Sincronizzazione non riuscita. Riprova piÃ¹ tardi.',
   },
   settings: {
     themeHeading: 'Tema',
@@ -2120,18 +2120,18 @@ export type Copy = typeof copy;
 ### Anti-Patterns to Avoid
 
 - **Hardcoded hex/font-size/radius:** every value goes through `@theme` token. ESLint rule `no-restricted-syntax` to ban `style={{ color: '#...' }}` literals.
-- **Cache-first on `index.html`:** PITFALL #2 — always NetworkFirst.
-- **localStorage for refresh token:** PITFALLS #4 + ARCHITECTURE.md Anti-Pattern 2 — HttpOnly cookie only.
-- **Auto-incremented Dexie PKs:** PITFALLS #5 — server UUIDs only.
-- **`group_id` in JWT claims:** PITFALLS #3 — always re-look-up from DB.
-- **Single `get_current_user` for cross-user reads:** ARCHITECTURE Anti-Pattern 5 — separate dependency for cross-user access (Phase 2).
-- **Direct AI SDK calls in services:** ARCHITECTURE Anti-Pattern 1 — always via `Depends(get_ai_provider)`.
-- **`utf-8` decode for MD upload:** PITFALLS #6 — must be `utf-8-sig` to strip BOM.
-- **Per-request AI provider construction:** ARCHITECTURE Anti-Pattern 4 — singleton at lifespan startup.
-- **Validating MD inline in API endpoint:** ARCHITECTURE Anti-Pattern 6 — `parse_and_validate` in `parsers/`.
-- **`!` in error messages:** UI-SPEC §7.1 / UI-17 — reserved for celebratory only.
-- **Vanilla shadcn defaults:** UI-03 — every component customized after `add`.
-- **Animations without `--motion-scale`:** UI-05 — must short-circuit when `prefers-reduced-motion: reduce`.
+- **Cache-first on `index.html`:** PITFALL #2 â€” always NetworkFirst.
+- **localStorage for refresh token:** PITFALLS #4 + ARCHITECTURE.md Anti-Pattern 2 â€” HttpOnly cookie only.
+- **Auto-incremented Dexie PKs:** PITFALLS #5 â€” server UUIDs only.
+- **`group_id` in JWT claims:** PITFALLS #3 â€” always re-look-up from DB.
+- **Single `get_current_user` for cross-user reads:** ARCHITECTURE Anti-Pattern 5 â€” separate dependency for cross-user access (Phase 2).
+- **Direct AI SDK calls in services:** ARCHITECTURE Anti-Pattern 1 â€” always via `Depends(get_ai_provider)`.
+- **`utf-8` decode for MD upload:** PITFALLS #6 â€” must be `utf-8-sig` to strip BOM.
+- **Per-request AI provider construction:** ARCHITECTURE Anti-Pattern 4 â€” singleton at lifespan startup.
+- **Validating MD inline in API endpoint:** ARCHITECTURE Anti-Pattern 6 â€” `parse_and_validate` in `parsers/`.
+- **`!` in error messages:** UI-SPEC Â§7.1 / UI-17 â€” reserved for celebratory only.
+- **Vanilla shadcn defaults:** UI-03 â€” every component customized after `add`.
+- **Animations without `--motion-scale`:** UI-05 â€” must short-circuit when `prefers-reduced-motion: reduce`.
 
 ## Don't Hand-Roll
 
@@ -2163,7 +2163,7 @@ export type Copy = typeof copy;
 
 ## Runtime State Inventory
 
-> Greenfield phase — Phase 1 is the **first phase**, no prior runtime state exists in production. This section is omitted as a discovery exercise. Whenever Phase 1 introduces NEW runtime state (Dexie schema v1, refresh_tokens table, Alembic baseline), the planner should ensure all five categories are documented for downstream phases:
+> Greenfield phase â€” Phase 1 is the **first phase**, no prior runtime state exists in production. This section is omitted as a discovery exercise. Whenever Phase 1 introduces NEW runtime state (Dexie schema v1, refresh_tokens table, Alembic baseline), the planner should ensure all five categories are documented for downstream phases:
 
 | Category | Phase 1 baseline established | Future phases must update |
 |----------|-----------------------------|--------------------------|
@@ -2173,13 +2173,13 @@ export type Copy = typeof copy;
 | Secrets/env vars | `SECRET_KEY` (token_hex 32), `DATABASE_URL`, `AI_PROVIDER=null`, `VITE_VAPID_PUBLIC_KEY` (Phase 3) | DPAPI-encrypted on Windows |
 | Build artifacts | None Phase 1 (greenfield); `frontend/dist/` produced by `pnpm build` | `dist/` regenerated each deploy |
 
-**Nothing pre-existing in repo to migrate** — verified by reading `d:/Develop/AI/WellnessBuddy/` (only `.planning/`, `CLAUDE.md`, `docs/PROMPT_CONTRACT_WELLNESS_BUDDY.md`).
+**Nothing pre-existing in repo to migrate** â€” verified by reading `d:/Develop/AI/WellnessBuddy/` (only `.planning/`, `CLAUDE.md`, `docs/PROMPT_CONTRACT_WELLNESS_BUDDY.md`).
 
 ## Common Pitfalls
 
 ### Pitfall 1: Tailwind 4 + shadcn/ui v4 Setup Quirks (2026)
 
-**What goes wrong:** shadcn/ui CLI generates components expecting `tailwind.config.ts` and CSS variables in legacy format; Tailwind 4 expects `@theme` block in CSS. Mismatch → components render with wrong colors / no theming.
+**What goes wrong:** shadcn/ui CLI generates components expecting `tailwind.config.ts` and CSS variables in legacy format; Tailwind 4 expects `@theme` block in CSS. Mismatch â†’ components render with wrong colors / no theming.
 
 **Why it happens:** shadcn CLI auto-detects v3 layout. Components.json must explicitly point to `theme.css`, not `tailwind.config.ts`.
 
@@ -2208,7 +2208,7 @@ export type Copy = typeof copy;
   ```
 - In `package.json` `prepare` script: `"prepare": "husky"` (Husky v9 auto-handles permissions).
 - vite-plugin-pwa: ensure `globPatterns` uses forward slashes only.
-- CI runs ubuntu-latest (D-08) — Windows-specific issues caught only in dev. Document in `README.md`.
+- CI runs ubuntu-latest (D-08) â€” Windows-specific issues caught only in dev. Document in `README.md`.
 
 **Phase to address:** Plan 1 (Monorepo + Tooling).
 
@@ -2216,33 +2216,33 @@ export type Copy = typeof copy;
 
 **What goes wrong:** Phase 2 ships with Dexie v2 schema; users with pending mutations from v1 see them dropped or corrupted.
 
-**Why it happens:** Dexie `version().upgrade()` transforms data — if mutation_queue stores domain objects rather than HTTP requests, schema bumps break pending writes.
+**Why it happens:** Dexie `version().upgrade()` transforms data â€” if mutation_queue stores domain objects rather than HTTP requests, schema bumps break pending writes.
 
 **How to avoid (codified in Pattern 5 above):**
-- `mutation_queue` stores **opaque HTTP requests** `{endpoint, method, body}`, never domain objects → survives any schema change.
+- `mutation_queue` stores **opaque HTTP requests** `{endpoint, method, body}`, never domain objects â†’ survives any schema change.
 - Cache tables are read-only mirrors; schema bump = drop + re-fetch (never migrate in place).
 - Server UUIDs (never auto-int) so refetch is idempotent.
 - Document this contract in `frontend/src/db/dexie.ts` header comment.
 
 **Warning signs:** Sentry "missing key X" after deploy; user reports "lost data after update".
 
-**Phase to address:** Plan 6 (PWA Shell + Dexie) — set the rule in code header.
+**Phase to address:** Plan 6 (PWA Shell + Dexie) â€” set the rule in code header.
 
 ### Pitfall 4: JWT Refresh Race on iOS Resume
 
-**What goes wrong:** PITFALLS.md #4 — iPhone resume fires N parallel queries → N concurrent 401s → N concurrent refresh attempts → server detects "reuse" → revokes family → user logged out mid-task.
+**What goes wrong:** PITFALLS.md #4 â€” iPhone resume fires N parallel queries â†’ N concurrent 401s â†’ N concurrent refresh attempts â†’ server detects "reuse" â†’ revokes family â†’ user logged out mid-task.
 
 **How to avoid (codified in Patterns 9):**
 - Singleton refresh promise client-side (`refreshTokenAtomic.ts`).
 - 10s server-side idempotent grace window in `rotate_refresh()`.
 - Pre-emptive refresh: if access token expires in <60s, refresh proactively (decode `exp` claim).
-- Test scenario: kill app → wait 16 min → reopen → assert single `/api/auth/refresh` call.
+- Test scenario: kill app â†’ wait 16 min â†’ reopen â†’ assert single `/api/auth/refresh` call.
 
 **Phase to address:** Plan 3 (Auth).
 
-### Pitfall 5: MD Parser BOM Trap — `utf-8` vs `utf-8-sig`
+### Pitfall 5: MD Parser BOM Trap â€” `utf-8` vs `utf-8-sig`
 
-**What goes wrong:** UploadFile bytes contain BOM (`\xef\xbb\xbf`) prefix. `bytes.decode('utf-8')` returns string starting with `﻿`. First heading regex fails because heading is preceded by zero-width-no-break-space.
+**What goes wrong:** UploadFile bytes contain BOM (`\xef\xbb\xbf`) prefix. `bytes.decode('utf-8')` returns string starting with `ï»¿`. First heading regex fails because heading is preceded by zero-width-no-break-space.
 
 **How to avoid:** ALWAYS use `'utf-8-sig'` for incoming MD bytes. Test fixture `notepad_bom.md` exists in `backend/tests/fixtures/plans/evil/` to lock this in CI.
 
@@ -2252,7 +2252,7 @@ export type Copy = typeof copy;
 
 ### Pitfall 6: OKLCH Browser Baseline (Safari 16.4+)
 
-**What goes wrong:** OKLCH colors invalid in Safari <16.4 → fallback to `currentColor` or invalid → colors render as black/white.
+**What goes wrong:** OKLCH colors invalid in Safari <16.4 â†’ fallback to `currentColor` or invalid â†’ colors render as black/white.
 
 **How to avoid:**
 - iOS Web Push (FND-05 stretch / Phase 3 hard) requires Safari 16.4+ already, so baseline aligns.
@@ -2271,7 +2271,7 @@ export type Copy = typeof copy;
 
 ### Pitfall 7: Tailwind 4 `@theme` + Dark Mode Manual Override
 
-**What goes wrong:** UI-SPEC §4.1 declares dark via both `@media (prefers-color-scheme: dark)` AND manual `data-theme="dark"`. Naive override leaves residual light tokens after toggle.
+**What goes wrong:** UI-SPEC Â§4.1 declares dark via both `@media (prefers-color-scheme: dark)` AND manual `data-theme="dark"`. Naive override leaves residual light tokens after toggle.
 
 **How to avoid:**
 - Use `:root[data-theme="dark"]` in CSS to mirror ALL dark tokens explicitly (not just selective).
@@ -2286,7 +2286,7 @@ export type Copy = typeof copy;
 
 ### Pitfall 8: Recharts Dark Mode Hardcoded Colors
 
-**What goes wrong:** UI-08 requires Recharts colors via CSS variables. Default Recharts demos use `stroke="#8884d8"` etc. → hardcoded → dark mode broken.
+**What goes wrong:** UI-08 requires Recharts colors via CSS variables. Default Recharts demos use `stroke="#8884d8"` etc. â†’ hardcoded â†’ dark mode broken.
 
 **How to avoid:** Every Recharts component prop uses `var(--color-...)`:
 
@@ -2302,7 +2302,7 @@ Code review checklist must verify: zero hex literals in `components/weight/`.
 
 ### Pitfall 9: Italian Decimal Separator vs Form Validation
 
-**What goes wrong:** User types `75,3` for weight; Zod schema parses as `number` → fails because `Number('75,3') === NaN`.
+**What goes wrong:** User types `75,3` for weight; Zod schema parses as `number` â†’ fails because `Number('75,3') === NaN`.
 
 **How to avoid:**
 - Input mask + `inputmode="decimal"` on weight input.
@@ -2312,9 +2312,9 @@ Code review checklist must verify: zero hex literals in `components/weight/`.
 
 **Phase to address:** Plan 7.
 
-### Pitfall 10: WIN REQUISITE Drift — Hardcoded Hex During Wave 1
+### Pitfall 10: WIN REQUISITE Drift â€” Hardcoded Hex During Wave 1
 
-**What goes wrong:** Plan 5 (Frontend Skeleton) lands tokens, but Plan 7 (Today/Weight/Workout) parallel agent forgets to use them — ships with `bg-slate-100` etc.
+**What goes wrong:** Plan 5 (Frontend Skeleton) lands tokens, but Plan 7 (Today/Weight/Workout) parallel agent forgets to use them â€” ships with `bg-slate-100` etc.
 
 **How to avoid:**
 - Plan 5 MUST land BEFORE Plan 7 (sequential, not parallel).
@@ -2322,7 +2322,7 @@ Code review checklist must verify: zero hex literals in `components/weight/`.
 - Code review checklist: grep for `#[0-9a-fA-F]{3,8}` in PR diff outside theme.css.
 - axe-core CI gate catches contrast issues; visual diff catches gross misuse.
 
-**Phase to address:** Plans 5 → 7 strict sequencing.
+**Phase to address:** Plans 5 â†’ 7 strict sequencing.
 
 ### Pitfall 11: pnpm Workspace + Backend Outside Workspace
 
@@ -2355,13 +2355,13 @@ Code review checklist must verify: zero hex literals in `components/weight/`.
 
 ### Pitfall 12: GitHub Actions axe-core CI on Built dist/
 
-**What goes wrong:** axe-core run against `vite dev` server has different bundle than production → inconsistencies. Or run against pre-build → no SW assertions.
+**What goes wrong:** axe-core run against `vite dev` server has different bundle than production â†’ inconsistencies. Or run against pre-build â†’ no SW assertions.
 
 **How to avoid:**
-- `axe-a11y.yml`: `pnpm build` → `pnpm exec serve dist -l 4173` → Playwright runs against `http://localhost:4173`.
+- `axe-a11y.yml`: `pnpm build` â†’ `pnpm exec serve dist -l 4173` â†’ Playwright runs against `http://localhost:4173`.
 - Document axe-core thresholds in `playwright.config.ts`:
   ```ts
-  // Source: UI-10, UI-SPEC §9
+  // Source: UI-10, UI-SPEC Â§9
   use: { contextOptions: { reducedMotion: 'reduce' } },  // also test reduced-motion
   ```
 
@@ -2373,7 +2373,7 @@ Code review checklist must verify: zero hex literals in `components/weight/`.
 
 ```python
 # backend/app/main.py
-# Source: ARCHITECTURE.md §4 Pattern 2 lifespan, FND-03
+# Source: ARCHITECTURE.md Â§4 Pattern 2 lifespan, FND-03
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -2474,7 +2474,7 @@ async def complete_meal(
 | Tailwind v3 + `tailwind.config.ts` | Tailwind v4 + CSS `@theme` block | Jan 2025 (Oxide) | Configuration moves to CSS, 2-5x faster builds, container queries first-class |
 | framer-motion | motion (renamed mid-2025) | mid-2025 | API identical; package name only |
 | pip + venv + pip-tools | uv (Astral) | 2024-2026 | Single tool, deterministic lock, 10-100x faster |
-| `python-jose` JWT only | python-jose still standard | — | No change for HS256 path |
+| `python-jose` JWT only | python-jose still standard | â€” | No change for HS256 path |
 | react-router v6 BrowserRouter | react-router v7 createBrowserRouter | 2024 | Unified data router, loaders/actions |
 | Create React App | Vite | 2023+ | CRA deprecated |
 | Class-based shadcn (v3 style) | shadcn/ui v4 with `@theme` | 2025 | Native CSS variable consumption |
@@ -2495,44 +2495,44 @@ async def complete_meal(
 
 | # | Claim | Section | Risk if Wrong |
 |---|-------|---------|---------------|
-| A1 | shadcn/ui v4 CLI honors `components.json` `tailwind.css` pointing to `theme.css` instead of `tailwind.config.ts` | shadcn CLI Install | If wrong, components generated with v3-style imports — fixable by manual edit but adds friction. **Mitigation:** Plan 5 first task = `pnpm dlx shadcn@latest init` and verify generated `button.tsx` reads from `@/components/ui/button` and uses CSS variables. [ASSUMED — STACK.md states "shadcn/ui has full v4 support" but exact CLI behavior 2026-05 not directly verified] |
-| A2 | `pytest-postgresql` ^6.x supports Python 3.12 + ephemeral Docker | Test Infrastructure | If wrong, fall back to `pytest-docker` + manual postgres image. **Mitigation:** Plan 1 includes smoke test in CI. [ASSUMED — package exists per STACK.md but version compat 2026-05 not directly verified] |
-| A3 | `vite-plugin-pwa` 0.21 produces SW that ignores `index.html` precache when `globPatterns` excludes it | Workbox Config | If wrong, must switch to `injectManifest` strategy. **Mitigation:** Test upgrade path manually (deploy v1 → install on iPhone → deploy v2 → verify update toast). [ASSUMED — vite-pwa docs describe the pattern; exact behavior of glob exclusion not directly verified] |
+| A1 | shadcn/ui v4 CLI honors `components.json` `tailwind.css` pointing to `theme.css` instead of `tailwind.config.ts` | shadcn CLI Install | If wrong, components generated with v3-style imports â€” fixable by manual edit but adds friction. **Mitigation:** Plan 5 first task = `pnpm dlx shadcn@latest init` and verify generated `button.tsx` reads from `@/components/ui/button` and uses CSS variables. [ASSUMED â€” STACK.md states "shadcn/ui has full v4 support" but exact CLI behavior 2026-05 not directly verified] |
+| A2 | `pytest-postgresql` ^6.x supports Python 3.12 + ephemeral Docker | Test Infrastructure | If wrong, fall back to `pytest-docker` + manual postgres image. **Mitigation:** Plan 1 includes smoke test in CI. [ASSUMED â€” package exists per STACK.md but version compat 2026-05 not directly verified] |
+| A3 | `vite-plugin-pwa` 0.21 produces SW that ignores `index.html` precache when `globPatterns` excludes it | Workbox Config | If wrong, must switch to `injectManifest` strategy. **Mitigation:** Test upgrade path manually (deploy v1 â†’ install on iPhone â†’ deploy v2 â†’ verify update toast). [ASSUMED â€” vite-pwa docs describe the pattern; exact behavior of glob exclusion not directly verified] |
 | A4 | `motion` v12 `useReducedMotion()` hook reliably reads `prefers-reduced-motion` and re-renders on change | Motion Config | If wrong, manual media query listener required. **Mitigation:** wrap in `hooks/useReducedMotion.ts` with manual fallback. [ASSUMED] |
-| A5 | OKLCH baseline of Safari 16.4+ aligns with iOS Web Push baseline | Browser Baseline | If 5% of users have older Safari, colors break. **Mitigation:** `@supports not (color: oklch())` HSL fallback for critical tokens. [VERIFIED: STACK.md "v4 requires Safari 16.4+ — already required by iOS Web Push"] |
+| A5 | OKLCH baseline of Safari 16.4+ aligns with iOS Web Push baseline | Browser Baseline | If 5% of users have older Safari, colors break. **Mitigation:** `@supports not (color: oklch())` HSL fallback for critical tokens. [VERIFIED: STACK.md "v4 requires Safari 16.4+ â€” already required by iOS Web Push"] |
 | A6 | `python-jose[cryptography]` HS256 + symmetric key sufficient for 2-user family deployment | Auth | If wrong (asymmetric keys for kid sessions), refactor to RS256. **Mitigation:** keep `algorithm` configurable in `core/security.py`. [VERIFIED: AUTH-04/05 + 2-user scope] |
-| A7 | Plan MD files Stefano+Marta will be edited primarily on macOS (Notes.app NFD) and Windows (Word CRLF) — corpus covers these | MD Parser | If users use exotic editor (e.g., Vim+Linux dotfiles), edge cases emerge. **Mitigation:** evil corpus is extensible; `unrecognized_headings` warned not failed. [ASSUMED — based on Stefano/Marta personas, not directly observed] |
+| A7 | Plan MD files Stefano+Marta will be edited primarily on macOS (Notes.app NFD) and Windows (Word CRLF) â€” corpus covers these | MD Parser | If users use exotic editor (e.g., Vim+Linux dotfiles), edge cases emerge. **Mitigation:** evil corpus is extensible; `unrecognized_headings` warned not failed. [ASSUMED â€” based on Stefano/Marta personas, not directly observed] |
 | A8 | Stefano accepts Tailwind 4 + OKLCH browser baseline restriction (Safari 16.4+) | Browser Baseline | If existing user has older device, dead. **Mitigation:** confirmed in PROJECT.md / STACK.md decisions. [VERIFIED: STACK.md decision rationale] |
 | A9 | `axe-core/playwright` reports contrast violations consistently in CI runner light/dark mode | a11y CI | If reduced-motion or color-scheme not switchable in CI, manual review needed. **Mitigation:** `playwright.config.ts` uses `colorScheme: 'dark'` matrix in dark-mode-screenshot.yml. [ASSUMED] |
 
-**No A-tagged claims block phase planning** — all assumptions have documented mitigations and can be verified in Plan 1 smoke tests or Plan 5 first PR.
+**No A-tagged claims block phase planning** â€” all assumptions have documented mitigations and can be verified in Plan 1 smoke tests or Plan 5 first PR.
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **shadcn/ui CLI exact prompt answers for components.json baseColor**
-   - What we know: UI-SPEC §4 declares OKLCH neutrals. shadcn baseColor prompt offers neutral/zinc/slate/stone.
+   - What we know: UI-SPEC Â§4 declares OKLCH neutrals. shadcn baseColor prompt offers neutral/zinc/slate/stone.
    - What's unclear: Does setting baseColor=neutral and then overriding via `@theme` work cleanly?
-   - Recommendation: Plan 5 task: run `pnpm dlx shadcn init`, verify generated `theme.css` baseline includes neutral, then PREPEND/REPLACE with our `@theme` block from this RESEARCH.md.
+   - **RESOLVED:** Recommendation: Plan 5 task: run `pnpm dlx shadcn init`, verify generated `theme.css` baseline includes neutral, then PREPEND/REPLACE with our `@theme` block from this RESEARCH.md.
 
 2. **Storyset illustration final selection (D-86 Claude's Discretion)**
-   - What we know: UI-SPEC §6.2 declares EmptyState component needs Storyset illustration (200×200 mobile / 280×280 desktop).
+   - What we know: UI-SPEC Â§6.2 declares EmptyState component needs Storyset illustration (200Ã—200 mobile / 280Ã—280 desktop).
    - What's unclear: Which specific illustrations from Storyset packs (e.g., "Wellness pack vol. 2" vs "Healthy lifestyle pack")?
-   - Recommendation: Plan 8 (Tone Calibration Mockups) task: prepare 4-5 candidate illustrations colorized to brand tokens, present to Stefano+Marta during exit-gate review alongside tone variants.
+   - **RESOLVED:** Recommendation: Plan 8 (Tone Calibration Mockups) task: prepare 4-5 candidate illustrations colorized to brand tokens, present to Stefano+Marta during exit-gate review alongside tone variants.
 
 3. **Lottie animations Sprint 1 (D-89 Claude's Discretion)**
-   - What we know: UI-SPEC §5 motion budget allows celebration ≤800ms. UI-04 says Motion v12 for state transitions.
+   - What we know: UI-SPEC Â§5 motion budget allows celebration â‰¤800ms. UI-04 says Motion v12 for state transitions.
    - What's unclear: Are any Lottie animations needed in Phase 1 (welcome screen + meal-completion)?
-   - Recommendation: Phase 1 ships ZERO Lottie (UI-SPEC §5 "Forbidden in Phase 1: Lottie (Phase 3)"). Welcome screen uses Motion v12 spring physics + Storyset hero illustration. Meal-completion = SVG path stroke-dasharray draw 200ms. Phase 3 introduces Lottie. **Locked: no Lottie Phase 1.**
+   - **RESOLVED:** Recommendation: Phase 1 ships ZERO Lottie (UI-SPEC Â§5 "Forbidden in Phase 1: Lottie (Phase 3)"). Welcome screen uses Motion v12 spring physics + Storyset hero illustration. Meal-completion = SVG path stroke-dasharray draw 200ms. Phase 3 introduces Lottie. **Locked: no Lottie Phase 1.**
 
 4. **Backend `/version.json` build_hash injection mechanism**
    - What we know: FND-06 requires `/version.json` polling.
    - What's unclear: Backend serves static? Or generated dynamically from env? Frontend reads `import.meta.env.VITE_BUILD_HASH`?
-   - Recommendation: Both. Backend: `version.py` serves dict from `settings.APP_VERSION + settings.BUILD_HASH` (env-injected at deploy). Frontend: `vite.config.ts` defines `__BUILD_HASH__` from git SHA at build time. Polled `/version.json` returns backend's; compared against frontend's `import.meta.env.VITE_BUILD_HASH`.
+   - **RESOLVED:** Recommendation: Both. Backend: `version.py` serves dict from `settings.APP_VERSION + settings.BUILD_HASH` (env-injected at deploy). Frontend: `vite.config.ts` defines `__BUILD_HASH__` from git SHA at build time. Polled `/version.json` returns backend's; compared against frontend's `import.meta.env.VITE_BUILD_HASH`.
 
 5. **Tone calibration mockups output format (Phase 1 exit gate)**
-   - What we know: UI-SPEC §8 mandates 3 mockups (75/25, 50/50, 25/75) of `/today` mobile + desktop, light + dark, populated + empty.
+   - What we know: UI-SPEC Â§8 mandates 3 mockups (75/25, 50/50, 25/75) of `/today` mobile + desktop, light + dark, populated + empty.
    - What's unclear: Figma vs Storybook vs HTML/CSS standalone vs deployed staging?
-   - Recommendation: **HTML/CSS standalone** — zero Figma dependency, Stefano can open URL on real iPhone (mobile preview), URL deployed via GitHub Pages preview or local Vite. Why: tokens already exist in code (Plan 5), mockups become real renderable code that doubles as Plan 7 starting point.
+   - **RESOLVED:** Recommendation: **HTML/CSS standalone** â€” zero Figma dependency, Stefano can open URL on real iPhone (mobile preview), URL deployed via GitHub Pages preview or local Vite. Why: tokens already exist in code (Plan 5), mockups become real renderable code that doubles as Plan 7 starting point.
 
 ## Environment Availability
 
@@ -2540,30 +2540,30 @@ async def complete_meal(
 
 | Dependency | Required By | Available | Version | Fallback |
 |------------|------------|-----------|---------|----------|
-| Node.js LTS (≥20) | Frontend Vite/pnpm | Verify in Plan 1 | TBD | nvm install 20 |
+| Node.js LTS (â‰¥20) | Frontend Vite/pnpm | Verify in Plan 1 | TBD | nvm install 20 |
 | pnpm | Frontend deps | Verify | TBD | `npm i -g pnpm` |
 | Python 3.12 | Backend | Verify | TBD | pyenv / chocolatey |
 | uv (Astral) | Backend deps | Verify | TBD | `pip install uv` first |
 | Docker | Dev postgres + CI | Verify | TBD | Required (D-13 forbids sqlite) |
 | PostgreSQL client (psql) | Manual `CREATE DATABASE WellnessBuddy` | Verify | TBD | Use Docker exec into container |
-| Git | Version control | Assumed yes | TBD | — |
-| GitHub Actions | CI runners | yes (D-08) | hosted | — |
+| Git | Version control | Assumed yes | TBD | â€” |
+| GitHub Actions | CI runners | yes (D-08) | hosted | â€” |
 
 **Plan 1 task:** Add `scripts/check-env.sh` (POSIX) + `scripts/check-env.ps1` (Windows) that verify presence + minimum versions of all the above and print Italian-friendly setup instructions if missing.
 
-**Production environment (Windows Server 2019) — verified by Stefano during Plan 8 deploy task:**
+**Production environment (Windows Server 2019) â€” verified by Stefano during Plan 8 deploy task:**
 
 | Dependency | Required By | Status | Notes |
 |------------|------------|--------|-------|
 | PostgreSQL | DB | ALREADY INSTALLED (per CONTEXT.md "Integration Points") | Only `CREATE DATABASE WellnessBuddy;` needed |
 | IIS | Reverse proxy | ALREADY CONFIGURED for other epartner.it sites | Add new site |
-| URL Rewrite + ARR modules | Reverse proxy `/api/*` → 8000 | Likely present (other sites use it) | Verify; install if missing |
+| URL Rewrite + ARR modules | Reverse proxy `/api/*` â†’ 8000 | Likely present (other sites use it) | Verify; install if missing |
 | NSSM | Wrap Uvicorn as Windows service | KNOWN PATTERN (CONTEXT.md) | Stefano familiar |
 | win-acme | Let's Encrypt cert | KNOWN PATTERN (CONTEXT.md) | Stefano familiar |
 | Python 3.12 (server) | Backend runtime | Verify | Install if missing |
 | GTK3 Runtime | WeasyPrint (Phase 2 only) | NOT NEEDED Phase 1 | Defer Phase 2 |
 
-**Missing dependencies with no fallback:** None — all required tools either installed or installable.
+**Missing dependencies with no fallback:** None â€” all required tools either installed or installable.
 
 **Missing dependencies with fallback:** None.
 
@@ -2585,42 +2585,42 @@ async def complete_meal(
 | Full suite command (frontend) | `cd frontend && pnpm vitest run && pnpm playwright test` |
 | Full suite phase gate | `pnpm run ci:all` (root script chaining backend + frontend + axe + visual) |
 
-### Phase Requirements → Test Map
+### Phase Requirements â†’ Test Map
 
 | Req ID | Behavior | Test Type | Automated Command | File Exists? |
 |--------|----------|-----------|-------------------|-------------|
-| FND-01 | Monorepo lint+typecheck pass | smoke | `pnpm lint && pnpm typecheck` (root) | ❌ Wave 0 |
-| FND-02 | Alembic baseline applies cleanly | integration | `cd backend && uv run alembic upgrade head` (CI runs against fresh DB) | ❌ Wave 0 |
-| FND-03 | FastAPI app starts + lifespan binds AI provider | integration | `pytest backend/tests/integration/test_app_startup.py -x` | ❌ Wave 0 |
-| FND-04 | Frontend builds + Tailwind 4 @theme tokens render | smoke | `pnpm build && pnpm preview` + Playwright assertion | ❌ Wave 0 |
-| FND-05 | PWA manifest + SW register on production build | e2e | `pnpm playwright test e2e/pwa.spec.ts -g "manifest"` | ❌ Wave 0 |
-| FND-06 | `/version.json` polling triggers update toast on mismatch | e2e | `pnpm playwright test e2e/pwa.spec.ts -g "version-update"` | ❌ Wave 0 |
-| FND-07 | Dexie schema v1 opens + tables exist | unit | `pnpm vitest run src/db/dexie.test.ts` | ❌ Wave 0 |
-| FND-08 | `navigator.storage.persist()` invoked post-login + Dexie-empty resync | e2e | `pnpm playwright test e2e/auth.spec.ts -g "persist-storage"` | ❌ Wave 0 |
-| FND-09 | All UI strings sourced from `copy.it.ts`, no hardcoded literals | unit (custom ESLint rule) | `pnpm lint --rule 'no-restricted-syntax: error'` | ❌ Wave 0 |
-| AUTH-01..03 | Login + logout + persist 7 days | integration | `pytest backend/tests/integration/test_auth_api.py::test_login_logout_persist` | ❌ Wave 0 |
-| AUTH-04 | Access token in Zustand memory only | unit | `pnpm vitest run stores/auth.test.ts` | ❌ Wave 0 |
-| AUTH-05 | Refresh token in HttpOnly+Secure+SameSite=Lax cookie | integration | `pytest backend/tests/integration/test_auth_api.py::test_refresh_cookie_attrs` | ❌ Wave 0 |
-| AUTH-06 | Refresh rotation + family revocation on reuse | integration | `pytest backend/tests/integration/test_auth_api.py::test_refresh_rotation_family` | ❌ Wave 0 |
-| AUTH-07 | Singleton refresh promise — concurrent 401s coalesced | unit | `pnpm vitest run lib/refreshTokenAtomic.test.ts` | ❌ Wave 0 |
-| AUTH-08 | 10s grace window idempotent | integration | `pytest backend/tests/integration/test_auth_api.py::test_refresh_grace_window` | ❌ Wave 0 |
-| AUTH-09..10 | Invite-only signup + admin generates token | integration | `pytest backend/tests/integration/test_auth_api.py::test_invite_flow` | ❌ Wave 0 |
-| AUTH-11 | `/api/auth/me` returns profile | integration | `pytest backend/tests/integration/test_auth_api.py::test_me_endpoint` | ❌ Wave 0 |
-| AUTH-12 | API errors all `{detail, code}` JSON | integration | `pytest backend/tests/integration/test_error_format.py` | ❌ Wave 0 |
-| MOD-01..10 | All models + indexes + TIMESTAMPTZ | unit | `pytest backend/tests/unit/test_models.py` | ❌ Wave 0 |
-| PLAN-01..06 | Parser tolerant + strict + evil corpus passes | unit | `pytest backend/tests/unit/test_plan_parser.py` (corpus iteration) | ❌ Wave 0 |
-| PLAN-07..10 | Upload + activate + diff + assign | integration | `pytest backend/tests/integration/test_plans_api.py` | ❌ Wave 0 |
-| TODAY-01..08 | /today landing + meal complete + offline | e2e | `pnpm playwright test e2e/today.spec.ts` | ❌ Wave 0 |
-| WEIGHT-01..02 | Recharts line + history table | unit + e2e | `pnpm vitest run components/weight/` + `pnpm playwright test e2e/weight.spec.ts` | ❌ Wave 0 |
-| WORK-01..02 | Form + history filter | unit + e2e | `pnpm vitest run components/workout/` + `pnpm playwright test e2e/workout.spec.ts` | ❌ Wave 0 |
-| AI-01..07 | ABC + NullProvider + DI + 501 + locked widget | integration + unit | `pytest backend/tests/integration/test_ai_api.py` + `pnpm vitest run components/ai/AIWidget.test.tsx` | ❌ Wave 0 |
-| DEP-01..05/08/09 | NSSM + IIS + win-acme + Docker compose | manual-only | DEPLOY.md checklist exec by Stefano | ❌ Wave 0 |
-| UI-01..09 | Tokens, mobile-first, shadcn customized, motion budget, dark mode, etc. | visual + unit | Playwright visual diff + ESLint custom rule | ❌ Wave 0 |
-| UI-10 | axe-core ≥4.5:1 / ≥3:1 | a11y | `pnpm playwright test e2e/a11y.spec.ts` (axe assertions) | ❌ Wave 0 |
-| UI-11 | Lighthouse a11y ≥95 | a11y | GitHub Action `lighthouse-ci` | ❌ Wave 0 |
-| UI-12 | Dark mode screenshot tests CI | visual | `pnpm playwright test visual/routes.spec.ts --grep dark` | ❌ Wave 0 |
-| UI-13 | VoiceOver smoke iOS | manual-only | Phase pause-gate checklist by Stefano | ❌ Wave 0 |
-| UI-14..20 | Illustrations a11y, form errors, iOS keyboard, tone, Italian formatting, emoji budget, impeccable | mixed | per-component checks + manual review | ❌ Wave 0 |
+| FND-01 | Monorepo lint+typecheck pass | smoke | `pnpm lint && pnpm typecheck` (root) | âŒ Wave 0 |
+| FND-02 | Alembic baseline applies cleanly | integration | `cd backend && uv run alembic upgrade head` (CI runs against fresh DB) | âŒ Wave 0 |
+| FND-03 | FastAPI app starts + lifespan binds AI provider | integration | `pytest backend/tests/integration/test_app_startup.py -x` | âŒ Wave 0 |
+| FND-04 | Frontend builds + Tailwind 4 @theme tokens render | smoke | `pnpm build && pnpm preview` + Playwright assertion | âŒ Wave 0 |
+| FND-05 | PWA manifest + SW register on production build | e2e | `pnpm playwright test e2e/pwa.spec.ts -g "manifest"` | âŒ Wave 0 |
+| FND-06 | `/version.json` polling triggers update toast on mismatch | e2e | `pnpm playwright test e2e/pwa.spec.ts -g "version-update"` | âŒ Wave 0 |
+| FND-07 | Dexie schema v1 opens + tables exist | unit | `pnpm vitest run src/db/dexie.test.ts` | âŒ Wave 0 |
+| FND-08 | `navigator.storage.persist()` invoked post-login + Dexie-empty resync | e2e | `pnpm playwright test e2e/auth.spec.ts -g "persist-storage"` | âŒ Wave 0 |
+| FND-09 | All UI strings sourced from `copy.it.ts`, no hardcoded literals | unit (custom ESLint rule) | `pnpm lint --rule 'no-restricted-syntax: error'` | âŒ Wave 0 |
+| AUTH-01..03 | Login + logout + persist 7 days | integration | `pytest backend/tests/integration/test_auth_api.py::test_login_logout_persist` | âŒ Wave 0 |
+| AUTH-04 | Access token in Zustand memory only | unit | `pnpm vitest run stores/auth.test.ts` | âŒ Wave 0 |
+| AUTH-05 | Refresh token in HttpOnly+Secure+SameSite=Lax cookie | integration | `pytest backend/tests/integration/test_auth_api.py::test_refresh_cookie_attrs` | âŒ Wave 0 |
+| AUTH-06 | Refresh rotation + family revocation on reuse | integration | `pytest backend/tests/integration/test_auth_api.py::test_refresh_rotation_family` | âŒ Wave 0 |
+| AUTH-07 | Singleton refresh promise â€” concurrent 401s coalesced | unit | `pnpm vitest run lib/refreshTokenAtomic.test.ts` | âŒ Wave 0 |
+| AUTH-08 | 10s grace window idempotent | integration | `pytest backend/tests/integration/test_auth_api.py::test_refresh_grace_window` | âŒ Wave 0 |
+| AUTH-09..10 | Invite-only signup + admin generates token | integration | `pytest backend/tests/integration/test_auth_api.py::test_invite_flow` | âŒ Wave 0 |
+| AUTH-11 | `/api/auth/me` returns profile | integration | `pytest backend/tests/integration/test_auth_api.py::test_me_endpoint` | âŒ Wave 0 |
+| AUTH-12 | API errors all `{detail, code}` JSON | integration | `pytest backend/tests/integration/test_error_format.py` | âŒ Wave 0 |
+| MOD-01..10 | All models + indexes + TIMESTAMPTZ | unit | `pytest backend/tests/unit/test_models.py` | âŒ Wave 0 |
+| PLAN-01..06 | Parser tolerant + strict + evil corpus passes | unit | `pytest backend/tests/unit/test_plan_parser.py` (corpus iteration) | âŒ Wave 0 |
+| PLAN-07..10 | Upload + activate + diff + assign | integration | `pytest backend/tests/integration/test_plans_api.py` | âŒ Wave 0 |
+| TODAY-01..08 | /today landing + meal complete + offline | e2e | `pnpm playwright test e2e/today.spec.ts` | âŒ Wave 0 |
+| WEIGHT-01..02 | Recharts line + history table | unit + e2e | `pnpm vitest run components/weight/` + `pnpm playwright test e2e/weight.spec.ts` | âŒ Wave 0 |
+| WORK-01..02 | Form + history filter | unit + e2e | `pnpm vitest run components/workout/` + `pnpm playwright test e2e/workout.spec.ts` | âŒ Wave 0 |
+| AI-01..07 | ABC + NullProvider + DI + 501 + locked widget | integration + unit | `pytest backend/tests/integration/test_ai_api.py` + `pnpm vitest run components/ai/AIWidget.test.tsx` | âŒ Wave 0 |
+| DEP-01..05/08/09 | NSSM + IIS + win-acme + Docker compose | manual-only | DEPLOY.md checklist exec by Stefano | âŒ Wave 0 |
+| UI-01..09 | Tokens, mobile-first, shadcn customized, motion budget, dark mode, etc. | visual + unit | Playwright visual diff + ESLint custom rule | âŒ Wave 0 |
+| UI-10 | axe-core â‰¥4.5:1 / â‰¥3:1 | a11y | `pnpm playwright test e2e/a11y.spec.ts` (axe assertions) | âŒ Wave 0 |
+| UI-11 | Lighthouse a11y â‰¥95 | a11y | GitHub Action `lighthouse-ci` | âŒ Wave 0 |
+| UI-12 | Dark mode screenshot tests CI | visual | `pnpm playwright test visual/routes.spec.ts --grep dark` | âŒ Wave 0 |
+| UI-13 | VoiceOver smoke iOS | manual-only | Phase pause-gate checklist by Stefano | âŒ Wave 0 |
+| UI-14..20 | Illustrations a11y, form errors, iOS keyboard, tone, Italian formatting, emoji budget, impeccable | mixed | per-component checks + manual review | âŒ Wave 0 |
 
 ### Sampling Rate
 
@@ -2644,7 +2644,7 @@ All test infrastructure absent (greenfield). Wave 0 must establish:
 - [ ] `.github/workflows/dark-mode-screenshot.yml` (visual diff)
 - [ ] Husky `.husky/pre-commit` + `lint-staged.config.js`
 - [ ] Custom ESLint rule for `no-hardcoded-hex-outside-theme` (or rely on grep CI step)
-- [ ] Lighthouse CI config + baseline `lighthouserc.json` with a11y ≥95 + PWA = 100
+- [ ] Lighthouse CI config + baseline `lighthouserc.json` with a11y â‰¥95 + PWA = 100
 
 **Wave 0 plan owner:** Plan 1 (Monorepo + Tooling) lands all CI infra + test scaffolding before any feature plan.
 
@@ -2659,7 +2659,7 @@ All test infrastructure absent (greenfield). Wave 0 must establish:
 | V2 Authentication | yes | python-jose HS256 + passlib bcrypt rounds=12 + invite-only signup + 24h single-use revocable invite tokens |
 | V3 Session Management | yes | JWT access 15min in-mem + refresh 7d HttpOnly+Secure+SameSite=Lax + rotation + family revocation + 10s idempotent grace |
 | V4 Access Control | yes Phase 1 (single-tenant); Phase 2 + Phase 4 add multi-user + RLS | `Depends(get_current_user)` on every protected endpoint; `Depends(require_admin)` on admin |
-| V5 Input Validation | yes | Pydantic v2 strict schemas at API boundary; Zod on frontend; MD parser tolerant→strict split |
+| V5 Input Validation | yes | Pydantic v2 strict schemas at API boundary; Zod on frontend; MD parser tolerantâ†’strict split |
 | V6 Cryptography | yes | python-jose for JWT (no custom crypto); passlib bcrypt for passwords (no custom hash); HTTPS via win-acme |
 | V7 Error Handling & Logging | yes | structlog JSON; Italian copy via `copy.it.ts` `code` lookup; mask `password`, `Authorization`, `cookie` headers |
 | V8 Data Protection | yes | `.env` gitignored, DPAPI on Windows; SECRET_KEY 32-byte token_hex; HttpOnly cookie; UUID server-generated |
@@ -2676,8 +2676,8 @@ All test infrastructure absent (greenfield). Wave 0 must establish:
 |---------|--------|---------------------|
 | SQL injection | Tampering | SQLAlchemy parameterized everything; ban `text()` with f-strings via lint rule |
 | XSS via plan MD content | Tampering / Information disclosure | `react-markdown` (safe by default), sanitize via remark plugins; never `dangerouslySetInnerHTML` |
-| CSRF on cookie-auth POST | Spoofing | `SameSite=Lax` on refresh cookie + access token in Authorization header (not cookie) → CSRF surface = `/api/auth/refresh` only, which is idempotent and safe |
-| JWT theft via XSS | Spoofing | Refresh in HttpOnly cookie; access in memory (Zustand) — XSS cannot steal refresh, can only steal short-lived access |
+| CSRF on cookie-auth POST | Spoofing | `SameSite=Lax` on refresh cookie + access token in Authorization header (not cookie) â†’ CSRF surface = `/api/auth/refresh` only, which is idempotent and safe |
+| JWT theft via XSS | Spoofing | Refresh in HttpOnly cookie; access in memory (Zustand) â€” XSS cannot steal refresh, can only steal short-lived access |
 | JWT replay after logout | Spoofing | Logout endpoint revokes refresh family server-side; access expires in 15min |
 | JWT refresh race storm (iOS resume) | DoS / repudiation | Singleton refresh promise + 10s grace window |
 | Mass account enumeration | Information disclosure | Login error message identical for invalid email vs invalid password ("Email o password non corretti") |
@@ -2687,8 +2687,8 @@ All test infrastructure absent (greenfield). Wave 0 must establish:
 | Path traversal in plan storage | Information disclosure | Store plans by UUID, never user-supplied filename |
 | Sensitive data in logs | Information disclosure | structlog processor masks `password`, `Authorization`, `cookie` keys |
 | Stored MD with crafted content | Tampering | Strict Pydantic v2 validation downstream of tolerant parser; reject malformed `parsed_json` shape |
-| AI prompt injection (Phase 5) | Tampering | OUT OF SCOPE Phase 1 — Phase 5 first PR introduces `<user_note>` delimiters + output validation |
-| CORS wildcard leak | Information disclosure | `allow_origins=settings.CORS_ORIGINS` — strict allowlist validated at boot, fail-fast if `*` in production |
+| AI prompt injection (Phase 5) | Tampering | OUT OF SCOPE Phase 1 â€” Phase 5 first PR introduces `<user_note>` delimiters + output validation |
+| CORS wildcard leak | Information disclosure | `allow_origins=settings.CORS_ORIGINS` â€” strict allowlist validated at boot, fail-fast if `*` in production |
 | Dependency vulnerabilities | Supply chain | `pnpm audit` + `uv pip audit` in CI weekly; Dependabot enabled |
 
 ### Phase 1 Specific Security Tasks
@@ -2705,38 +2705,38 @@ All test infrastructure absent (greenfield). Wave 0 must establish:
 
 ### Primary (HIGH confidence)
 
-- `.planning/research/STACK.md` — Stack picks + version pins, verified 2026-05-01
-- `.planning/research/ARCHITECTURE.md` — System architecture + DI patterns + DB pool config
-- `.planning/research/PITFALLS.md` — 12 pitfalls with mitigations (#1-12)
-- `.planning/research/SUMMARY.md` — Cross-cutting themes + Sprint 1 must-haves
-- `.planning/phases/01-foundation/01-UI-SPEC.md` — Design contract APPROVED 6/6
-- `.planning/phases/01-foundation/01-CONTEXT.md` — 33 user decisions D-01 through D-33
-- `.planning/REQUIREMENTS.md` — Phase 1 REQ-IDs locked
-- `CLAUDE.md` — Project conventions
+- `.planning/research/STACK.md` â€” Stack picks + version pins, verified 2026-05-01
+- `.planning/research/ARCHITECTURE.md` â€” System architecture + DI patterns + DB pool config
+- `.planning/research/PITFALLS.md` â€” 12 pitfalls with mitigations (#1-12)
+- `.planning/research/SUMMARY.md` â€” Cross-cutting themes + Sprint 1 must-haves
+- `.planning/phases/01-foundation/01-UI-SPEC.md` â€” Design contract APPROVED 6/6
+- `.planning/phases/01-foundation/01-CONTEXT.md` â€” 33 user decisions D-01 through D-33
+- `.planning/REQUIREMENTS.md` â€” Phase 1 REQ-IDs locked
+- `CLAUDE.md` â€” Project conventions
 
 ### Secondary (MEDIUM confidence)
 
-- shadcn/ui v4 CLI (`pnpm dlx shadcn@latest init`) — exact prompt behavior 2026-05 inferred from STACK.md "shadcn/ui has full v4 support"
-- vite-plugin-pwa 0.21 `globPatterns` exclusion of index.html — pattern from upstream docs, exact behavior assumed (A3)
-- pytest-postgresql ^6.x Python 3.12 compat — assumed (A2)
-- Tailwind 4 `@custom-variant dark` syntax for manual data-theme override — Tailwind 4 docs
+- shadcn/ui v4 CLI (`pnpm dlx shadcn@latest init`) â€” exact prompt behavior 2026-05 inferred from STACK.md "shadcn/ui has full v4 support"
+- vite-plugin-pwa 0.21 `globPatterns` exclusion of index.html â€” pattern from upstream docs, exact behavior assumed (A3)
+- pytest-postgresql ^6.x Python 3.12 compat â€” assumed (A2)
+- Tailwind 4 `@custom-variant dark` syntax for manual data-theme override â€” Tailwind 4 docs
 
 ### Tertiary (LOW confidence)
 
-- None — all critical claims either verified via upstream research or marked `[ASSUMED]` with mitigation.
+- None â€” all critical claims either verified via upstream research or marked `[ASSUMED]` with mitigation.
 
 ## Metadata
 
 **Confidence breakdown:**
-- Standard stack: HIGH — versions verified in STACK.md 2026-05-01, browser baseline aligned with iOS Web Push requirement
-- Architecture: HIGH — patterns verified across STACK.md + ARCHITECTURE.md + PITFALLS.md cross-reference
-- Pitfalls: HIGH — 12 pitfalls already cataloged in PITFALLS.md; this RESEARCH adds 12 Phase-1-specific 2026 traps
-- Tone calibration: MEDIUM — output format recommendation (HTML/CSS standalone) is Claude's reasoned suggestion, awaits Stefano+Marta confirmation at exit gate
-- shadcn/ui CLI exact behavior: MEDIUM (A1) — flagged for Plan 5 first-task verification
-- Test infrastructure: HIGH — patterns standard 2026 (pytest-postgresql, Playwright + axe, Vitest + jsdom)
+- Standard stack: HIGH â€” versions verified in STACK.md 2026-05-01, browser baseline aligned with iOS Web Push requirement
+- Architecture: HIGH â€” patterns verified across STACK.md + ARCHITECTURE.md + PITFALLS.md cross-reference
+- Pitfalls: HIGH â€” 12 pitfalls already cataloged in PITFALLS.md; this RESEARCH adds 12 Phase-1-specific 2026 traps
+- Tone calibration: MEDIUM â€” output format recommendation (HTML/CSS standalone) is Claude's reasoned suggestion, awaits Stefano+Marta confirmation at exit gate
+- shadcn/ui CLI exact behavior: MEDIUM (A1) â€” flagged for Plan 5 first-task verification
+- Test infrastructure: HIGH â€” patterns standard 2026 (pytest-postgresql, Playwright + axe, Vitest + jsdom)
 
 **Research date:** 2026-05-01
-**Valid until:** 2026-06-01 (30 days — stack stable, no major Tailwind 4 / Vite 7 / FastAPI / shadcn breaking changes expected)
+**Valid until:** 2026-06-01 (30 days â€” stack stable, no major Tailwind 4 / Vite 7 / FastAPI / shadcn breaking changes expected)
 
 ---
 *Phase 1 Foundation research completed: 2026-05-01*
