@@ -12,6 +12,9 @@ migrations to head. Integration tests that need the schema depend on `test_engin
 If Postgres is not reachable on localhost:5432 (developer running `pytest -k unit` without
 docker compose up), the engine fixture raises a clear error — only integration tests using
 `test_engine` are affected.
+
+The pytest-postgresql plugin (transitive via dev deps) is disabled in pyproject.toml
+(`-p no:postgresql`) because it requires libpq/psycopg which we do not install.
 """
 
 from __future__ import annotations

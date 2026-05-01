@@ -1,11 +1,18 @@
 """FastAPI application factory.
 
-Lifespan stub here — Plan 02b extends it to bind `app.state.ai_provider`
-(per AI-03, D-32). Co-mod boundary: this file is owned by both 02a (skeleton)
-and 02b (AI provider binding). 02a establishes structure + middlewares + routers;
-02b adds the provider construction inside `lifespan`.
+CO-MODIFIED FILE — Plan 02a + Plan 02b (resolved on Wave 2 merge).
 
-Routers wired in 02a: health, version, errors. Auth/plans/today/etc. land later.
+Plan 02a establishes the FastAPI backbone: lifespan, configure_logging,
+RequestIDMiddleware, IdempotentGraceMiddleware, CORS, register_exception_handlers,
+and the health/version/errors routers.
+
+Plan 02b extends it by:
+  * binding `app.state.ai_provider = build_provider()` inside lifespan (D-32, AI-03)
+  * registering the AI router + 7 stub routers (auth, plans, today, weekly,
+    workout, weight, shopping, admin) — all return 501 envelopes until their
+    owning plans (03/04/07) implement them.
+
+Sources: D-21, D-31, D-32, AI-03, AUTH-12, V14, RESEARCH Pattern 11.
 """
 
 from __future__ import annotations
@@ -16,7 +23,21 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import errors, health, version
+from app.ai.factory import build_provider
+from app.api import (
+    admin,
+    ai,
+    auth,
+    errors,
+    health,
+    plans,
+    shopping,
+    today,
+    version,
+    weekly,
+    weight,
+    workout,
+)
 from app.core.config import settings
 from app.core.exceptions import register_exception_handlers
 from app.core.logging import configure_logging
@@ -24,15 +45,14 @@ from app.core.middleware import IdempotentGraceMiddleware, RequestIDMiddleware
 
 
 @asynccontextmanager
-async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """App startup/shutdown hook.
 
-    Plan 02b extends:
-        from app.ai.factory import build_provider
-        _app.state.ai_provider = build_provider()
+    Plan 02a: configure logging at boot.
+    Plan 02b: bind the AI provider singleton (D-32, AI-03).
     """
     configure_logging(settings.LOG_LEVEL)
-    # Plan 02b extends: _app.state.ai_provider = build_provider()
+    app.state.ai_provider = build_provider()
     yield
 
 
@@ -54,5 +74,20 @@ app.add_middleware(IdempotentGraceMiddleware)
 
 register_exception_handlers(app)
 
-for r in (health.router, version.router, errors.router):
+for r in (
+    # Plan 02a infra routers
+    health.router,
+    version.router,
+    errors.router,
+    # Plan 02b stub routers (replaced as Plans 03/04/07 ship)
+    auth.router,
+    plans.router,
+    today.router,
+    weekly.router,
+    workout.router,
+    weight.router,
+    shopping.router,
+    ai.router,
+    admin.router,
+):
     app.include_router(r)
