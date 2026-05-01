@@ -1,0 +1,24 @@
+{
+  "service_name": "WellnessBuddyAPI",
+  "display_name": "Wellness Buddy API",
+  "description": "FastAPI backend per Wellness Buddy PWA. 1 Uvicorn worker, port 8000.",
+  "executable": "uv",
+  "arguments": "run --directory backend uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1 --no-access-log",
+  "working_directory": "backend",
+  "depends_on": ["postgresql-x64-16"],
+  "start_type": "auto",
+  "object_name": "NT AUTHORITY\\LocalService",
+  "log_stdout": "logs/stdout.log",
+  "log_stderr": "logs/stderr.log",
+  "rotate_files": true,
+  "rotate_online": true,
+  "rotate_bytes": 10485760,
+  "rotate_size_mb": 10,
+  "restart_policy": "Restart",
+  "restart_delay_ms": 5000,
+  "notes": [
+    "Bound to 127.0.0.1 (loopback) — Uvicorn never exposed externally; IIS reverse proxy is the only ingress.",
+    "Runs as LocalService for least privilege (T-DEPLOY-01 mitigation).",
+    "PostgreSQL service name (postgresql-x64-16) may differ on your server — verify with `Get-Service postgresql*`."
+  ]
+}
