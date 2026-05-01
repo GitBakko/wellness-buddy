@@ -1,0 +1,265 @@
+/*
+ * Wellness Buddy — Tailwind 4 @theme design tokens
+ *
+ * Source of truth: UI-SPEC §12 "Final Lock List" (Phase 1 design contract).
+ * Every later phase consumes these tokens — no hardcoded hex/font-size/radius
+ * anywhere outside this file. ESLint enforces (no-restricted-syntax).
+ *
+ * Palette: warm-coral (10% accent), leaf-green supporting, neutrals 60/30 split.
+ * Color space: OKLCH (Safari 16.4+ baseline; HSL fallback in globals.css).
+ * Dark mode: explicit dark variants via @media + manual data-theme override
+ *   (Pitfall #7). @custom-variant dark wires the manual toggle to dark:* utilities.
+ * Motion: @media prefers-reduced-motion sets --motion-scale: 0 (UI-05).
+ */
+
+@import 'tailwindcss';
+@plugin "tailwindcss-animate";
+
+/* ─────────────────────────────────────────────────────────────────
+ * Manual dark-mode override (Tailwind 4 @custom-variant — Pitfall #7).
+ * Enables `dark:bg-...` to respect <html data-theme="dark"> in addition
+ * to system @media (prefers-color-scheme: dark).
+ * ────────────────────────────────────────────────────────────────*/
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+  /* ───── Spacing — multiples of 4 + documented exceptions (UI-SPEC §2) ───── */
+  --spacing-0: 0;
+  --spacing-px: 1px;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  --spacing-20: 80px;
+
+  /* ───── Radius (UI-SPEC §12) ───── */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-button: 12px;
+  --radius-card: 16px;
+  --radius-sheet: 20px;
+  --radius-pill: 9999px;
+
+  /* shadcn alias — points the radius to our card token */
+  --radius: 16px;
+
+  /* ───── Font families (UI-SPEC §3) ─────
+   * NOTE: fontsource-variable ships Geist as `'Geist Variable'` /
+   * `'Geist Mono Variable'`. The original 'Geist Sans' / 'Geist Mono'
+   * aliases are kept as fallbacks so future swaps stay token-stable. */
+  --font-sans: 'Geist Variable', 'Geist Sans', system-ui, sans-serif;
+  --font-mono: 'Geist Mono Variable', 'Geist Mono', ui-monospace, monospace;
+  --font-display: 'Instrument Serif', 'Geist Variable', 'Geist Sans', serif;
+
+  /* ───── Type scale — 4 base sizes + 1 documented escape hatch (UI-SPEC §3) ───── */
+  --text-caption: 0.75rem; /* 12px — captions, helper text, micro-labels, tab labels */
+  --text-base: 1rem; /* 16px — default body, form labels, button labels */
+  --text-heading: 1.375rem; /* 22px — section/card/modal titles */
+  --text-display: 1.75rem; /* 28px — page hero (non-/today), KPI value step */
+  --text-display-serif: 2.25rem; /* 36px — Instrument Serif, /today greeting only, MAX 1/page */
+
+  /* Line heights paired with sizes */
+  --leading-tight: 1.1;
+  --leading-display: 1.2;
+  --leading-heading: 1.25;
+  --leading-caption: 1.4;
+  --leading-base: 1.5;
+
+  /* ───── Colors — light mode (UI-SPEC §4) ───── */
+  /* Dominant 60% — page + surfaces */
+  --color-bg: oklch(98.5% 0.005 80);
+  --color-bg-elev: oklch(100% 0 0);
+  --color-surface: oklch(99% 0.005 80);
+  --color-surface-muted: oklch(96.5% 0.008 80);
+
+  /* Secondary 30% — neutrals */
+  --color-neutral-50: oklch(98% 0.005 80);
+  --color-neutral-100: oklch(95% 0.006 80);
+  --color-neutral-200: oklch(90% 0.008 80);
+  --color-neutral-300: oklch(83% 0.01 80);
+  --color-neutral-400: oklch(70% 0.012 80);
+  --color-neutral-500: oklch(58% 0.014 80);
+  --color-neutral-600: oklch(48% 0.014 80);
+  --color-neutral-700: oklch(38% 0.012 80);
+  --color-neutral-800: oklch(28% 0.01 80);
+  --color-neutral-900: oklch(20% 0.008 80);
+  --color-neutral-950: oklch(13% 0.006 80);
+
+  /* Accent 10% — warm-coral (PRIMARY brand) */
+  --color-coral-50: oklch(97% 0.02 30);
+  --color-coral-100: oklch(93% 0.045 28);
+  --color-coral-200: oklch(86% 0.08 28);
+  --color-coral-300: oklch(78% 0.115 28);
+  --color-coral-400: oklch(70% 0.145 28);
+  --color-coral-500: oklch(63% 0.165 28); /* DEFAULT accent */
+  --color-coral-600: oklch(55% 0.165 28);
+  --color-coral-700: oklch(46% 0.15 28);
+  --color-coral-800: oklch(36% 0.115 28);
+  --color-coral-900: oklch(28% 0.085 28);
+
+  /* Supporting — leaf-green */
+  --color-leaf-50: oklch(97% 0.025 145);
+  --color-leaf-500: oklch(60% 0.135 145);
+  --color-leaf-700: oklch(42% 0.115 145);
+
+  /* Semantic */
+  --color-success: oklch(58% 0.13 145);
+  --color-success-bg: oklch(96% 0.03 145);
+  --color-warning: oklch(72% 0.14 75);
+  --color-warning-bg: oklch(96% 0.045 80);
+  --color-destructive: oklch(56% 0.19 25);
+  --color-destructive-bg: oklch(95% 0.035 25);
+
+  /* Focus ring — neutral, not coral (UI-SPEC §4.1) */
+  --color-focus-ring: oklch(45% 0.03 250);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  /* Text */
+  --color-text: oklch(28% 0.01 80);
+  --color-text-muted: oklch(58% 0.014 80);
+  --color-text-inverse: oklch(98% 0.005 80);
+
+  /* ───── Elevation (3 levels max — UI-SPEC §12) ───── */
+  --shadow-1: 0 1px 2px oklch(0% 0 0 / 0.04), 0 1px 3px oklch(0% 0 0 / 0.06);
+  --shadow-2: 0 4px 8px oklch(0% 0 0 / 0.06), 0 2px 4px oklch(0% 0 0 / 0.04);
+  --shadow-3: 0 12px 24px oklch(0% 0 0 / 0.08), 0 4px 8px oklch(0% 0 0 / 0.04);
+
+  /* ───── Hairline border ───── */
+  --color-border: oklch(90% 0.008 80);
+
+  /* ───── Motion budget (UI-SPEC §5) ───── */
+  --duration-instant: 80ms; /* tap scale */
+  --duration-fast: 150ms; /* hover, focus ring */
+  --duration-base: 250ms; /* default state transition (HARD MAX for micro) */
+  --duration-slow: 400ms; /* sheet/modal in/out */
+  --duration-celebration: 800ms; /* HARD MAX for Phase 3 Lottie */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ─────────────────────────────────────────────────────────────────
+   * shadcn/ui alias mapping → brand tokens (UI-03: customize, never
+   * vanilla shadcn). Maps the conventional shadcn variable names that
+   * primitives reference internally to our @theme palette.
+   * ────────────────────────────────────────────────────────────────*/
+  --color-background: oklch(98.5% 0.005 80);
+  --color-foreground: oklch(28% 0.01 80);
+  --color-card: oklch(100% 0 0);
+  --color-card-foreground: oklch(28% 0.01 80);
+  --color-popover: oklch(100% 0 0);
+  --color-popover-foreground: oklch(28% 0.01 80);
+  --color-primary: oklch(63% 0.165 28); /* coral-500 */
+  --color-primary-foreground: oklch(100% 0 0);
+  --color-secondary: oklch(95% 0.006 80); /* neutral-100 */
+  --color-secondary-foreground: oklch(28% 0.01 80);
+  --color-muted: oklch(95% 0.006 80);
+  --color-muted-foreground: oklch(58% 0.014 80);
+  --color-accent: oklch(95% 0.006 80);
+  --color-accent-foreground: oklch(28% 0.01 80);
+  --color-destructive-foreground: oklch(100% 0 0);
+  --color-border: oklch(90% 0.008 80);
+  --color-input: oklch(90% 0.008 80);
+  --color-ring: oklch(45% 0.03 250);
+}
+
+/* ─────────────────────────────────────────────────────────────────
+ * Dark mode — system preference (UI-SPEC §4 — explicit dark variants,
+ * NOT auto-inversion). All overrides mirrored in :root[data-theme="dark"]
+ * below for manual toggle parity (Pitfall #7).
+ * ────────────────────────────────────────────────────────────────*/
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-bg: oklch(13% 0.006 250);
+    --color-bg-elev: oklch(17% 0.008 250);
+    --color-surface: oklch(18% 0.008 250);
+    --color-surface-muted: oklch(22% 0.01 250);
+
+    --color-neutral-200: oklch(28% 0.01 250);
+    --color-neutral-700: oklch(72% 0.01 250);
+    --color-neutral-800: oklch(86% 0.008 250);
+
+    --color-coral-500: oklch(70% 0.145 28);
+    --color-coral-600: oklch(76% 0.15 28);
+
+    --color-text: oklch(92% 0.005 80);
+    --color-text-muted: oklch(68% 0.01 250);
+
+    /* shadcn aliases — dark */
+    --color-background: oklch(13% 0.006 250);
+    --color-foreground: oklch(92% 0.005 80);
+    --color-card: oklch(17% 0.008 250);
+    --color-card-foreground: oklch(92% 0.005 80);
+    --color-popover: oklch(17% 0.008 250);
+    --color-popover-foreground: oklch(92% 0.005 80);
+    --color-primary: oklch(70% 0.145 28);
+    --color-primary-foreground: oklch(13% 0.006 250);
+    --color-secondary: oklch(22% 0.01 250);
+    --color-secondary-foreground: oklch(92% 0.005 80);
+    --color-muted: oklch(22% 0.01 250);
+    --color-muted-foreground: oklch(68% 0.01 250);
+    --color-accent: oklch(22% 0.01 250);
+    --color-accent-foreground: oklch(92% 0.005 80);
+    --color-border: oklch(28% 0.01 250);
+    --color-input: oklch(28% 0.01 250);
+    --color-ring: oklch(70% 0.08 250);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+ * Manual dark mode (Settings ThemeToggle) — explicit override
+ * mirrors all dark tokens (Pitfall #7).
+ * ────────────────────────────────────────────────────────────────*/
+:root[data-theme='dark'] {
+  --color-bg: oklch(13% 0.006 250);
+  --color-bg-elev: oklch(17% 0.008 250);
+  --color-surface: oklch(18% 0.008 250);
+  --color-surface-muted: oklch(22% 0.01 250);
+
+  --color-neutral-200: oklch(28% 0.01 250);
+  --color-neutral-700: oklch(72% 0.01 250);
+  --color-neutral-800: oklch(86% 0.008 250);
+
+  --color-coral-500: oklch(70% 0.145 28);
+  --color-coral-600: oklch(76% 0.15 28);
+
+  --color-text: oklch(92% 0.005 80);
+  --color-text-muted: oklch(68% 0.01 250);
+
+  --color-background: oklch(13% 0.006 250);
+  --color-foreground: oklch(92% 0.005 80);
+  --color-card: oklch(17% 0.008 250);
+  --color-card-foreground: oklch(92% 0.005 80);
+  --color-popover: oklch(17% 0.008 250);
+  --color-popover-foreground: oklch(92% 0.005 80);
+  --color-primary: oklch(70% 0.145 28);
+  --color-primary-foreground: oklch(13% 0.006 250);
+  --color-secondary: oklch(22% 0.01 250);
+  --color-secondary-foreground: oklch(92% 0.005 80);
+  --color-muted: oklch(22% 0.01 250);
+  --color-muted-foreground: oklch(68% 0.01 250);
+  --color-accent: oklch(22% 0.01 250);
+  --color-accent-foreground: oklch(92% 0.005 80);
+  --color-border: oklch(28% 0.01 250);
+  --color-input: oklch(28% 0.01 250);
+  --color-ring: oklch(70% 0.08 250);
+}
+
+/* ─────────────────────────────────────────────────────────────────
+ * prefers-reduced-motion gate (UI-05) — sets motion scale to 0 so
+ * all `transform: scale(var(--motion-scale))` etc become no-op.
+ * ────────────────────────────────────────────────────────────────*/
+:root {
+  --motion-scale: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-scale: 0;
+  }
+}

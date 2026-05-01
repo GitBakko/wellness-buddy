@@ -1,28 +1,70 @@
-// ESLint 9 flat config — D-09
-// Note: plugins (@eslint/js, typescript-eslint, eslint-plugin-react, eslint-plugin-react-hooks)
-// are installed in Plan 05a alongside the rest of the frontend dev deps. This file
-// declares the contract; lint commands will fail with module-not-found until then.
+// ESLint 9 flat config — D-09 + Pitfall #10 (hex-ban).
+// Plugins installed via frontend devDependencies (Plan 05a).
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
+import globals from 'globals';
 
 export default [
-  js.configs.recommended,
-  ...tseslint.configs.recommended,
+  // Ignore generated/vendor & non-source files
   {
-    plugins: { react: reactPlugin, 'react-hooks': reactHooks },
-    settings: { react: { version: 'detect' } },
+    ignores: [
+      'dist/',
+      'node_modules/',
+      'src/styles/theme.css',
+      'src/styles/globals.css',
+      'public/',
+      '*.config.js',
+      '*.config.ts',
+      '*.config.cjs',
+      '*.config.mjs',
+      '.prettierrc.cjs',
+      '.prettierrc.js',
+      'vite.config.ts',
+      'tsconfig*.json',
+    ],
+  },
+
+  // Base JS rules
+  js.configs.recommended,
+
+  // TypeScript strict
+  ...tseslint.configs.recommended,
+
+  // App source rules
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    plugins: {
+      react: reactPlugin,
+      'react-hooks': reactHooks,
+    },
+    settings: {
+      react: { version: 'detect' },
+    },
     languageOptions: {
-      parserOptions: { ecmaFeatures: { jsx: true } },
-      globals: { window: 'readonly', document: 'readonly', console: 'readonly' },
+      ecmaVersion: 2023,
+      sourceType: 'module',
+      parserOptions: {
+        ecmaFeatures: { jsx: true },
+      },
+      globals: {
+        ...globals.browser,
+        ...globals.es2023,
+      },
     },
     rules: {
       ...reactPlugin.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-      // Pitfall #10 — ban hardcoded hex outside theme.css (FND-04, UI-01)
+      'react/prop-types': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
+      '@typescript-eslint/no-explicit-any': 'warn',
+      // Pitfall #10 — ban hardcoded hex outside theme.css/globals.css (UI-01).
+      // Matches #abc, #abcd, #abcdef, #abcdef12 only. Tokens must come from @theme.
       'no-restricted-syntax': [
         'error',
         {
@@ -34,5 +76,4 @@ export default [
       ],
     },
   },
-  { ignores: ['dist/', 'node_modules/', 'src/styles/theme.css'] },
 ];

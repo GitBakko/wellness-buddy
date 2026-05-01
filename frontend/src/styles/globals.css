@@ -1,0 +1,118 @@
+/*
+ * Wellness Buddy — base reset + body styling + OKLCH HSL fallback (Pitfall #6).
+ *
+ * Imported by main.tsx after theme.css. theme.css owns ALL tokens.
+ * This file owns: base reset, body chrome, OKLCH fallback for legacy Safari.
+ */
+
+/* ─────────────────────────────────────────────────────────────────
+ * Base reset (small, conservative — Tailwind preflight already
+ * ships in @import "tailwindcss"; this adds project conventions).
+ * ────────────────────────────────────────────────────────────────*/
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-base);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'cv11', 'ss01';
+  /* Safe area aware (iOS notch) */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  min-height: 100dvh;
+}
+
+#root {
+  min-height: 100dvh;
+  isolation: isolate;
+}
+
+/* Form controls inherit body font (Tailwind preflight already does most) */
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+/* Visible focus everywhere — UI-13 */
+:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: var(--radius-sm);
+}
+
+/* iOS-safe tap targets — Pitfall #16 (visualViewport handled in JS later) */
+@media (hover: none) {
+  button,
+  [role='button'],
+  a {
+    touch-action: manipulation;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+ * OKLCH HSL fallback (Pitfall #6 — Safari < 16.4).
+ * Activated by `no-oklch` class set in index.html when OKLCH unsupported.
+ * Provides degraded but readable HSL approximations for critical brand
+ * tokens so the app stays usable; we accept lower fidelity over breakage.
+ * ────────────────────────────────────────────────────────────────*/
+@supports not (color: oklch(50% 0 0)) {
+  :root {
+    /* Approximate HSL fallbacks — chosen to match OKLCH targets visually */
+    --color-bg: hsl(40 30% 98%);
+    --color-bg-elev: hsl(0 0% 100%);
+    --color-surface: hsl(40 30% 99%);
+    --color-surface-muted: hsl(40 25% 95%);
+
+    --color-neutral-200: hsl(40 10% 88%);
+    --color-neutral-500: hsl(40 6% 55%);
+    --color-neutral-700: hsl(40 6% 35%);
+    --color-neutral-800: hsl(40 6% 25%);
+
+    --color-coral-500: hsl(14 80% 60%);
+    --color-coral-600: hsl(14 75% 52%);
+    --color-coral-700: hsl(14 70% 42%);
+
+    --color-leaf-500: hsl(140 50% 50%);
+    --color-success: hsl(140 50% 45%);
+    --color-warning: hsl(40 75% 55%);
+    --color-destructive: hsl(10 75% 50%);
+
+    --color-text: hsl(40 6% 25%);
+    --color-text-muted: hsl(40 6% 50%);
+    --color-border: hsl(40 10% 88%);
+
+    --color-background: hsl(40 30% 98%);
+    --color-foreground: hsl(40 6% 25%);
+    --color-card: hsl(0 0% 100%);
+    --color-primary: hsl(14 80% 60%);
+    --color-primary-foreground: hsl(0 0% 100%);
+    --color-ring: hsl(220 30% 40%);
+  }
+}
+
+/* Class-based fallback (set by index.html boot script) */
+.no-oklch {
+  --color-bg: hsl(40 30% 98%);
+  --color-coral-500: hsl(14 80% 60%);
+  --color-text: hsl(40 6% 25%);
+}
