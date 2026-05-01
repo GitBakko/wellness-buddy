@@ -1,6 +1,6 @@
 # State: Wellness Buddy
 
-**Last updated:** 2026-05-01 (Plan 01-05b complete — Wave 2 frontend behavior + test infra in parallel branch)
+**Last updated:** 2026-05-01 (Plan 01-06 complete — Wave 3 PWA shell + Dexie + AppShell + locked AIWidget on parallel branch)
 
 ## Project Reference
 
@@ -16,12 +16,12 @@
 ## Current Position
 
 - **Phase:** 1 — Foundation
-- **Plan:** 01-05b complete (Wave 2 parallel branch); awaiting 02a/02b/05a parallel landings + merge
-- **Status:** Wave 2 in progress — Plan 05b (frontend behavior + i18n + test infra) shipped on parallel branch
-- **Progress:** Phase 0/5 phases complete · Plans 2/10
+- **Plan:** 01-06 complete (Wave 3 parallel branch); awaiting 03 parallel landing + merge
+- **Status:** Wave 3 in progress — Plan 06 (PWA shell + Dexie v1 + AppShell + locked AIWidget) shipped on parallel branch
+- **Progress:** Phase 0/5 phases complete · Plans 3/10
 - **Phase progress bar:**
   ```
-  [##        ] 20% — Phase 1: Foundation (2/10 plans)
+  [###       ] 30% — Phase 1: Foundation (3/10 plans)
   ```
 
 ## Performance Metrics
@@ -29,7 +29,7 @@
 | Metric | Value |
 |--------|-------|
 | Phases complete | 0 / 5 |
-| Plans complete | 2 / 10 (Phase 1) |
+| Plans complete | 3 / 10 (Phase 1) |
 | v1 requirements mapped | 145 / 145 (100%) |
 | Orphan requirements | 0 |
 | Pause gates passed | 0 / 5 |
@@ -40,6 +40,7 @@
 |------------------|----------|-------|--------------------------|---------|
 | 01-01 monorepo   | ~10 min  | 3/3   | 30 created + 1 modified  | 3       |
 | 01-05b fe-behave | ~25 min  | 2/2   | 20 created + 3 modified  | 2       |
+| 01-06 pwa-shell  | 1 sess   | 2/2   | 22 created + 7 modified  | 2       |
 
 ## Accumulated Context
 
@@ -61,6 +62,11 @@
 - (Plan 05b) `useSyncExternalStore` adopted for `useMediaQuery` to satisfy `react-hooks/set-state-in-effect`
 - (Plan 05b) Visual diff via Playwright `toHaveScreenshot()` (no Percy); `maxDiffPixelRatio=0.02` per spec
 - (Plan 05b) Test infra runs against `pnpm preview` built bundle (Pitfall #12) — never `pnpm dev`
+- (Plan 06) Workbox NetworkFirst index.html with 3s timeout (PITFALLS #2 mitigation), skipWaiting:false (no auto-reload mid-form)
+- (Plan 06) Dexie v1 schema with 7 tables; mutation_queue stores OPAQUE HTTP requests (PITFALLS #5 — survives schema bumps); cache_* DROP-and-refetch contract
+- (Plan 06) TanStack Query persister uses sync localStorage Phase 1; Phase 2 hard requirement upgrades to Dexie-backed async persister
+- (Plan 06) Forward-compat stubs for auth/api/persistStorage shipped — Plan 03 owns canonical impls (MERGE EXPECTED at 03 integration)
+- (Plan 06) AIWidget Phase 1 ships locked placeholder with SSE/WebSocket scaffold COMMENTED — zero data interpolation, zero network calls (T-AI-01); D-26 negative invariant honored (no VAPID, no pywebpush, no push API surface)
 
 ### Open Questions to Resolve in Plans
 
