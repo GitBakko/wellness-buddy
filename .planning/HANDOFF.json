@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-05-01T11:18:03.338Z",
+  "timestamp": "2026-05-01T11:21:14.896Z",
   "source": "auto-postool",
   "partial": false,
   "phase": null,
@@ -17,12 +17,8 @@
   "decisions": [],
   "uncommitted_files": [
     {
-      "status": "M",
-      "path": ".planning/HANDOFF.json"
-    },
-    {
       "status": "??",
-      "path": ".planning/research/SUMMARY.md"
+      "path": ".planning/REQUIREMENTS.md"
     },
     {
       "status": "??",
@@ -30,5 +26,5 @@
     }
   ],
   "next_action": null,
-  "context_notes": "Recent commits:\nb06ba69 docs: synthesize research findings .planning/research/STACK.md .planning/research/FEATURES.md .planning/research/ARCHITECTURE.md .planning/research/PITFALLS.md\n7d17daf docs: initialize Wellness Buddy project .planning/PROJECT.md .planning/config.json"
+  "context_notes": "Recent commits:\ncc71c75 docs: synthesize research findings + update PROJECT.md with stack deviations .planning/research/SUMMARY.md .planning/PROJECT.md\nb06ba69 docs: synthesize research findings .planning/research/STACK.md .planning/research/FEATURES.md .planning/research/ARCHITECTURE.md .planning/research/PITFALLS.md\n7d17daf docs: initialize Wellness Buddy project .planning/PROJECT.md .planning/config.json"
 }
