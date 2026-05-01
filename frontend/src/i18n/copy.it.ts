@@ -112,14 +112,26 @@ export const copy = {
     parseWarningsBody:
       'Il piano è stato letto, ma queste sezioni non sono state riconosciute: {list}. Puoi attivarlo comunque o annullare.',
     diffHeading: 'Differenze rispetto al piano attivo',
+    diffAddedHeading: 'Aggiunte',
+    diffRemovedHeading: 'Rimosse',
+    diffChangedHeading: 'Modificate',
+    diffEmpty: 'Nessuna differenza rilevata.',
     activateCta: 'Attiva piano',
     cancelCta: 'Annulla',
     activateConfirm:
       'Sostituire il piano attivo con quello caricato? Il piano precedente verrà archiviato.',
     activateSuccess: 'Piano attivato.',
+    activateFailed: 'Attivazione non riuscita. Riprova.',
     errorBadFileType: 'Solo file .md sono supportati.',
     errorTooLarge: 'Il file supera il limite di 1 MB.',
     errorParseFailed: 'Non sono riuscito a leggere il piano. Verifica che il formato sia corretto.',
+    errorGenericUpload: 'Caricamento non riuscito. Riprova.',
+    listHeading: 'Piani caricati',
+    listEmpty: 'Non hai ancora caricato nessun piano.',
+    listActiveBadge: 'attivo',
+    nameLabel: 'Nome del piano',
+    namePlaceholder: 'es. Piano gennaio 2026',
+    previewHeading: 'Anteprima del piano',
   },
 
   // ───── Settings ─────
