@@ -1,13 +1,16 @@
-# Real nutrition plans (privacy)
+# Real nutrition plans (privacy — D-04)
 /plans/*
 !/plans/.gitkeep
 !/plans/EXAMPLE.md
 
-# Env
+# Env (D-03 — .env.example versioned, real .env never)
 .env
 .env.local
 .env.*.local
 !.env.example
+backend/.env
+frontend/.env
+frontend/.env.local
 
 # Python
 __pycache__/
@@ -24,8 +27,16 @@ env/
 .mypy_cache/
 .coverage
 htmlcov/
+backend/.venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/.pytest_cache/
+backend/.mypy_cache/
+backend/.ruff_cache/
+backend/htmlcov/
+backend/.coverage
 
-# Node
+# Node / pnpm
 node_modules/
 .pnpm-store/
 dist/
@@ -33,6 +44,8 @@ build/
 .vite/
 .turbo/
 *.tsbuildinfo
+frontend/dist/
+frontend/.vite/
 
 # IDE
 .vscode/*
@@ -57,6 +70,9 @@ yarn-error.log*
 playwright-report/
 test-results/
 coverage/
+frontend/test-results/
+frontend/playwright-report/
+frontend/coverage/
 
 # GSD checkpoint files
 .planning/HANDOFF.json
