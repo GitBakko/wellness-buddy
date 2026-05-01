@@ -1,6 +1,6 @@
 # State: Wellness Buddy
 
-**Last updated:** 2026-05-01 (Plan 01-01 complete)
+**Last updated:** 2026-05-01 (Plan 01-05a complete — frontend skeleton + WIN REQUISITE token foundation)
 
 ## Project Reference
 
@@ -16,12 +16,12 @@
 ## Current Position
 
 - **Phase:** 1 — Foundation
-- **Plan:** 01-01 complete; next 02a/02b/05a/05b (Wave 2, parallelizable)
-- **Status:** Wave 1 complete — monorepo + tooling + CI workflows landed
-- **Progress:** Phase 0/5 phases complete · Plans 1/10
+- **Plan:** 01-05a complete (Wave 2 sub-plan); siblings 02a/02b/05b run in parallel within Wave 2
+- **Status:** Wave 2 in progress — frontend skeleton + Tailwind 4 @theme + shadcn 17 primitives landed
+- **Progress:** Phase 0/5 phases complete · Plans 2/10
 - **Phase progress bar:**
   ```
-  [#         ] 10% — Phase 1: Foundation (1/10 plans)
+  [##        ] 20% — Phase 1: Foundation (2/10 plans)
   ```
 
 ## Performance Metrics
@@ -29,16 +29,17 @@
 | Metric | Value |
 |--------|-------|
 | Phases complete | 0 / 5 |
-| Plans complete | 1 / 10 (Phase 1) |
+| Plans complete | 2 / 10 (Phase 1) |
 | v1 requirements mapped | 145 / 145 (100%) |
 | Orphan requirements | 0 |
 | Pause gates passed | 0 / 5 |
 
 ### Plan execution metrics
 
-| Phase-Plan      | Duration | Tasks | Files                    | Commits |
-|-----------------|----------|-------|--------------------------|---------|
-| 01-01 monorepo  | ~10 min  | 3/3   | 30 created + 1 modified  | 3       |
+| Phase-Plan       | Duration | Tasks | Files                       | Commits |
+|------------------|----------|-------|-----------------------------|---------|
+| 01-01 monorepo   | ~10 min  | 3/3   | 30 created + 1 modified     | 3       |
+| 01-05a frontend  | ~25 min  | 2/2   | 42 created + 4 modified     | 2       |
 
 ## Accumulated Context
 
@@ -56,6 +57,10 @@
 - Italian-only Sprint 1 via constants file (refactor to react-i18next only if non-Italian users emerge)
 - AI provider DI via `Depends(get_ai_provider)` from Sprint 1, NullProvider default
 - Last-write-wins conflict resolution + 409 toast UX
+- (Plan 05a) `@fontsource-variable/geist` + `@fontsource/instrument-serif` replace `geist` npm pkg (Next-only) — same fonts, Vite-compatible
+- (Plan 05a) 17 shadcn primitives authored inline (interactive `pnpm dlx shadcn add` not runnable in agent runtime) — UI-03 customization mandatory regardless
+- (Plan 05a) ESLint 9.39.4 + TypeScript 5.9.3 (typescript-eslint and eslint-plugin-react peer ranges)
+- (Plan 05a) Vite 7.3.2 locked because vite-plugin-pwa@1.2.0 (Plan 06 dep) caps peer at vite^7
 
 ### Open Questions to Resolve in Plans
 
@@ -109,7 +114,8 @@
 
 ### Next Action
 
-Run `/gsd:plan-phase 1` to decompose Phase 1 (Foundation) into plans.
+Continue Wave 2: Plans 02a (backend core), 02b (backend AI layer), 05b (frontend behavior + tests). All Wave 2 plans land in parallel; once complete proceed to Wave 3 (Plans 03/06/04/07/08).
 
 ---
 *State initialized: 2026-05-01 — Phase 1 (Foundation) is the current focus.*
+*Plan 01-05a complete: WIN REQUISITE token foundation locked, 17 shadcn primitives consume @theme.*

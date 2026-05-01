@@ -67,7 +67,7 @@ Plans:
 - [x] 01-01-PLAN.md — Monorepo + tooling + Docker Compose dev postgres + GitHub Actions CI workflows (completed 2026-05-01, commits e9756c6, 2a9fb2e, 739de1d)
 - [ ] 01-02a-PLAN.md — Backend core: FastAPI + SQLAlchemy 2 async + 10 models + Alembic baseline + audit_service + Pydantic v2 base schemas + /api/health + /version.json
 - [ ] 01-02b-PLAN.md — Backend AI layer: AIProvider ABC + NullProvider + factory + DI lifespan + stub routers (auth/plans/today/weekly/workout/weight/shopping/admin) + AI endpoints
-- [ ] 01-05a-PLAN.md — Frontend build: Vite + React 19 + Tailwind 4 @theme tokens + shadcn/ui CLI + 17 customized primitives + dark mode + ESLint hex ban + 4 PWA icons
+- [x] 01-05a-PLAN.md — Frontend build: Vite + React 19 + Tailwind 4 @theme tokens + shadcn/ui 17 customized primitives + dark mode + ESLint hex ban + 4 PWA icons (completed 2026-05-01, commits fcd0795, e7bf9a5)
 - [ ] 01-05b-PLAN.md — Frontend behavior: Italian copy.it.ts + format.ts + hooks (useReducedMotion/useOnline/useTheme) + Zustand stores + Vitest + Playwright + axe + visual diff + Lighthouse CI
 - [ ] 01-03-PLAN.md — Auth: JWT 15min + refresh 7d rotation + 10s grace + family revocation + invite-only signup + frontend Zustand + singleton refresh promise + Login/Register pages + PersistStorageWelcome
 - [ ] 01-06-PLAN.md — PWA shell: vite-plugin-pwa Workbox (NetworkFirst index, CacheFirst hashed, NetworkOnly auth+writes) + Dexie v1 schema + mutation_queue + persist() + update toast + AppShell layout + locked AIWidget
@@ -256,7 +256,7 @@ Every v1 REQ-ID is mapped to **exactly one** phase. Cross-cutting UI-01 â€”
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/0 | Not started | â€” |
+| 1. Foundation | 2/10 | In progress | â€” |
 | 2. Differentiators | 0/0 | Not started | â€” |
 | 3. Engagement & Polish | 0/0 | Not started | â€” |
 | 4. Admin & Hardening | 0/0 | Not started | â€” |
@@ -285,4 +285,4 @@ Foundations (tokens, axe-core CI, dark-mode screenshots, motion budget, tone cal
 
 ---
 *Roadmap created: 2026-05-01*
-*Last updated: 2026-05-01 after initial creation*
+*Last updated: 2026-05-01 — Plan 01-05a (frontend skeleton + WIN REQUISITE token foundation) complete*

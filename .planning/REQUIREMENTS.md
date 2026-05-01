@@ -12,7 +12,7 @@ Requirements per release v1 (Sprint 1-5). Ogni requisito mappa a una fase roadma
 - [ ] **FND-01**: Monorepo pnpm workspaces con `frontend/` (React 19 + Vite 7 + TailwindCSS 4) e `backend/` (FastAPI Python 3.12) configurato con linter (ESLint 9 flat, Prettier, ruff, mypy)
 - [ ] **FND-02**: Database PostgreSQL `WellnessBuddy` creato + Alembic init con migration baseline
 - [ ] **FND-03**: Backend FastAPI skeleton con SQLAlchemy 2 async + asyncpg pool 15/10 + lifespan startup
-- [ ] **FND-04**: Frontend Vite skeleton con React 19 + TailwindCSS 4 `@theme` tokens + shadcn/ui CLI inizializzato + Geist Sans/Mono + lucide-react + sonner + Motion v12
+- [x] **FND-04**: Frontend Vite skeleton con React 19 + TailwindCSS 4 `@theme` tokens + shadcn/ui 17 customized primitives + Geist (via fontsource-variable) + lucide-react + sonner + Motion v12 (Plan 01-05a, 2026-05-01)
 - [ ] **FND-05**: PWA shell con vite-plugin-pwa, manifest (icons 192/512, theme color, display standalone), Service Worker con strategia NetworkFirst per `index.html` + CacheFirst hashed assets
 - [ ] **FND-06**: Update flow PWA con `/version.json` polling + toast "Nuova versione disponibile" + `skipWaiting` + postMessage
 - [ ] **FND-07**: Dexie schema con `cache_*` tables + `mutation_queue` + `drafts` (UUIDs server-generated), upgrade hooks documentate
@@ -190,15 +190,15 @@ Requirements per release v1 (Sprint 1-5). Ogni requisito mappa a una fase roadma
 
 ### WIN REQUISITE UI/UX (cross-cutting, ogni sprint)
 
-- [ ] **UI-01**: TailwindCSS 4 `@theme` design tokens — colors OKLCH/HSL con dark variants, typography Geist, radius, motion
-- [ ] **UI-02**: Mobile-first 390px → tablet → desktop con container queries
-- [ ] **UI-03**: shadcn/ui + Radix primitives customizzati (no vanilla shadcn)
+- [x] **UI-01**: TailwindCSS 4 `@theme` design tokens — colors OKLCH/HSL con dark variants, typography Geist, radius, motion (foundation Plan 01-05a; cross-phase quality gate continues to apply)
+- [x] **UI-02**: Mobile-first 390px → tablet → desktop con container queries (foundation Plan 01-05a — token spacing scale + Card sm:p-6 breakpoints established; per-page validation continues per phase)
+- [x] **UI-03**: shadcn/ui + Radix primitives customizzati (no vanilla shadcn) — 17 primitives consumed @theme tokens (Plan 01-05a, 2026-05-01)
 - [ ] **UI-04**: Motion v12 per ogni state transition con motion budget enforced (≤250ms micro, ≤800ms celebration, ≤2 simultaneous moving elements)
 - [ ] **UI-05**: `prefers-reduced-motion: reduce` honored via `--motion-scale: 0` (full disable)
 - [ ] **UI-06**: Touch microinteractions: every tap scales 0.97 con 80ms ease
-- [ ] **UI-07**: Dark mode first-class — palette OKLCH con dark variants da day one
-- [ ] **UI-08**: Recharts colors via CSS variables (mai hardcoded hex)
-- [ ] **UI-09**: PWA manifest theme color con `media` queries dark/light
+- [x] **UI-07**: Dark mode first-class — palette OKLCH con dark variants da day one (foundation Plan 01-05a; @media + :root[data-theme=dark] mirror + @custom-variant dark; per-route screenshot tests continue per phase)
+- [x] **UI-08**: Recharts colors via CSS variables (mai hardcoded hex) — token contract locked Plan 01-05a; Recharts integration with var(--color-*) lands Plan 07
+- [x] **UI-09**: PWA manifest theme color con `media` queries dark/light (Plan 01-05a — index.html `<meta name="theme-color" media="(prefers-color-scheme: light|dark)">`)
 - [ ] **UI-10**: axe-core in Playwright CI su ogni PR — fail at <4.5:1 body, <3:1 large/icons
 - [ ] **UI-11**: Lighthouse a11y ≥95 su ogni route UI
 - [ ] **UI-12**: Dark mode screenshot tests CI per ogni pagina
