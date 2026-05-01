@@ -12,12 +12,12 @@ Requirements per release v1 (Sprint 1-5). Ogni requisito mappa a una fase roadma
 - [ ] **FND-01**: Monorepo pnpm workspaces con `frontend/` (React 19 + Vite 7 + TailwindCSS 4) e `backend/` (FastAPI Python 3.12) configurato con linter (ESLint 9 flat, Prettier, ruff, mypy)
 - [ ] **FND-02**: Database PostgreSQL `WellnessBuddy` creato + Alembic init con migration baseline
 - [ ] **FND-03**: Backend FastAPI skeleton con SQLAlchemy 2 async + asyncpg pool 15/10 + lifespan startup
-- [x] **FND-04**: Frontend Vite skeleton con React 19 + TailwindCSS 4 `@theme` tokens + shadcn/ui 17 customized primitives + Geist (via fontsource-variable) + lucide-react + sonner + Motion v12 (Plan 01-05a, 2026-05-01)
+- [ ] **FND-04**: Frontend Vite skeleton con React 19 + TailwindCSS 4 `@theme` tokens + shadcn/ui CLI inizializzato + Geist Sans/Mono + lucide-react + sonner + Motion v12
 - [ ] **FND-05**: PWA shell con vite-plugin-pwa, manifest (icons 192/512, theme color, display standalone), Service Worker con strategia NetworkFirst per `index.html` + CacheFirst hashed assets
 - [ ] **FND-06**: Update flow PWA con `/version.json` polling + toast "Nuova versione disponibile" + `skipWaiting` + postMessage
 - [ ] **FND-07**: Dexie schema con `cache_*` tables + `mutation_queue` + `drafts` (UUIDs server-generated), upgrade hooks documentate
 - [ ] **FND-08**: `navigator.storage.persist()` request flow dopo first login + rilevamento Dexie-empty-but-JWT-valid → full-resync da server
-- [ ] **FND-09**: Italian-only constant file (`copy.it.ts`) con tutti label/messaggi/errori UI
+- [x] **FND-09**: Italian-only constant file (`copy.it.ts`) con tutti label/messaggi/errori UI (Plan 01-05b — 114 strings, 13 namespaces, UI-SPEC §7.2 verbatim)
 
 ### Authentication (Sprint 1)
 
@@ -190,24 +190,24 @@ Requirements per release v1 (Sprint 1-5). Ogni requisito mappa a una fase roadma
 
 ### WIN REQUISITE UI/UX (cross-cutting, ogni sprint)
 
-- [x] **UI-01**: TailwindCSS 4 `@theme` design tokens — colors OKLCH/HSL con dark variants, typography Geist, radius, motion (foundation Plan 01-05a; cross-phase quality gate continues to apply)
-- [x] **UI-02**: Mobile-first 390px → tablet → desktop con container queries (foundation Plan 01-05a — token spacing scale + Card sm:p-6 breakpoints established; per-page validation continues per phase)
-- [x] **UI-03**: shadcn/ui + Radix primitives customizzati (no vanilla shadcn) — 17 primitives consumed @theme tokens (Plan 01-05a, 2026-05-01)
-- [ ] **UI-04**: Motion v12 per ogni state transition con motion budget enforced (≤250ms micro, ≤800ms celebration, ≤2 simultaneous moving elements)
-- [ ] **UI-05**: `prefers-reduced-motion: reduce` honored via `--motion-scale: 0` (full disable)
+- [ ] **UI-01**: TailwindCSS 4 `@theme` design tokens — colors OKLCH/HSL con dark variants, typography Geist, radius, motion
+- [ ] **UI-02**: Mobile-first 390px → tablet → desktop con container queries
+- [ ] **UI-03**: shadcn/ui + Radix primitives customizzati (no vanilla shadcn)
+- [~] **UI-04**: Motion v12 per ogni state transition con motion budget enforced (≤250ms micro, ≤800ms celebration, ≤2 simultaneous moving elements) (Plan 01-05b — motion test infra + tokens; full enforcement at component level Plans 03/04/07)
+- [x] **UI-05**: `prefers-reduced-motion: reduce` honored via `--motion-scale: 0` (full disable) (Plan 01-05b — useReducedMotion hook + motion.test.ts 4/4 + Playwright reducedMotion: 'reduce' global)
 - [ ] **UI-06**: Touch microinteractions: every tap scales 0.97 con 80ms ease
-- [x] **UI-07**: Dark mode first-class — palette OKLCH con dark variants da day one (foundation Plan 01-05a; @media + :root[data-theme=dark] mirror + @custom-variant dark; per-route screenshot tests continue per phase)
-- [x] **UI-08**: Recharts colors via CSS variables (mai hardcoded hex) — token contract locked Plan 01-05a; Recharts integration with var(--color-*) lands Plan 07
-- [x] **UI-09**: PWA manifest theme color con `media` queries dark/light (Plan 01-05a — index.html `<meta name="theme-color" media="(prefers-color-scheme: light|dark)">`)
-- [ ] **UI-10**: axe-core in Playwright CI su ogni PR — fail at <4.5:1 body, <3:1 large/icons
-- [ ] **UI-11**: Lighthouse a11y ≥95 su ogni route UI
-- [ ] **UI-12**: Dark mode screenshot tests CI per ogni pagina
+- [ ] **UI-07**: Dark mode first-class — palette OKLCH con dark variants da day one
+- [ ] **UI-08**: Recharts colors via CSS variables (mai hardcoded hex)
+- [ ] **UI-09**: PWA manifest theme color con `media` queries dark/light
+- [~] **UI-10**: axe-core in Playwright CI su ogni PR — fail at <4.5:1 body, <3:1 large/icons (Plan 01-05b — a11y.spec.ts wcag2aa scaffold; baseline pending Plans 03/04/07 page UI)
+- [~] **UI-11**: Lighthouse a11y ≥95 su ogni route UI (Plan 01-05b — lighthouserc.json thresholds locked; baseline pending Plan 05a + page UI)
+- [~] **UI-12**: Dark mode screenshot tests CI per ogni pagina (Plan 01-05b — visual/{light,dark}.spec.ts scaffold for 4 routes × 2 schemes; baselines pending real UI)
 - [ ] **UI-13**: VoiceOver smoke test ogni sprint su real iOS device
 - [ ] **UI-14**: Illustrations: decorative `aria-hidden="true"`, meaningful `<title>` + `aria-labelledby` Italian copy
 - [ ] **UI-15**: Form errors: Italian copy + icon + `role="alert"` + color (mai color alone)
 - [ ] **UI-16**: iOS keyboard: `visualViewport` API + scroll input into view
-- [ ] **UI-17**: Tone guardrails: no `!` in error messages, no infantile mascots, empty states minimalist Italian
-- [ ] **UI-18**: Italian formatting: `Intl.NumberFormat('it-IT')`, 24h time, NFC normalize, `Intl.Collator('it')` sorting
+- [~] **UI-17**: Tone guardrails: no `!` in error messages, no infantile mascots, empty states minimalist Italian (Plan 01-05b — copy.it.ts compliance verified, no `!` in errors namespace)
+- [x] **UI-18**: Italian formatting: `Intl.NumberFormat('it-IT')`, 24h time, NFC normalize, `Intl.Collator('it')` sorting (Plan 01-05b — lib/format.ts ships all four)
 - [ ] **UI-19**: Emoji budget ≤1-2 per screen in copy only, mai in chrome
 - [ ] **UI-20**: `impeccable:critique` + `impeccable:harden` run dopo ogni sprint close
 

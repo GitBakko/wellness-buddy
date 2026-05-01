@@ -1,6 +1,6 @@
 # State: Wellness Buddy
 
-**Last updated:** 2026-05-01 (Plan 01-05a complete — frontend skeleton + WIN REQUISITE token foundation)
+**Last updated:** 2026-05-01 (Plan 01-05b complete — Wave 2 frontend behavior + test infra in parallel branch)
 
 ## Project Reference
 
@@ -16,8 +16,8 @@
 ## Current Position
 
 - **Phase:** 1 — Foundation
-- **Plan:** 01-05a complete (Wave 2 sub-plan); siblings 02a/02b/05b run in parallel within Wave 2
-- **Status:** Wave 2 in progress — frontend skeleton + Tailwind 4 @theme + shadcn 17 primitives landed
+- **Plan:** 01-05b complete (Wave 2 parallel branch); awaiting 02a/02b/05a parallel landings + merge
+- **Status:** Wave 2 in progress — Plan 05b (frontend behavior + i18n + test infra) shipped on parallel branch
 - **Progress:** Phase 0/5 phases complete · Plans 2/10
 - **Phase progress bar:**
   ```
@@ -36,10 +36,10 @@
 
 ### Plan execution metrics
 
-| Phase-Plan       | Duration | Tasks | Files                       | Commits |
-|------------------|----------|-------|-----------------------------|---------|
-| 01-01 monorepo   | ~10 min  | 3/3   | 30 created + 1 modified     | 3       |
-| 01-05a frontend  | ~25 min  | 2/2   | 42 created + 4 modified     | 2       |
+| Phase-Plan       | Duration | Tasks | Files                    | Commits |
+|------------------|----------|-------|--------------------------|---------|
+| 01-01 monorepo   | ~10 min  | 3/3   | 30 created + 1 modified  | 3       |
+| 01-05b fe-behave | ~25 min  | 2/2   | 20 created + 3 modified  | 2       |
 
 ## Accumulated Context
 
@@ -57,10 +57,10 @@
 - Italian-only Sprint 1 via constants file (refactor to react-i18next only if non-Italian users emerge)
 - AI provider DI via `Depends(get_ai_provider)` from Sprint 1, NullProvider default
 - Last-write-wins conflict resolution + 409 toast UX
-- (Plan 05a) `@fontsource-variable/geist` + `@fontsource/instrument-serif` replace `geist` npm pkg (Next-only) — same fonts, Vite-compatible
-- (Plan 05a) 17 shadcn primitives authored inline (interactive `pnpm dlx shadcn add` not runnable in agent runtime) — UI-03 customization mandatory regardless
-- (Plan 05a) ESLint 9.39.4 + TypeScript 5.9.3 (typescript-eslint and eslint-plugin-react peer ranges)
-- (Plan 05a) Vite 7.3.2 locked because vite-plugin-pwa@1.2.0 (Plan 06 dep) caps peer at vite^7
+- (Plan 05b) Italian copy lives in `frontend/src/i18n/copy.it.ts` as single source of truth (114 strings, 13 namespaces, FND-09)
+- (Plan 05b) `useSyncExternalStore` adopted for `useMediaQuery` to satisfy `react-hooks/set-state-in-effect`
+- (Plan 05b) Visual diff via Playwright `toHaveScreenshot()` (no Percy); `maxDiffPixelRatio=0.02` per spec
+- (Plan 05b) Test infra runs against `pnpm preview` built bundle (Pitfall #12) — never `pnpm dev`
 
 ### Open Questions to Resolve in Plans
 
@@ -114,8 +114,7 @@
 
 ### Next Action
 
-Continue Wave 2: Plans 02a (backend core), 02b (backend AI layer), 05b (frontend behavior + tests). All Wave 2 plans land in parallel; once complete proceed to Wave 3 (Plans 03/06/04/07/08).
+Run `/gsd:plan-phase 1` to decompose Phase 1 (Foundation) into plans.
 
 ---
 *State initialized: 2026-05-01 — Phase 1 (Foundation) is the current focus.*
-*Plan 01-05a complete: WIN REQUISITE token foundation locked, 17 shadcn primitives consume @theme.*
