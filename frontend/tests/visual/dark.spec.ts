@@ -3,16 +3,22 @@
 // Runs in the `visual-dark` Playwright project (colorScheme: 'dark').
 // Pair with light.spec.ts — both must pass for dark-mode parity gate.
 //
-// TODO (Plan 01-09 follow-up): the Lifesum Pure theme propagation in Plan 01-09
-// changes every screenshot baseline (slate-blue bg + leaf signature variants,
-// Plus Jakarta typography, macro ring hero, Phosphor iconography).
-// Re-record baselines post-merge:
-//   pnpm test:visual --update-snapshots
+// Plan 02-02 (D-31): baselines regenerated post Lifesum Pure (Plan 01-09)
+// + new /settimana route. Use the deterministic seed Monday 2026-05-04 for
+// the /settimana fixture so screenshots are stable across runs.
+//
+// To re-record after a deliberate UI change: `pnpm test:visual --update-snapshots`
 // then commit the new PNGs under `frontend/tests/visual/__screenshots__/`.
 
 import { test, expect } from '@playwright/test';
 
-const ROUTES = ['/login', '/today', '/piano', '/impostazioni'];
+const ROUTES = [
+  '/login',
+  '/today',
+  '/settimana/2026-05-04',
+  '/piano',
+  '/impostazioni',
+];
 
 for (const route of ROUTES) {
   test(`visual-dark: ${route}`, async ({ page }) => {
