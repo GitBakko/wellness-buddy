@@ -183,6 +183,10 @@ export const copy = {
     persistDeniedHeading: 'Storage offline non abilitato',
     persistDeniedBody:
       "I tuoi dati potrebbero essere cancellati dopo 7 giorni di inattività. Apri l'app regolarmente.",
+    // Plan 02-03 (D-26) — post-deploy iPhone install follow-up help banner
+    installFollowUpHeading: 'Installazione completata',
+    installFollowUpBody: 'Ora puoi aprire Wellness Buddy dalla schermata Home come app.',
+    installFollowUpDismiss: 'Ho capito',
   },
 
   // ───── AI placeholder (Phase 1 widget on /today) ─────
