@@ -47,4 +47,6 @@ export {
   CaretUp,
   CaretLeft,
   CaretRight,
+  // Phase 2 (Plan 02-02) — /settimana additions
+  ArrowsClockwise,
 } from '@phosphor-icons/react';

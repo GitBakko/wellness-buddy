@@ -35,6 +35,16 @@ export const router = createBrowserRouter([
         lazy: async () => ({ Component: (await import('./pages/Today')).default }),
       },
       {
+        // Phase 2 (Plan 02-02) — /settimana with optional explicit weekStart param.
+        // /settimana → resolves to today's Monday at runtime via Week.tsx.
+        path: 'settimana',
+        lazy: async () => ({ Component: (await import('./pages/Week')).default }),
+      },
+      {
+        path: 'settimana/:weekStart',
+        lazy: async () => ({ Component: (await import('./pages/Week')).default }),
+      },
+      {
         path: 'piano',
         lazy: async () => ({ Component: (await import('./pages/Plans')).default }),
       },

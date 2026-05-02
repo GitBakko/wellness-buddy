@@ -68,3 +68,29 @@ export interface Draft {
   payload: unknown;
   updated_at: number;
 }
+
+// ───── Phase 2 — weekly + shopping caches (PITFALLS#5: opaque payload mirror) ─────
+
+/**
+ * Cache mirror for /api/weekly/{week_start} payloads. PITFALLS#5: payload is
+ * stored as `unknown` (opaque) so a server response shape change doesn't
+ * trigger a Dexie schema migration — the version() bump simply DROPs and
+ * re-fetches. Keyed by [user_id+week_start] for fast per-user lookup.
+ */
+export interface CachedWeekly {
+  user_id: string;
+  week_start: string;
+  payload: unknown;
+  fetched_at: string;
+}
+
+/**
+ * Cache mirror for /api/shopping/{week_start} payloads — wired by Plan 02-04.
+ * Defined in v2 alongside cache_weekly so the schema bump is paid once.
+ */
+export interface CachedShopping {
+  user_id: string;
+  week_start: string;
+  payload: unknown;
+  fetched_at: string;
+}
