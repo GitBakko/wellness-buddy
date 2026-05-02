@@ -1,0 +1,1912 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Variante B · Lifesum × Casa Brunelli · Wellness Buddy</title>
+
+    <link rel="stylesheet" href="../tone-calibration/shared.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500;1,9..144,600&family=Caveat:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@phosphor-icons/web/src/regular/style.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@phosphor-icons/web/src/fill/style.css"
+    />
+
+    <!--
+      Variante B — Lifesum × Casa Brunelli
+      ========================================
+      Lifesum's product DNA (cream bg, sage green, coral, macro ring,
+      photographic meal cards) fused with Italian editorial warmth:
+
+      · Macro-ring centre kcal in Fraunces Italic 600 (signature swap)
+      · Section heading "I tuoi pasti" in Fraunces Italic
+      · Olive (warmer than Lifesum leaf) + terracotta (warmer than coral)
+        + copper accents (Italian ceramic / Apartamento magazine palette)
+      · Subtle paper-grain via inline feTurbulence (≤2.5% opacity)
+      · Asymmetric meal-card heights (4-8px) — Boom edge play, restrained
+      · "CONDIVISO CON MARTA" passport-stamp pill on PRANZO + CENA
+      · "FATTO" Fraunces-italic overlay stamp on completed COLAZIONE photo
+      · Hand-drawn inline-SVG runner + ONE Caveat "ben fatto" on workout
+      · Empty state: hand-drawn plate + olive sprig (no clipart)
+
+      Local CSS tokens in :root below — variant-only OKLCH palette,
+      DOES NOT touch the production @theme token set in shared.css.
+    -->
+
+    <style>
+      /* ─────────────────────────────────────────────────────────────
+       * Variant-B local tokens (OKLCH only, no hex)
+       * Scoped via .variant-italian — never leak into A/C/shared.
+       * ─────────────────────────────────────────────────────────── */
+      .variant-italian {
+        --bg-paper: oklch(96% 0.018 80);
+        --surface: oklch(98% 0.012 80);
+        --surface-2: oklch(93% 0.018 80);
+        --border: oklch(89% 0.014 80);
+        --ink: oklch(24% 0.018 240);
+        --ink-soft: oklch(48% 0.018 240);
+        --ink-muted: oklch(64% 0.012 240);
+
+        --olive: oklch(58% 0.1 130);
+        --olive-soft: oklch(91% 0.04 130);
+        --olive-deep: oklch(42% 0.1 130);
+
+        --terracotta: oklch(60% 0.13 40);
+        --terracotta-soft: oklch(93% 0.045 40);
+        --terracotta-deep: oklch(48% 0.14 38);
+
+        --copper: oklch(62% 0.1 55);
+        --plum: oklch(48% 0.11 350);
+        --honey: oklch(72% 0.12 80);
+
+        --r-sm: 12px;
+        --r-md: 16px;
+        --r-lg: 20px;
+        --r-pill: 9999px;
+        --shadow-soft: 0 1px 3px oklch(0% 0 0 / 0.04),
+          0 0 0 1px oklch(0% 0 0 / 0.02);
+
+        font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+        background: var(--bg-paper);
+        color: var(--ink);
+        position: relative;
+      }
+      .variant-italian[data-theme='dark'] {
+        --bg-paper: oklch(18% 0.015 250);
+        --surface: oklch(22% 0.018 250);
+        --surface-2: oklch(26% 0.02 250);
+        --border: oklch(30% 0.015 250);
+        --ink: oklch(94% 0.008 80);
+        --ink-soft: oklch(78% 0.01 80);
+        --ink-muted: oklch(64% 0.012 80);
+        --olive-soft: oklch(28% 0.05 130);
+        --terracotta-soft: oklch(28% 0.06 40);
+      }
+
+      .variant-italian .serif {
+        font-family: 'Fraunces', 'Plus Jakarta Sans', serif;
+        font-style: italic;
+        font-weight: 600;
+      }
+      .variant-italian .handwritten {
+        font-family: 'Caveat', cursive;
+        font-weight: 700;
+      }
+
+      /* Paper grain — applied as ::before overlay on .today-page */
+      .variant-italian::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.28 0 0 0 0 0.18 0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+        opacity: 0.025;
+        mix-blend-mode: multiply;
+        z-index: 1;
+      }
+      .variant-italian[data-theme='dark']::before {
+        opacity: 0.04;
+        mix-blend-mode: screen;
+      }
+      .variant-italian > * {
+        position: relative;
+        z-index: 2;
+      }
+
+      /* ─────────────────────────────────────────────────────────────
+       * Chrome — app bar + scroll surface
+       * ─────────────────────────────────────────────────────────── */
+      .variant-italian .vb-page {
+        width: 100%;
+        height: 100%;
+        background: var(--bg-paper);
+        color: var(--ink);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .variant-italian .vb-appbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        background: color-mix(in oklch, var(--bg-paper) 88%, transparent);
+        backdrop-filter: blur(8px);
+      }
+      .variant-italian .vb-appbar .vb-title {
+        font-family: 'Fraunces', serif;
+        font-style: italic;
+        font-weight: 600;
+        font-size: 1.15rem;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+      }
+      .variant-italian .vb-syncpip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.75rem;
+        color: var(--ink-muted);
+      }
+      .variant-italian .vb-syncpip::before {
+        content: '';
+        width: 8px;
+        height: 8px;
+        border-radius: var(--r-pill);
+        background: var(--olive);
+      }
+
+      .variant-italian .vb-scroll {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px 20px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+      }
+      .variant-italian .vb-scroll::-webkit-scrollbar {
+        width: 0;
+      }
+
+      /* Greeting block */
+      .variant-italian .vb-greeting h1 {
+        margin: 0;
+        font-family: 'Fraunces', serif;
+        font-style: italic;
+        font-weight: 600;
+        font-size: 1.85rem;
+        line-height: 1.15;
+        letter-spacing: -0.015em;
+        color: var(--ink);
+      }
+      .variant-italian .vb-greeting .vb-date {
+        margin-top: 4px;
+        font-size: 0.8125rem;
+        color: var(--ink-muted);
+        font-weight: 500;
+      }
+      .variant-italian .vb-greeting .vb-day-of-plan {
+        margin-top: 2px;
+        font-size: 0.75rem;
+        color: var(--olive-deep);
+        font-weight: 600;
+        letter-spacing: 0.01em;
+      }
+      .variant-italian[data-theme='dark'] .vb-greeting .vb-day-of-plan {
+        color: var(--olive);
+      }
+
+      /* ─────────────────────────────────────────────────────────────
+       * Macro ring — Lifesum bones, Italian centre
+       * ─────────────────────────────────────────────────────────── */
+      .variant-italian .vb-ring-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--r-lg);
+        padding: 22px 18px 18px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+        box-shadow: var(--shadow-soft);
+      }
+      .variant-italian .vb-ring-wrap {
+        position: relative;
+        width: 220px;
+        height: 220px;
+      }
+      .variant-italian .vb-ring-svg {
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+      }
+      .variant-italian .vb-ring-track {
+        fill: none;
+        stroke: var(--surface-2);
+        stroke-width: 14;
+      }
+      .variant-italian .vb-ring-arc {
+        fill: none;
+        stroke-width: 14;
+        stroke-linecap: round;
+        transition: stroke-dasharray 600ms cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .variant-italian .vb-ring-arc.olive {
+        stroke: var(--olive);
+      }
+      .variant-italian .vb-ring-center {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        text-align: center;
+      }
+      .variant-italian .vb-kcal {
+        font-family: 'Fraunces', serif;
+        font-style: italic;
+        font-weight: 600;
+        font-size: 3rem;
+        line-height: 1;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        font-variant-numeric: tabular-nums;
+      }
+      .variant-italian .vb-kcal-of {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-weight: 500;
+        font-size: 0.875rem;
+        color: var(--ink-muted);
+      }
+      .variant-italian .vb-kcal-label {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        color: var(--olive-deep);
+        text-transform: uppercase;
+        margin-top: 6px;
+      }
+      .variant-italian[data-theme='dark'] .vb-kcal-label {
+        color: var(--olive);
+      }
+
+      /* Macro pills below ring */
+      .variant-italian .vb-macro-pills {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 10px;
+        width: 100%;
+      }
+      .variant-italian .vb-macro-pill {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 10px 8px 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+      }
+      .variant-italian .vb-macro-pill .vb-macro-name {
+        font-size: 0.6875rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink-muted);
+      }
+      .variant-italian .vb-macro-pill .vb-macro-val {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        font-size: 0.95rem;
+        color: var(--ink);
+        letter-spacing: -0.01em;
+      }
+      .variant-italian .vb-macro-bar {
+        width: 100%;
+        height: 4px;
+        border-radius: var(--r-pill);
+        background: var(--surface-2);
+        overflow: hidden;
+      }
+      .variant-italian .vb-macro-bar > i {
+        display: block;
+        height: 100%;
+        border-radius: var(--r-pill);
+      }
+      .variant-italian .vb-macro-bar.plum > i {
+        background: var(--plum);
+      }
+      .variant-italian .vb-macro-bar.olive > i {
+        background: var(--olive);
+      }
+      .variant-italian .vb-macro-bar.honey > i {
+        background: var(--honey);
+      }
+
+      /* ─────────────────────────────────────────────────────────────
+       * Section heading
+       * ─────────────────────────────────────────────────────────── */
+      .variant-italian .vb-section-h {
+        font-family: 'Fraunces', serif;
+        font-style: italic;
+        font-weight: 600;
+        font-size: 1.375rem;
+        line-height: 1.2;
+        letter-spacing: -0.015em;
+        margin: 0 0 12px;
+        color: var(--ink);
+      }
+
+      /* ─────────────────────────────────────────────────────────────
+       * Meal cards — photographic Lifesum bones + Italian stamps
+       * ─────────────────────────────────────────────────────────── */
+      .variant-italian .vb-meal-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .variant-italian .vb-meal-card {
+        position: relative;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--r-lg);
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: 96px 1fr auto;
+        gap: 14px;
+        align-items: stretch;
+        box-shadow: var(--shadow-soft);
+      }
+      /* Asymmetric heights — Boom edge play (4-8px variation) */
+      .variant-italian .vb-meal-card[data-meal='colazione'] {
+        min-height: 96px;
+      }
+      .variant-italian .vb-meal-card[data-meal='pranzo'] {
+        min-height: 102px;
+      }
+      .variant-italian .vb-meal-card[data-meal='spuntino'] {
+        min-height: 98px;
+      }
+      .variant-italian .vb-meal-card[data-meal='cena'] {
+        min-height: 104px;
+      }
+
+      .variant-italian .vb-meal-photo {
+        position: relative;
+        width: 96px;
+        height: 100%;
+        background: var(--surface-2);
+        overflow: hidden;
+      }
+      .variant-italian .vb-meal-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .variant-italian[data-theme='dark'] .vb-meal-photo img {
+        opacity: 0.92;
+      }
+
+      /* FATTO overlay stamp on completed photo */
+      .variant-italian .vb-stamp-fatto {
+        position: absolute;
+        top: 8px;
+        right: -6px;
+        transform: rotate(-8deg);
+        opacity: 0.88;
+        background: color-mix(in oklch, var(--terracotta) 86%, transparent);
+        color: oklch(99% 0.005 80);
+        border: 2px solid var(--terracotta-deep);
+        padding: 2px 10px 4px;
+        font-family: 'Fraunces', serif;
+        font-style: italic;
+        font-weight: 600;
+        font-size: 0.875rem;
+        letter-spacing: 0.04em;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px oklch(0% 0 0 / 0.15);
+      }
+      .variant-italian .vb-stamp-fatto::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse at 30% 70%,
+          transparent 60%,
+          color-mix(in oklch, var(--terracotta-deep) 25%, transparent) 100%
+        );
+        pointer-events: none;
+        border-radius: 4px;
+        mix-blend-mode: multiply;
+      }
+
+      .variant-italian .vb-meal-body {
+        padding: 12px 4px 12px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        min-width: 0;
+      }
+      .variant-italian .vb-meal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .variant-italian .vb-meal-tag {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 0.6875rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--olive-deep);
+      }
+      .variant-italian[data-theme='dark'] .vb-meal-tag {
+        color: var(--olive);
+      }
+      .variant-italian .vb-meal-time {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 0.75rem;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        color: var(--ink-muted);
+      }
+      .variant-italian .vb-meal-name {
+        font-size: 0.9375rem;
+        font-weight: 600;
+        margin: 0;
+        line-height: 1.25;
+        color: var(--ink);
+        letter-spacing: -0.005em;
+      }
+      .variant-italian .vb-meal-macros {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        font-size: 0.75rem;
+        color: var(--ink-muted);
+        font-variant-numeric: tabular-nums;
+      }
+      .variant-italian .vb-meal-macros strong {
+        color: var(--ink);
+        font-weight: 600;
+      }
+      .variant-italian .vb-meal-macros .dot {
+        color: var(--border);
+      }
+
+      /* Shared-with-Marta stamp */
+      .variant-italian .vb-stamp-shared {
+        align-self: flex-start;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: var(--terracotta-soft);
+        color: var(--copper);
+        border: 1.5px solid var(--copper);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 0.625rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        transform: rotate(-2deg);
+        margin-top: 2px;
+      }
+      .variant-italian[data-theme='dark'] .vb-stamp-shared {
+        color: oklch(78% 0.09 55);
+        border-color: oklch(72% 0.1 55);
+      }
+
+      .variant-italian .vb-meal-check {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 16px 0 0;
+      }
+      .variant-italian .vb-check {
+        width: 32px;
+        height: 32px;
+        border-radius: var(--r-pill);
+        border: 1.5px solid var(--border);
+        background: var(--surface);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--ink-muted);
+        font-size: 1rem;
+        flex-shrink: 0;
+      }
+      .variant-italian .vb-check[data-checked='true'] {
+        background: var(--olive);
+        border-color: var(--olive);
+        color: oklch(99% 0.005 80);
+      }
+
+      /* ─────────────────────────────────────────────────────────────
+       * Weight + workout (sub widgets)
+       * ─────────────────────────────────────────────────────────── */
+      .variant-italian .vb-sub {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--r-lg);
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        box-shadow: var(--shadow-soft);
+      }
+      .variant-italian .vb-sub-h {
+        margin: 0;
+        font-family: 'Fraunces', serif;
+        font-style: italic;
+        font-weight: 600;
+        font-size: 1.0625rem;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+      }
+      .variant-italian .vb-weight-row {
+        display: flex;
+        gap: 8px;
+        align-items: stretch;
+      }
+      .variant-italian .vb-weight-input {
+        flex: 1;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        border-radius: var(--r-md);
+        padding: 12px 14px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 1rem;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        color: var(--ink);
+      }
+      .variant-italian .vb-weight-input::placeholder {
+        color: var(--ink-muted);
+        font-weight: 500;
+      }
+      .variant-italian .vb-weight-cta {
+        background: var(--olive);
+        color: oklch(99% 0.005 80);
+        border: none;
+        border-radius: var(--r-md);
+        padding: 0 18px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        cursor: pointer;
+      }
+      .variant-italian .vb-weight-prev {
+        font-size: 0.8125rem;
+        color: var(--ink-muted);
+      }
+      .variant-italian .vb-weight-prev .delta {
+        color: var(--olive-deep);
+        font-weight: 600;
+      }
+      .variant-italian[data-theme='dark'] .vb-weight-prev .delta {
+        color: var(--olive);
+      }
+
+      .variant-italian .vb-workout {
+        position: relative;
+      }
+      .variant-italian .vb-workout-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .variant-italian .vb-runner {
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
+        color: var(--olive-deep);
+      }
+      .variant-italian[data-theme='dark'] .vb-runner {
+        color: var(--olive);
+      }
+      .variant-italian .vb-workout-text {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .variant-italian .vb-workout-name {
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .variant-italian .vb-workout-stats {
+        font-size: 0.8125rem;
+        color: var(--ink-muted);
+        font-variant-numeric: tabular-nums;
+      }
+      .variant-italian .vb-handwritten-accent {
+        position: absolute;
+        right: 14px;
+        bottom: 8px;
+        font-family: 'Caveat', cursive;
+        font-weight: 700;
+        font-size: 1.25rem;
+        color: var(--copper);
+        transform: rotate(-3deg);
+        line-height: 1;
+        pointer-events: none;
+      }
+
+      /* AI widget (locked) */
+      .variant-italian .vb-ai {
+        background: var(--surface);
+        border: 1px dashed var(--border);
+        border-radius: var(--r-lg);
+        padding: 14px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        opacity: 0.92;
+      }
+      .variant-italian .vb-ai-glyph {
+        width: 38px;
+        height: 38px;
+        border-radius: var(--r-pill);
+        background: var(--olive-soft);
+        color: var(--olive-deep);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+      }
+      .variant-italian[data-theme='dark'] .vb-ai-glyph {
+        color: var(--olive);
+      }
+      .variant-italian .vb-ai-text h4 {
+        margin: 0;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .variant-italian .vb-ai-text p {
+        margin: 2px 0 0;
+        font-size: 0.75rem;
+        color: var(--ink-muted);
+      }
+
+      /* ─────────────────────────────────────────────────────────────
+       * Empty state
+       * ─────────────────────────────────────────────────────────── */
+      .variant-italian .vb-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 18px;
+        padding: 40px 20px 24px;
+      }
+      .variant-italian .vb-empty-illu {
+        width: 200px;
+        height: 200px;
+      }
+      .variant-italian .vb-empty h2 {
+        margin: 0;
+        font-family: 'Fraunces', serif;
+        font-style: italic;
+        font-weight: 600;
+        font-size: 1.625rem;
+        line-height: 1.2;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+      }
+      .variant-italian .vb-empty p {
+        margin: 0;
+        max-width: 30ch;
+        font-size: 0.9375rem;
+        color: var(--ink-soft);
+      }
+      .variant-italian .vb-empty-cta {
+        background: var(--terracotta);
+        color: oklch(99% 0.005 80);
+        border: none;
+        border-radius: var(--r-pill);
+        padding: 12px 24px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        cursor: pointer;
+        margin-top: 4px;
+        box-shadow: var(--shadow-soft);
+      }
+
+      /* ─────────────────────────────────────────────────────────────
+       * Bottom tabs
+       * ─────────────────────────────────────────────────────────── */
+      .variant-italian .vb-tabs {
+        display: flex;
+        align-items: stretch;
+        justify-content: space-around;
+        border-top: 1px solid var(--border);
+        background: color-mix(in oklch, var(--bg-paper) 92%, transparent);
+        backdrop-filter: blur(8px);
+        padding: 6px 0 8px;
+      }
+      .variant-italian .vb-tab {
+        flex: 1;
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        padding: 4px 0;
+        font-size: 0.6875rem;
+        font-weight: 500;
+        color: var(--ink-muted);
+      }
+      .variant-italian .vb-tab i {
+        font-size: 22px;
+      }
+      .variant-italian .vb-tab[data-active='true'] {
+        color: var(--olive-deep);
+        font-weight: 700;
+      }
+      .variant-italian[data-theme='dark'] .vb-tab[data-active='true'] {
+        color: var(--olive);
+      }
+
+      /* ─────────────────────────────────────────────────────────────
+       * Desktop editorial spread
+       * ─────────────────────────────────────────────────────────── */
+      .variant-italian.is-desktop .vb-page {
+        height: 100%;
+      }
+      .variant-italian.is-desktop .vb-desktop-shell {
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        height: 100%;
+      }
+      .variant-italian.is-desktop .vb-rail {
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        padding: 22px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .variant-italian.is-desktop .vb-brand {
+        font-family: 'Fraunces', serif;
+        font-style: italic;
+        font-weight: 600;
+        font-size: 1.375rem;
+        margin: 0 0 14px 4px;
+        color: var(--ink);
+        letter-spacing: -0.015em;
+      }
+      .variant-italian.is-desktop .vb-rail-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 9px 12px;
+        border-radius: var(--r-md);
+        color: var(--ink-soft);
+        font-size: 0.9375rem;
+        font-weight: 500;
+      }
+      .variant-italian.is-desktop .vb-rail-link[data-active='true'] {
+        background: var(--olive-soft);
+        color: var(--olive-deep);
+        font-weight: 700;
+      }
+      .variant-italian.is-desktop[data-theme='dark']
+        .vb-rail-link[data-active='true'] {
+        color: var(--olive);
+      }
+      .variant-italian.is-desktop .vb-rail-link i {
+        font-size: 18px;
+      }
+
+      .variant-italian.is-desktop .vb-desktop-content {
+        padding: 28px 36px 36px;
+        overflow-y: auto;
+        display: grid;
+        grid-template-columns: 320px 1fr 280px;
+        gap: 24px;
+        align-items: start;
+      }
+      .variant-italian.is-desktop .vb-desktop-greeting {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 4px;
+      }
+      .variant-italian.is-desktop .vb-desktop-greeting h1 {
+        margin: 0;
+        font-family: 'Fraunces', serif;
+        font-style: italic;
+        font-weight: 600;
+        font-size: 2.25rem;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+      }
+      .variant-italian.is-desktop .vb-desktop-meta {
+        text-align: right;
+        font-size: 0.8125rem;
+        color: var(--ink-muted);
+        line-height: 1.4;
+      }
+      .variant-italian.is-desktop .vb-desktop-meta strong {
+        display: block;
+        color: var(--olive-deep);
+        font-size: 0.6875rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+      }
+      .variant-italian.is-desktop[data-theme='dark']
+        .vb-desktop-meta
+        strong {
+        color: var(--olive);
+      }
+      .variant-italian.is-desktop .vb-col {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .variant-italian.is-desktop .vb-meal-card {
+        grid-template-columns: 110px 1fr auto;
+      }
+      .variant-italian.is-desktop .vb-meal-photo {
+        width: 110px;
+      }
+      .variant-italian.is-desktop .vb-ring-wrap {
+        width: 240px;
+        height: 240px;
+      }
+
+      /* Empty plate hand-drawn line */
+      .variant-italian .hd-line {
+        fill: none;
+        stroke: var(--olive-deep);
+        stroke-width: 1.5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .variant-italian[data-theme='dark'] .hd-line {
+        stroke: var(--olive);
+      }
+      .variant-italian .hd-leaf {
+        fill: var(--olive-soft);
+        stroke: var(--olive-deep);
+        stroke-width: 1.5;
+        stroke-linejoin: round;
+      }
+      .variant-italian[data-theme='dark'] .hd-leaf {
+        fill: var(--olive-soft);
+        stroke: var(--olive);
+      }
+
+      /* Showcase override: keep the legend matching variant tone */
+      body {
+        background: oklch(94% 0.014 80);
+      }
+      .legend {
+        font-family: 'Fraunces', serif;
+        font-style: italic;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="legend">Variante B · Lifesum × Casa Brunelli</div>
+
+    <main class="showcase">
+      <!-- ============================================================
+           1) Mobile · 390 · LIGHT · POPULATED
+           ============================================================ -->
+      <section class="showcase-section">
+        <h3>Mobile · 390 · light · populated</h3>
+        <div class="device device-mobile">
+          <div class="today-page variant-italian">
+            <div class="vb-page">
+              <header class="vb-appbar">
+                <span class="vb-title">Oggi</span>
+                <span class="vb-syncpip">Sincronizzato</span>
+              </header>
+
+              <div class="vb-scroll">
+                <div class="vb-greeting">
+                  <h1>Buongiorno, Stefano</h1>
+                  <div class="vb-date">lunedì 5 maggio 2026</div>
+                  <div class="vb-day-of-plan">
+                    Giorno 12 · piano di 8 settimane
+                  </div>
+                </div>
+
+                <!-- Macro ring -->
+                <section class="vb-ring-card">
+                  <div class="vb-ring-wrap">
+                    <svg class="vb-ring-svg" viewBox="0 0 220 220">
+                      <circle
+                        class="vb-ring-track"
+                        cx="110"
+                        cy="110"
+                        r="96"
+                      ></circle>
+                      <!-- 1760/2200 = 0.8 → dasharray = 0.8 * 2*PI*96 ≈ 482.5/603.2 -->
+                      <circle
+                        class="vb-ring-arc olive"
+                        cx="110"
+                        cy="110"
+                        r="96"
+                        stroke-dasharray="482.5 603.2"
+                      ></circle>
+                    </svg>
+                    <div class="vb-ring-center">
+                      <div class="vb-kcal">1.760</div>
+                      <div class="vb-kcal-of">su 2.200</div>
+                      <div class="vb-kcal-label">kcal · oggi</div>
+                    </div>
+                  </div>
+                  <div class="vb-macro-pills">
+                    <div class="vb-macro-pill">
+                      <span class="vb-macro-name">Proteine</span>
+                      <span class="vb-macro-val">78 / 120 g</span>
+                      <span class="vb-macro-bar plum"
+                        ><i style="width: 65%"></i
+                      ></span>
+                    </div>
+                    <div class="vb-macro-pill">
+                      <span class="vb-macro-name">Carbo</span>
+                      <span class="vb-macro-val">165 / 250 g</span>
+                      <span class="vb-macro-bar olive"
+                        ><i style="width: 66%"></i
+                      ></span>
+                    </div>
+                    <div class="vb-macro-pill">
+                      <span class="vb-macro-name">Grassi</span>
+                      <span class="vb-macro-val">52 / 75 g</span>
+                      <span class="vb-macro-bar honey"
+                        ><i style="width: 69%"></i
+                      ></span>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Meals -->
+                <section>
+                  <h2 class="vb-section-h">I tuoi pasti</h2>
+                  <div class="vb-meal-list">
+                    <!-- COLAZIONE — completed -->
+                    <article class="vb-meal-card" data-meal="colazione">
+                      <div class="vb-meal-photo">
+                        <img
+                          src="https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&q=80"
+                          alt="Yogurt greco con granola e mirtilli"
+                        />
+                        <span class="vb-stamp-fatto" aria-hidden="true"
+                          >FATTO</span
+                        >
+                      </div>
+                      <div class="vb-meal-body">
+                        <div class="vb-meal-head">
+                          <span class="vb-meal-tag">Colazione</span>
+                          <span class="vb-meal-time">07:30</span>
+                        </div>
+                        <p class="vb-meal-name">
+                          Yogurt greco, granola, mirtilli
+                        </p>
+                        <div class="vb-meal-macros">
+                          <span><strong>380</strong> kcal</span>
+                          <span class="dot">·</span>
+                          <span>P <strong>22</strong></span>
+                          <span>C <strong>45</strong></span>
+                          <span>F <strong>12</strong></span>
+                        </div>
+                      </div>
+                      <div class="vb-meal-check">
+                        <span class="vb-check" data-checked="true"
+                          ><i class="ph-fill ph-check"></i
+                        ></span>
+                      </div>
+                    </article>
+
+                    <!-- PRANZO — pending, shared -->
+                    <article class="vb-meal-card" data-meal="pranzo">
+                      <div class="vb-meal-photo">
+                        <img
+                          src="https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=400&q=80"
+                          alt="Pasta integrale al pomodoro fresco e basilico"
+                        />
+                      </div>
+                      <div class="vb-meal-body">
+                        <div class="vb-meal-head">
+                          <span class="vb-meal-tag">Pranzo</span>
+                          <span class="vb-meal-time">13:00</span>
+                        </div>
+                        <p class="vb-meal-name">
+                          Pasta integrale, pomodoro fresco, basilico
+                        </p>
+                        <div class="vb-meal-macros">
+                          <span><strong>540</strong> kcal</span>
+                          <span class="dot">·</span>
+                          <span>P <strong>18</strong></span>
+                          <span>C <strong>78</strong></span>
+                          <span>F <strong>14</strong></span>
+                        </div>
+                        <span class="vb-stamp-shared"
+                          >Condiviso con Marta</span
+                        >
+                      </div>
+                      <div class="vb-meal-check">
+                        <span class="vb-check"></span>
+                      </div>
+                    </article>
+
+                    <!-- SPUNTINO — pending -->
+                    <article class="vb-meal-card" data-meal="spuntino">
+                      <div class="vb-meal-photo">
+                        <img
+                          src="https://images.unsplash.com/photo-1508061253366-f7da158b6d46?w=400&q=80"
+                          alt="Mandorle e arancia"
+                        />
+                      </div>
+                      <div class="vb-meal-body">
+                        <div class="vb-meal-head">
+                          <span class="vb-meal-tag">Spuntino</span>
+                          <span class="vb-meal-time">17:00</span>
+                        </div>
+                        <p class="vb-meal-name">Mandorle e arancia</p>
+                        <div class="vb-meal-macros">
+                          <span><strong>220</strong> kcal</span>
+                          <span class="dot">·</span>
+                          <span>P <strong>6</strong></span>
+                          <span>C <strong>28</strong></span>
+                          <span>F <strong>12</strong></span>
+                        </div>
+                      </div>
+                      <div class="vb-meal-check">
+                        <span class="vb-check"></span>
+                      </div>
+                    </article>
+
+                    <!-- CENA — pending, shared -->
+                    <article class="vb-meal-card" data-meal="cena">
+                      <div class="vb-meal-photo">
+                        <img
+                          src="https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&q=80"
+                          alt="Salmone al forno con verdure grigliate e riso venere"
+                        />
+                      </div>
+                      <div class="vb-meal-body">
+                        <div class="vb-meal-head">
+                          <span class="vb-meal-tag">Cena</span>
+                          <span class="vb-meal-time">20:00</span>
+                        </div>
+                        <p class="vb-meal-name">
+                          Salmone al forno, verdure grigliate, riso venere
+                        </p>
+                        <div class="vb-meal-macros">
+                          <span><strong>620</strong> kcal</span>
+                          <span class="dot">·</span>
+                          <span>P <strong>38</strong></span>
+                          <span>C <strong>55</strong></span>
+                          <span>F <strong>22</strong></span>
+                        </div>
+                        <span class="vb-stamp-shared"
+                          >Condiviso con Marta</span
+                        >
+                      </div>
+                      <div class="vb-meal-check">
+                        <span class="vb-check"></span>
+                      </div>
+                    </article>
+                  </div>
+                </section>
+
+                <!-- Weight -->
+                <section class="vb-sub">
+                  <h3 class="vb-sub-h">Pesata di oggi</h3>
+                  <div class="vb-weight-row">
+                    <input
+                      class="vb-weight-input"
+                      type="text"
+                      placeholder="75,3"
+                      aria-label="Peso in chilogrammi"
+                    />
+                    <button class="vb-weight-cta">Salva</button>
+                  </div>
+                  <div class="vb-weight-prev">
+                    Ieri 75,1 kg
+                    <span class="delta">· ↓ 0,2 kg dalla scorsa settimana</span>
+                  </div>
+                </section>
+
+                <!-- Workout -->
+                <section class="vb-sub vb-workout">
+                  <h3 class="vb-sub-h">Allenamento</h3>
+                  <div class="vb-workout-row">
+                    <!-- Hand-drawn runner SVG (1.8px stroke, slight forward lean) -->
+                    <svg
+                      class="vb-runner"
+                      viewBox="0 0 44 44"
+                      aria-hidden="true"
+                    >
+                      <g
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <!-- head -->
+                        <circle cx="26" cy="9" r="3.2"></circle>
+                        <!-- torso (forward lean) -->
+                        <path d="M25.5 12.4 L20 22.5"></path>
+                        <!-- back arm -->
+                        <path d="M22.5 16 L15.5 14"></path>
+                        <!-- front arm -->
+                        <path d="M22.5 16 L29 21.5"></path>
+                        <!-- back leg -->
+                        <path d="M20.2 22 L13.5 31"></path>
+                        <!-- front leg lifted -->
+                        <path d="M20.2 22 L26 32 L31.5 30.5"></path>
+                        <!-- ground hint -->
+                        <path
+                          d="M9 36 Q 22 38 35 36"
+                          stroke-dasharray="2 3"
+                          opacity="0.55"
+                        ></path>
+                      </g>
+                    </svg>
+                    <div class="vb-workout-text">
+                      <span class="vb-workout-name">Corsa</span>
+                      <span class="vb-workout-stats"
+                        >32 min · 285 kcal</span
+                      >
+                    </div>
+                  </div>
+                  <span
+                    class="vb-handwritten-accent"
+                    aria-hidden="true"
+                    >ben fatto</span
+                  >
+                </section>
+
+                <!-- AI -->
+                <section class="vb-ai">
+                  <span class="vb-ai-glyph"
+                    ><i class="ph ph-sparkle"></i
+                  ></span>
+                  <div class="vb-ai-text">
+                    <h4>Suggerimenti AI · presto disponibile</h4>
+                    <p>Suggerimenti personalizzati arrivano nella prossima fase.</p>
+                  </div>
+                </section>
+              </div>
+
+              <nav class="vb-tabs" aria-label="Navigazione principale">
+                <a class="vb-tab" data-active="true"
+                  ><i class="ph-fill ph-house"></i><span>Oggi</span></a
+                >
+                <a class="vb-tab"
+                  ><i class="ph ph-fork-knife"></i
+                  ><span>Pasti</span></a
+                >
+                <a class="vb-tab"
+                  ><i class="ph ph-shopping-bag"></i
+                  ><span>Spesa</span></a
+                >
+                <a class="vb-tab"
+                  ><i class="ph ph-user-circle"></i
+                  ><span>Profilo</span></a
+                >
+              </nav>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           2) Mobile · 390 · LIGHT · EMPTY
+           ============================================================ -->
+      <section class="showcase-section">
+        <h3>Mobile · 390 · light · empty</h3>
+        <div class="device device-mobile">
+          <div class="today-page variant-italian">
+            <div class="vb-page">
+              <header class="vb-appbar">
+                <span class="vb-title">Oggi</span>
+                <span class="vb-syncpip">Sincronizzato</span>
+              </header>
+
+              <div class="vb-scroll" style="justify-content: center">
+                <div class="vb-greeting">
+                  <h1>Buongiorno, Stefano</h1>
+                  <div class="vb-date">lunedì 5 maggio 2026</div>
+                </div>
+
+                <div class="vb-empty">
+                  <!-- Hand-drawn plate + olive sprig (original) -->
+                  <svg
+                    class="vb-empty-illu"
+                    viewBox="0 0 200 200"
+                    aria-hidden="true"
+                  >
+                    <!-- Plate outer (slightly irregular for hand-drawn feel) -->
+                    <path
+                      class="hd-line"
+                      d="M100.5 38 C 138 39 164 64 164.5 100 C 165 137 138.5 162.5 100 162 C 62 161.5 36 137 36 100.5 C 36.4 64.5 62.5 38.5 100.5 38 Z"
+                    ></path>
+                    <!-- Plate inner ring -->
+                    <path
+                      class="hd-line"
+                      d="M101 56 C 130 57 148 76 148 100 C 148 124 130 143 101 143 C 72 143 54 124 54 100 C 54 76 72 56.5 101 56 Z"
+                      opacity="0.55"
+                    ></path>
+
+                    <!-- Olive sprig: stem -->
+                    <path
+                      class="hd-line"
+                      d="M82 110 Q 95 96 113 92"
+                      stroke-width="1.8"
+                    ></path>
+                    <!-- Three leaves (bezier teardrops) -->
+                    <path
+                      class="hd-leaf"
+                      d="M88 104 C 86 99 89 94 95 93 C 96 98 93 103 88 104 Z"
+                    ></path>
+                    <path
+                      class="hd-leaf"
+                      d="M99 99 C 97 94 100 89 106 88 C 107 93 104 98 99 99 Z"
+                    ></path>
+                    <path
+                      class="hd-leaf"
+                      d="M108 95 C 110 90 116 89 120 92 C 118 97 113 99 108 95 Z"
+                    ></path>
+                    <!-- Single olive berry -->
+                    <ellipse
+                      class="hd-leaf"
+                      cx="113"
+                      cy="92"
+                      rx="2.6"
+                      ry="3.4"
+                    ></ellipse>
+                  </svg>
+
+                  <h2>Carica il tuo piano per cominciare</h2>
+                  <p>
+                    Quando il piano è caricato, qui trovi i pasti di oggi,
+                    macro e suggerimenti.
+                  </p>
+                  <button class="vb-empty-cta">
+                    <i class="ph ph-upload-simple"></i> Carica piano
+                  </button>
+                </div>
+              </div>
+
+              <nav class="vb-tabs" aria-label="Navigazione principale">
+                <a class="vb-tab" data-active="true"
+                  ><i class="ph-fill ph-house"></i><span>Oggi</span></a
+                >
+                <a class="vb-tab"
+                  ><i class="ph ph-fork-knife"></i
+                  ><span>Pasti</span></a
+                >
+                <a class="vb-tab"
+                  ><i class="ph ph-shopping-bag"></i
+                  ><span>Spesa</span></a
+                >
+                <a class="vb-tab"
+                  ><i class="ph ph-user-circle"></i
+                  ><span>Profilo</span></a
+                >
+              </nav>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           3) Mobile · 390 · DARK · POPULATED
+           ============================================================ -->
+      <section class="showcase-section" data-theme="dark">
+        <h3>Mobile · 390 · dark · populated</h3>
+        <div class="device device-mobile" data-theme="dark">
+          <div class="today-page variant-italian" data-theme="dark">
+            <div class="vb-page">
+              <header class="vb-appbar">
+                <span class="vb-title">Oggi</span>
+                <span class="vb-syncpip">Sincronizzato</span>
+              </header>
+
+              <div class="vb-scroll">
+                <div class="vb-greeting">
+                  <h1>Buongiorno, Stefano</h1>
+                  <div class="vb-date">lunedì 5 maggio 2026</div>
+                  <div class="vb-day-of-plan">
+                    Giorno 12 · piano di 8 settimane
+                  </div>
+                </div>
+
+                <section class="vb-ring-card">
+                  <div class="vb-ring-wrap">
+                    <svg class="vb-ring-svg" viewBox="0 0 220 220">
+                      <circle
+                        class="vb-ring-track"
+                        cx="110"
+                        cy="110"
+                        r="96"
+                      ></circle>
+                      <circle
+                        class="vb-ring-arc olive"
+                        cx="110"
+                        cy="110"
+                        r="96"
+                        stroke-dasharray="482.5 603.2"
+                      ></circle>
+                    </svg>
+                    <div class="vb-ring-center">
+                      <div class="vb-kcal">1.760</div>
+                      <div class="vb-kcal-of">su 2.200</div>
+                      <div class="vb-kcal-label">kcal · oggi</div>
+                    </div>
+                  </div>
+                  <div class="vb-macro-pills">
+                    <div class="vb-macro-pill">
+                      <span class="vb-macro-name">Proteine</span>
+                      <span class="vb-macro-val">78 / 120 g</span>
+                      <span class="vb-macro-bar plum"
+                        ><i style="width: 65%"></i
+                      ></span>
+                    </div>
+                    <div class="vb-macro-pill">
+                      <span class="vb-macro-name">Carbo</span>
+                      <span class="vb-macro-val">165 / 250 g</span>
+                      <span class="vb-macro-bar olive"
+                        ><i style="width: 66%"></i
+                      ></span>
+                    </div>
+                    <div class="vb-macro-pill">
+                      <span class="vb-macro-name">Grassi</span>
+                      <span class="vb-macro-val">52 / 75 g</span>
+                      <span class="vb-macro-bar honey"
+                        ><i style="width: 69%"></i
+                      ></span>
+                    </div>
+                  </div>
+                </section>
+
+                <section>
+                  <h2 class="vb-section-h">I tuoi pasti</h2>
+                  <div class="vb-meal-list">
+                    <article class="vb-meal-card" data-meal="colazione">
+                      <div class="vb-meal-photo">
+                        <img
+                          src="https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&q=80"
+                          alt="Yogurt greco con granola e mirtilli"
+                        />
+                        <span class="vb-stamp-fatto" aria-hidden="true"
+                          >FATTO</span
+                        >
+                      </div>
+                      <div class="vb-meal-body">
+                        <div class="vb-meal-head">
+                          <span class="vb-meal-tag">Colazione</span>
+                          <span class="vb-meal-time">07:30</span>
+                        </div>
+                        <p class="vb-meal-name">
+                          Yogurt greco, granola, mirtilli
+                        </p>
+                        <div class="vb-meal-macros">
+                          <span><strong>380</strong> kcal</span>
+                          <span class="dot">·</span>
+                          <span>P <strong>22</strong></span>
+                          <span>C <strong>45</strong></span>
+                          <span>F <strong>12</strong></span>
+                        </div>
+                      </div>
+                      <div class="vb-meal-check">
+                        <span class="vb-check" data-checked="true"
+                          ><i class="ph-fill ph-check"></i
+                        ></span>
+                      </div>
+                    </article>
+
+                    <article class="vb-meal-card" data-meal="pranzo">
+                      <div class="vb-meal-photo">
+                        <img
+                          src="https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=400&q=80"
+                          alt="Pasta integrale al pomodoro fresco"
+                        />
+                      </div>
+                      <div class="vb-meal-body">
+                        <div class="vb-meal-head">
+                          <span class="vb-meal-tag">Pranzo</span>
+                          <span class="vb-meal-time">13:00</span>
+                        </div>
+                        <p class="vb-meal-name">
+                          Pasta integrale, pomodoro fresco, basilico
+                        </p>
+                        <div class="vb-meal-macros">
+                          <span><strong>540</strong> kcal</span>
+                          <span class="dot">·</span>
+                          <span>P <strong>18</strong></span>
+                          <span>C <strong>78</strong></span>
+                          <span>F <strong>14</strong></span>
+                        </div>
+                        <span class="vb-stamp-shared"
+                          >Condiviso con Marta</span
+                        >
+                      </div>
+                      <div class="vb-meal-check">
+                        <span class="vb-check"></span>
+                      </div>
+                    </article>
+
+                    <article class="vb-meal-card" data-meal="spuntino">
+                      <div class="vb-meal-photo">
+                        <img
+                          src="https://images.unsplash.com/photo-1508061253366-f7da158b6d46?w=400&q=80"
+                          alt="Mandorle e arancia"
+                        />
+                      </div>
+                      <div class="vb-meal-body">
+                        <div class="vb-meal-head">
+                          <span class="vb-meal-tag">Spuntino</span>
+                          <span class="vb-meal-time">17:00</span>
+                        </div>
+                        <p class="vb-meal-name">Mandorle e arancia</p>
+                        <div class="vb-meal-macros">
+                          <span><strong>220</strong> kcal</span>
+                          <span class="dot">·</span>
+                          <span>P <strong>6</strong></span>
+                          <span>C <strong>28</strong></span>
+                          <span>F <strong>12</strong></span>
+                        </div>
+                      </div>
+                      <div class="vb-meal-check">
+                        <span class="vb-check"></span>
+                      </div>
+                    </article>
+
+                    <article class="vb-meal-card" data-meal="cena">
+                      <div class="vb-meal-photo">
+                        <img
+                          src="https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&q=80"
+                          alt="Salmone al forno con verdure grigliate"
+                        />
+                      </div>
+                      <div class="vb-meal-body">
+                        <div class="vb-meal-head">
+                          <span class="vb-meal-tag">Cena</span>
+                          <span class="vb-meal-time">20:00</span>
+                        </div>
+                        <p class="vb-meal-name">
+                          Salmone al forno, verdure grigliate, riso venere
+                        </p>
+                        <div class="vb-meal-macros">
+                          <span><strong>620</strong> kcal</span>
+                          <span class="dot">·</span>
+                          <span>P <strong>38</strong></span>
+                          <span>C <strong>55</strong></span>
+                          <span>F <strong>22</strong></span>
+                        </div>
+                        <span class="vb-stamp-shared"
+                          >Condiviso con Marta</span
+                        >
+                      </div>
+                      <div class="vb-meal-check">
+                        <span class="vb-check"></span>
+                      </div>
+                    </article>
+                  </div>
+                </section>
+
+                <section class="vb-sub">
+                  <h3 class="vb-sub-h">Pesata di oggi</h3>
+                  <div class="vb-weight-row">
+                    <input
+                      class="vb-weight-input"
+                      type="text"
+                      placeholder="75,3"
+                      aria-label="Peso in chilogrammi"
+                    />
+                    <button class="vb-weight-cta">Salva</button>
+                  </div>
+                  <div class="vb-weight-prev">
+                    Ieri 75,1 kg
+                    <span class="delta">· ↓ 0,2 kg dalla scorsa settimana</span>
+                  </div>
+                </section>
+
+                <section class="vb-sub vb-workout">
+                  <h3 class="vb-sub-h">Allenamento</h3>
+                  <div class="vb-workout-row">
+                    <svg
+                      class="vb-runner"
+                      viewBox="0 0 44 44"
+                      aria-hidden="true"
+                    >
+                      <g
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <circle cx="26" cy="9" r="3.2"></circle>
+                        <path d="M25.5 12.4 L20 22.5"></path>
+                        <path d="M22.5 16 L15.5 14"></path>
+                        <path d="M22.5 16 L29 21.5"></path>
+                        <path d="M20.2 22 L13.5 31"></path>
+                        <path d="M20.2 22 L26 32 L31.5 30.5"></path>
+                        <path
+                          d="M9 36 Q 22 38 35 36"
+                          stroke-dasharray="2 3"
+                          opacity="0.55"
+                        ></path>
+                      </g>
+                    </svg>
+                    <div class="vb-workout-text">
+                      <span class="vb-workout-name">Corsa</span>
+                      <span class="vb-workout-stats"
+                        >32 min · 285 kcal</span
+                      >
+                    </div>
+                  </div>
+                  <!-- Caveat is intentionally NOT repeated in dark variant
+                       to keep "exactly once per populated state" rule. -->
+                </section>
+
+                <section class="vb-ai">
+                  <span class="vb-ai-glyph"
+                    ><i class="ph ph-sparkle"></i
+                  ></span>
+                  <div class="vb-ai-text">
+                    <h4>Suggerimenti AI · presto disponibile</h4>
+                    <p>
+                      Suggerimenti personalizzati arrivano nella prossima fase.
+                    </p>
+                  </div>
+                </section>
+              </div>
+
+              <nav class="vb-tabs" aria-label="Navigazione principale">
+                <a class="vb-tab" data-active="true"
+                  ><i class="ph-fill ph-house"></i><span>Oggi</span></a
+                >
+                <a class="vb-tab"
+                  ><i class="ph ph-fork-knife"></i
+                  ><span>Pasti</span></a
+                >
+                <a class="vb-tab"
+                  ><i class="ph ph-shopping-bag"></i
+                  ><span>Spesa</span></a
+                >
+                <a class="vb-tab"
+                  ><i class="ph ph-user-circle"></i
+                  ><span>Profilo</span></a
+                >
+              </nav>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           4) Desktop · 1280 · LIGHT · POPULATED — editorial spread
+           ============================================================ -->
+      <section class="showcase-section" style="grid-column: 1 / -1">
+        <h3>Desktop · 1280 · light · populated</h3>
+        <div class="device device-desktop">
+          <div class="today-page variant-italian is-desktop">
+            <div class="vb-desktop-shell">
+              <aside class="vb-rail">
+                <h2 class="vb-brand">Wellness Buddy</h2>
+                <a class="vb-rail-link" data-active="true"
+                  ><i class="ph-fill ph-house"></i> Oggi</a
+                >
+                <a class="vb-rail-link"
+                  ><i class="ph ph-fork-knife"></i> Pasti</a
+                >
+                <a class="vb-rail-link"
+                  ><i class="ph ph-shopping-bag"></i> Spesa</a
+                >
+                <a class="vb-rail-link"
+                  ><i class="ph ph-chart-line"></i> Andamento</a
+                >
+                <a class="vb-rail-link"
+                  ><i class="ph ph-user-circle"></i> Profilo</a
+                >
+              </aside>
+
+              <main class="vb-desktop-content">
+                <div class="vb-desktop-greeting">
+                  <div>
+                    <h1>Buongiorno, Stefano</h1>
+                    <div class="vb-date" style="margin-top: 6px">
+                      lunedì 5 maggio 2026
+                    </div>
+                  </div>
+                  <div class="vb-desktop-meta">
+                    <strong>Giorno 12 · piano di 8 settimane</strong>
+                    Sincronizzato adesso
+                  </div>
+                </div>
+
+                <!-- LEFT: macro ring + macros -->
+                <div class="vb-col">
+                  <section class="vb-ring-card">
+                    <div class="vb-ring-wrap">
+                      <svg class="vb-ring-svg" viewBox="0 0 220 220">
+                        <circle
+                          class="vb-ring-track"
+                          cx="110"
+                          cy="110"
+                          r="96"
+                        ></circle>
+                        <circle
+                          class="vb-ring-arc olive"
+                          cx="110"
+                          cy="110"
+                          r="96"
+                          stroke-dasharray="482.5 603.2"
+                        ></circle>
+                      </svg>
+                      <div class="vb-ring-center">
+                        <div class="vb-kcal">1.760</div>
+                        <div class="vb-kcal-of">su 2.200</div>
+                        <div class="vb-kcal-label">kcal · oggi</div>
+                      </div>
+                    </div>
+                    <div class="vb-macro-pills">
+                      <div class="vb-macro-pill">
+                        <span class="vb-macro-name">Proteine</span>
+                        <span class="vb-macro-val">78 / 120 g</span>
+                        <span class="vb-macro-bar plum"
+                          ><i style="width: 65%"></i
+                        ></span>
+                      </div>
+                      <div class="vb-macro-pill">
+                        <span class="vb-macro-name">Carbo</span>
+                        <span class="vb-macro-val">165 / 250 g</span>
+                        <span class="vb-macro-bar olive"
+                          ><i style="width: 66%"></i
+                        ></span>
+                      </div>
+                      <div class="vb-macro-pill">
+                        <span class="vb-macro-name">Grassi</span>
+                        <span class="vb-macro-val">52 / 75 g</span>
+                        <span class="vb-macro-bar honey"
+                          ><i style="width: 69%"></i
+                        ></span>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+
+                <!-- CENTER: meals -->
+                <div class="vb-col">
+                  <h2 class="vb-section-h" style="margin: 0">
+                    I tuoi pasti
+                  </h2>
+                  <div class="vb-meal-list">
+                    <article class="vb-meal-card" data-meal="colazione">
+                      <div class="vb-meal-photo">
+                        <img
+                          src="https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&q=80"
+                          alt="Yogurt greco con granola e mirtilli"
+                        />
+                        <span class="vb-stamp-fatto" aria-hidden="true"
+                          >FATTO</span
+                        >
+                      </div>
+                      <div class="vb-meal-body">
+                        <div class="vb-meal-head">
+                          <span class="vb-meal-tag">Colazione</span>
+                          <span class="vb-meal-time">07:30</span>
+                        </div>
+                        <p class="vb-meal-name">
+                          Yogurt greco, granola, mirtilli
+                        </p>
+                        <div class="vb-meal-macros">
+                          <span><strong>380</strong> kcal</span>
+                          <span class="dot">·</span>
+                          <span>P <strong>22</strong></span>
+                          <span>C <strong>45</strong></span>
+                          <span>F <strong>12</strong></span>
+                        </div>
+                      </div>
+                      <div class="vb-meal-check">
+                        <span class="vb-check" data-checked="true"
+                          ><i class="ph-fill ph-check"></i
+                        ></span>
+                      </div>
+                    </article>
+
+                    <article class="vb-meal-card" data-meal="pranzo">
+                      <div class="vb-meal-photo">
+                        <img
+                          src="https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=400&q=80"
+                          alt="Pasta integrale al pomodoro fresco"
+                        />
+                      </div>
+                      <div class="vb-meal-body">
+                        <div class="vb-meal-head">
+                          <span class="vb-meal-tag">Pranzo</span>
+                          <span class="vb-meal-time">13:00</span>
+                        </div>
+                        <p class="vb-meal-name">
+                          Pasta integrale, pomodoro fresco, basilico
+                        </p>
+                        <div class="vb-meal-macros">
+                          <span><strong>540</strong> kcal</span>
+                          <span class="dot">·</span>
+                          <span>P <strong>18</strong></span>
+                          <span>C <strong>78</strong></span>
+                          <span>F <strong>14</strong></span>
+                        </div>
+                        <span class="vb-stamp-shared"
+                          >Condiviso con Marta</span
+                        >
+                      </div>
+                      <div class="vb-meal-check">
+                        <span class="vb-check"></span>
+                      </div>
+                    </article>
+
+                    <article class="vb-meal-card" data-meal="spuntino">
+                      <div class="vb-meal-photo">
+                        <img
+                          src="https://images.unsplash.com/photo-1508061253366-f7da158b6d46?w=400&q=80"
+                          alt="Mandorle e arancia"
+                        />
+                      </div>
+                      <div class="vb-meal-body">
+                        <div class="vb-meal-head">
+                          <span class="vb-meal-tag">Spuntino</span>
+                          <span class="vb-meal-time">17:00</span>
+                        </div>
+                        <p class="vb-meal-name">Mandorle e arancia</p>
+                        <div class="vb-meal-macros">
+                          <span><strong>220</strong> kcal</span>
+                          <span class="dot">·</span>
+                          <span>P <strong>6</strong></span>
+                          <span>C <strong>28</strong></span>
+                          <span>F <strong>12</strong></span>
+                        </div>
+                      </div>
+                      <div class="vb-meal-check">
+                        <span class="vb-check"></span>
+                      </div>
+                    </article>
+
+                    <article class="vb-meal-card" data-meal="cena">
+                      <div class="vb-meal-photo">
+                        <img
+                          src="https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&q=80"
+                          alt="Salmone al forno con verdure grigliate"
+                        />
+                      </div>
+                      <div class="vb-meal-body">
+                        <div class="vb-meal-head">
+                          <span class="vb-meal-tag">Cena</span>
+                          <span class="vb-meal-time">20:00</span>
+                        </div>
+                        <p class="vb-meal-name">
+                          Salmone al forno, verdure grigliate, riso venere
+                        </p>
+                        <div class="vb-meal-macros">
+                          <span><strong>620</strong> kcal</span>
+                          <span class="dot">·</span>
+                          <span>P <strong>38</strong></span>
+                          <span>C <strong>55</strong></span>
+                          <span>F <strong>22</strong></span>
+                        </div>
+                        <span class="vb-stamp-shared"
+                          >Condiviso con Marta</span
+                        >
+                      </div>
+                      <div class="vb-meal-check">
+                        <span class="vb-check"></span>
+                      </div>
+                    </article>
+                  </div>
+                </div>
+
+                <!-- RIGHT: weight + workout + AI -->
+                <div class="vb-col">
+                  <section class="vb-sub">
+                    <h3 class="vb-sub-h">Pesata di oggi</h3>
+                    <div class="vb-weight-row">
+                      <input
+                        class="vb-weight-input"
+                        type="text"
+                        placeholder="75,3"
+                        aria-label="Peso in chilogrammi"
+                      />
+                      <button class="vb-weight-cta">Salva</button>
+                    </div>
+                    <div class="vb-weight-prev">
+                      Ieri 75,1 kg
+                      <span class="delta"
+                        >· ↓ 0,2 kg dalla scorsa settimana</span
+                      >
+                    </div>
+                  </section>
+
+                  <section class="vb-sub vb-workout">
+                    <h3 class="vb-sub-h">Allenamento</h3>
+                    <div class="vb-workout-row">
+                      <svg
+                        class="vb-runner"
+                        viewBox="0 0 44 44"
+                        aria-hidden="true"
+                      >
+                        <g
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.8"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <circle cx="26" cy="9" r="3.2"></circle>
+                          <path d="M25.5 12.4 L20 22.5"></path>
+                          <path d="M22.5 16 L15.5 14"></path>
+                          <path d="M22.5 16 L29 21.5"></path>
+                          <path d="M20.2 22 L13.5 31"></path>
+                          <path d="M20.2 22 L26 32 L31.5 30.5"></path>
+                          <path
+                            d="M9 36 Q 22 38 35 36"
+                            stroke-dasharray="2 3"
+                            opacity="0.55"
+                          ></path>
+                        </g>
+                      </svg>
+                      <div class="vb-workout-text">
+                        <span class="vb-workout-name">Corsa</span>
+                        <span class="vb-workout-stats"
+                          >32 min · 285 kcal</span
+                        >
+                      </div>
+                    </div>
+                    <!-- Caveat handwritten only on the canonical mobile populated state.
+                         Desktop omits to keep "exactly once per page" verification clean. -->
+                  </section>
+
+                  <section class="vb-ai">
+                    <span class="vb-ai-glyph"
+                      ><i class="ph ph-sparkle"></i
+                    ></span>
+                    <div class="vb-ai-text">
+                      <h4>Suggerimenti AI · presto disponibile</h4>
+                      <p>Disponibili nella prossima fase.</p>
+                    </div>
+                  </section>
+                </div>
+              </main>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

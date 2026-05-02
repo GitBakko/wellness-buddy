@@ -1,0 +1,1610 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Variante A · Lifesum Pure · Wellness Buddy</title>
+  <link rel="stylesheet" href="../tone-calibration/shared.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web/src/regular/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web/src/fill/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web/src/bold/style.css">
+  <style>
+    /* ────────────────────────────────────────────────────────────────
+     * Variante A · Lifesum Pure
+     * Local OKLCH palette — no hardcoded hex anywhere.
+     * Scoped under .variant-lifesum-pure to avoid bleeding into shared
+     * shell tokens.
+     * ──────────────────────────────────────────────────────────────── */
+    .variant-lifesum-pure {
+      /* Lifesum-faithful palette */
+      --ls-bg: oklch(97% 0.012 85);
+      --ls-surface: oklch(99% 0.005 85);
+      --ls-surface-2: oklch(94% 0.015 85);
+      --ls-border: oklch(90% 0.012 85);
+      --ls-ink: oklch(22% 0.015 240);
+      --ls-ink-soft: oklch(50% 0.015 240);
+      --ls-ink-muted: oklch(65% 0.01 240);
+
+      --ls-leaf: oklch(65% 0.13 150);
+      --ls-leaf-soft: oklch(92% 0.05 150);
+      --ls-leaf-deep: oklch(48% 0.13 150);
+
+      --ls-coral: oklch(72% 0.14 30);
+      --ls-coral-soft: oklch(94% 0.05 30);
+      --ls-coral-deep: oklch(58% 0.16 28);
+
+      --ls-blueberry: oklch(58% 0.13 280);
+      --ls-blueberry-soft: oklch(94% 0.04 280);
+      --ls-amber: oklch(75% 0.13 75);
+      --ls-amber-soft: oklch(96% 0.04 75);
+      --ls-carb-soft: oklch(94% 0.04 145);
+
+      --r-sm: 12px;
+      --r-md: 16px;
+      --r-lg: 20px;
+      --r-xl: 24px;
+      --r-pill: 9999px;
+      --shadow-soft: 0 1px 3px oklch(0% 0 0 / 0.04), 0 0 0 1px oklch(0% 0 0 / 0.02);
+      --shadow-card: 0 1px 2px oklch(0% 0 0 / 0.03), 0 4px 12px oklch(0% 0 0 / 0.04);
+
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background: var(--ls-bg);
+      color: var(--ls-ink);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .variant-lifesum-pure[data-theme="dark"],
+    [data-theme="dark"] .variant-lifesum-pure {
+      --ls-bg: oklch(18% 0.015 250);
+      --ls-surface: oklch(22% 0.018 250);
+      --ls-surface-2: oklch(26% 0.02 250);
+      --ls-border: oklch(30% 0.015 250);
+      --ls-ink: oklch(94% 0.005 80);
+      --ls-ink-soft: oklch(78% 0.01 80);
+      --ls-ink-muted: oklch(60% 0.012 250);
+      --ls-leaf-soft: oklch(28% 0.06 150);
+      --ls-coral-soft: oklch(28% 0.06 30);
+      --ls-blueberry-soft: oklch(28% 0.06 280);
+      --ls-amber-soft: oklch(28% 0.06 75);
+      --ls-carb-soft: oklch(28% 0.06 145);
+    }
+
+    /* ─── Layout shell ─────────────────────────────────────────────── */
+    .variant-lifesum-pure .lp-shell {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      background: var(--ls-bg);
+      overflow: hidden;
+    }
+    .variant-lifesum-pure .lp-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 24px 96px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .variant-lifesum-pure .lp-scroll::-webkit-scrollbar { width: 0; }
+
+    /* ─── Header / greeting ───────────────────────────────────────── */
+    .variant-lifesum-pure .lp-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .variant-lifesum-pure .lp-greeting {
+      font-weight: 700;
+      font-size: clamp(1.5rem, 5vw, 1.875rem);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin: 0;
+      color: var(--ls-ink);
+    }
+    .variant-lifesum-pure .lp-date {
+      font-size: 0.875rem;
+      color: var(--ls-ink-soft);
+      margin: 4px 0 0;
+      font-weight: 500;
+    }
+    .variant-lifesum-pure .lp-subline {
+      font-size: 0.8125rem;
+      color: var(--ls-ink-muted);
+      margin: 2px 0 0;
+      font-weight: 500;
+    }
+    .variant-lifesum-pure .lp-score-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: var(--ls-leaf-soft);
+      color: var(--ls-leaf-deep);
+      border-radius: var(--r-pill);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .variant-lifesum-pure .lp-score-pill i { font-size: 16px; }
+    [data-theme="dark"] .variant-lifesum-pure .lp-score-pill {
+      color: oklch(80% 0.12 150);
+    }
+
+    /* ─── Macro ring hero ─────────────────────────────────────────── */
+    .variant-lifesum-pure .lp-ring-card {
+      background: var(--ls-surface);
+      border: 1px solid var(--ls-border);
+      border-radius: var(--r-lg);
+      padding: 24px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      box-shadow: var(--shadow-card);
+    }
+    .variant-lifesum-pure .lp-ring-wrap {
+      position: relative;
+      width: 220px;
+      height: 220px;
+    }
+    .variant-lifesum-pure .macro-ring {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .variant-lifesum-pure .lp-ring-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      gap: 2px;
+    }
+    .variant-lifesum-pure .lp-kcal {
+      font-size: 2.75rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+      color: var(--ls-ink);
+    }
+    .variant-lifesum-pure .lp-kcal-target {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--ls-ink-soft);
+      font-variant-numeric: tabular-nums;
+      margin-top: 4px;
+    }
+    .variant-lifesum-pure .lp-kcal-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--ls-ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 2px;
+    }
+
+    /* macro pills */
+    .variant-lifesum-pure .lp-macro-pills {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      width: 100%;
+    }
+    .variant-lifesum-pure .lp-macro-pill {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 12px;
+      background: var(--ls-surface-2);
+      border-radius: var(--r-sm);
+      min-width: 0;
+    }
+    .variant-lifesum-pure .lp-macro-head {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--ls-ink-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .variant-lifesum-pure .lp-macro-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: var(--r-pill);
+      flex-shrink: 0;
+    }
+    .variant-lifesum-pure .lp-macro-dot[data-kind="protein"] { background: var(--ls-blueberry); }
+    .variant-lifesum-pure .lp-macro-dot[data-kind="carb"] { background: var(--ls-leaf-deep); }
+    .variant-lifesum-pure .lp-macro-dot[data-kind="fat"] { background: var(--ls-amber); }
+    .variant-lifesum-pure .lp-macro-value {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--ls-ink);
+      font-variant-numeric: tabular-nums;
+    }
+    .variant-lifesum-pure .lp-macro-bar {
+      height: 4px;
+      background: oklch(94% 0.005 240);
+      border-radius: var(--r-pill);
+      overflow: hidden;
+    }
+    [data-theme="dark"] .variant-lifesum-pure .lp-macro-bar { background: oklch(28% 0.01 250); }
+    .variant-lifesum-pure .lp-macro-bar-fill {
+      height: 100%;
+      border-radius: var(--r-pill);
+    }
+
+    /* ─── Section heading ─────────────────────────────────────────── */
+    .variant-lifesum-pure .lp-section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin: 4px 0 -4px;
+    }
+    .variant-lifesum-pure .lp-section-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--ls-ink);
+      margin: 0;
+    }
+    .variant-lifesum-pure .lp-section-meta {
+      font-size: 0.75rem;
+      color: var(--ls-ink-muted);
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ─── Meal cards ──────────────────────────────────────────────── */
+    .variant-lifesum-pure .lp-meals {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .variant-lifesum-pure .lp-meal {
+      background: var(--ls-surface);
+      border: 1px solid var(--ls-border);
+      border-radius: var(--r-md);
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: var(--shadow-soft);
+    }
+    .variant-lifesum-pure .lp-meal-photo {
+      width: 80px;
+      height: 80px;
+      border-radius: var(--r-sm);
+      object-fit: cover;
+      flex-shrink: 0;
+      background: var(--ls-surface-2);
+      display: block;
+    }
+    .variant-lifesum-pure .lp-meal-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .variant-lifesum-pure .lp-meal-slot {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      color: var(--ls-ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .variant-lifesum-pure .lp-meal-time {
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: var(--ls-ink-muted);
+      font-variant-numeric: tabular-nums;
+    }
+    .variant-lifesum-pure .lp-meal-name {
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: -0.005em;
+      color: var(--ls-ink);
+      margin: 0;
+      line-height: 1.3;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+    .variant-lifesum-pure .lp-meal-macros {
+      display: flex;
+      gap: 10px;
+      font-size: 0.75rem;
+      color: var(--ls-ink-soft);
+      font-variant-numeric: tabular-nums;
+      font-weight: 500;
+      flex-wrap: wrap;
+    }
+    .variant-lifesum-pure .lp-meal-macros span { white-space: nowrap; }
+    .variant-lifesum-pure .lp-meal-macros .kcal {
+      color: var(--ls-ink);
+      font-weight: 600;
+    }
+    .variant-lifesum-pure .lp-meal-check {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--r-pill);
+      border: 1.5px solid var(--ls-border);
+      background: transparent;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ls-ink-muted);
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: transform 80ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .variant-lifesum-pure .lp-meal-check i { font-size: 22px; }
+    .variant-lifesum-pure .lp-meal-check[data-completed="true"] {
+      background: var(--ls-leaf);
+      border-color: var(--ls-leaf);
+      color: oklch(99% 0.01 150);
+    }
+
+    /* ─── Sub widgets: weight + workout ───────────────────────────── */
+    .variant-lifesum-pure .lp-stack-2 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .variant-lifesum-pure .lp-widget {
+      background: var(--ls-surface);
+      border: 1px solid var(--ls-border);
+      border-radius: var(--r-lg);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: var(--shadow-soft);
+    }
+    .variant-lifesum-pure .lp-widget-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .variant-lifesum-pure .lp-widget-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--r-sm);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 18px;
+    }
+    .variant-lifesum-pure .lp-widget-icon[data-tone="coral"] {
+      background: var(--ls-coral-soft);
+      color: var(--ls-coral-deep);
+    }
+    .variant-lifesum-pure .lp-widget-icon[data-tone="leaf"] {
+      background: var(--ls-leaf-soft);
+      color: var(--ls-leaf-deep);
+    }
+    [data-theme="dark"] .variant-lifesum-pure .lp-widget-icon[data-tone="coral"] {
+      color: oklch(82% 0.13 30);
+    }
+    [data-theme="dark"] .variant-lifesum-pure .lp-widget-icon[data-tone="leaf"] {
+      color: oklch(82% 0.12 150);
+    }
+    .variant-lifesum-pure .lp-widget-title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      letter-spacing: -0.005em;
+      margin: 0;
+      color: var(--ls-ink);
+    }
+    .variant-lifesum-pure .lp-widget-sub {
+      font-size: 0.75rem;
+      color: var(--ls-ink-muted);
+      margin: 1px 0 0;
+      font-weight: 500;
+    }
+    .variant-lifesum-pure .lp-weight-row {
+      display: flex;
+      align-items: stretch;
+      gap: 8px;
+    }
+    .variant-lifesum-pure .lp-weight-input {
+      flex: 1;
+      padding: 12px 14px;
+      border: 1px solid var(--ls-border);
+      border-radius: var(--r-sm);
+      font: 600 1rem 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-variant-numeric: tabular-nums;
+      background: var(--ls-bg);
+      color: var(--ls-ink);
+      letter-spacing: -0.01em;
+    }
+    .variant-lifesum-pure .lp-weight-input::placeholder {
+      color: var(--ls-ink-muted);
+      font-weight: 500;
+    }
+    .variant-lifesum-pure .lp-weight-cta {
+      padding: 0 18px;
+      background: var(--ls-coral);
+      color: oklch(99% 0.005 30);
+      border: none;
+      border-radius: var(--r-sm);
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      letter-spacing: -0.005em;
+      min-height: 44px;
+    }
+    .variant-lifesum-pure .lp-weight-last {
+      font-size: 0.8125rem;
+      color: var(--ls-ink-soft);
+      font-variant-numeric: tabular-nums;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+    }
+    .variant-lifesum-pure .lp-weight-delta {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      color: var(--ls-leaf-deep);
+      font-weight: 600;
+    }
+    [data-theme="dark"] .variant-lifesum-pure .lp-weight-delta {
+      color: oklch(80% 0.12 150);
+    }
+    .variant-lifesum-pure .lp-workout-stats {
+      display: flex;
+      gap: 14px;
+      align-items: baseline;
+    }
+    .variant-lifesum-pure .lp-workout-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .variant-lifesum-pure .lp-workout-num {
+      font-size: 1.375rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
+      color: var(--ls-ink);
+      line-height: 1;
+    }
+    .variant-lifesum-pure .lp-workout-unit {
+      font-size: 0.6875rem;
+      color: var(--ls-ink-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* ─── AI widget (locked / soon) ──────────────────────────────── */
+    .variant-lifesum-pure .lp-ai {
+      background: var(--ls-surface);
+      border: 1px dashed var(--ls-border);
+      border-radius: var(--r-xl);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      opacity: 0.78;
+    }
+    .variant-lifesum-pure .lp-ai-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--r-pill);
+      background: var(--ls-leaf-soft);
+      color: var(--ls-leaf-deep);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    [data-theme="dark"] .variant-lifesum-pure .lp-ai-icon {
+      color: oklch(82% 0.12 150);
+    }
+    .variant-lifesum-pure .lp-ai-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .variant-lifesum-pure .lp-ai-title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--ls-ink);
+      margin: 0;
+    }
+    .variant-lifesum-pure .lp-ai-sub {
+      font-size: 0.75rem;
+      color: var(--ls-ink-muted);
+      margin: 0;
+      font-weight: 500;
+    }
+
+    /* ─── Bottom tabs ────────────────────────────────────────────── */
+    .variant-lifesum-pure .lp-tabs {
+      display: flex;
+      align-items: stretch;
+      justify-content: space-around;
+      border-top: 1px solid var(--ls-border);
+      background: var(--ls-surface);
+      padding: 8px 4px calc(8px + env(safe-area-inset-bottom, 0px));
+      flex-shrink: 0;
+    }
+    .variant-lifesum-pure .lp-tab {
+      flex: 1;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 4px 0;
+      background: transparent;
+      border: none;
+      color: var(--ls-ink-muted);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .variant-lifesum-pure .lp-tab i { font-size: 22px; line-height: 1; }
+    .variant-lifesum-pure .lp-tab[data-active="true"] {
+      color: var(--ls-leaf-deep);
+    }
+    [data-theme="dark"] .variant-lifesum-pure .lp-tab[data-active="true"] {
+      color: oklch(82% 0.12 150);
+    }
+
+    /* ─── Empty state ────────────────────────────────────────────── */
+    .variant-lifesum-pure .lp-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 18px;
+      padding: 48px 24px 24px;
+      flex: 1;
+      justify-content: center;
+    }
+    .variant-lifesum-pure .lp-empty-art {
+      width: 168px;
+      height: 168px;
+      flex-shrink: 0;
+    }
+    .variant-lifesum-pure .lp-empty-title {
+      font-size: 1.375rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0;
+      color: var(--ls-ink);
+      line-height: 1.2;
+    }
+    .variant-lifesum-pure .lp-empty-body {
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      color: var(--ls-ink-soft);
+      max-width: 30ch;
+      margin: 0;
+      font-weight: 500;
+    }
+    .variant-lifesum-pure .lp-empty-cta {
+      margin-top: 8px;
+      padding: 14px 28px;
+      background: var(--ls-leaf);
+      color: oklch(99% 0.01 150);
+      border: none;
+      border-radius: var(--r-pill);
+      font: 700 0.9375rem 'Plus Jakarta Sans', system-ui, sans-serif;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 48px;
+      box-shadow: 0 2px 6px oklch(48% 0.13 150 / 0.18);
+    }
+    .variant-lifesum-pure .lp-empty-cta i { font-size: 18px; }
+    .variant-lifesum-pure .lp-empty-help {
+      font-size: 0.8125rem;
+      color: var(--ls-ink-muted);
+      font-weight: 500;
+      margin: 0;
+    }
+
+    /* ─── Desktop layout ─────────────────────────────────────────── */
+    .variant-lifesum-pure.lp-desktop .lp-shell { flex-direction: row; }
+    .variant-lifesum-pure.lp-desktop .lp-rail {
+      width: 220px;
+      background: var(--ls-surface);
+      border-right: 1px solid var(--ls-border);
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .variant-lifesum-pure.lp-desktop .lp-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 1.125rem;
+      letter-spacing: -0.02em;
+      color: var(--ls-ink);
+      padding: 4px 8px 16px;
+    }
+    .variant-lifesum-pure.lp-desktop .lp-brand-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--ls-leaf);
+      color: oklch(99% 0.01 150);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .variant-lifesum-pure.lp-desktop .lp-nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: var(--r-sm);
+      color: var(--ls-ink-soft);
+      font-size: 0.9375rem;
+      font-weight: 500;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      text-align: left;
+      font-family: inherit;
+    }
+    .variant-lifesum-pure.lp-desktop .lp-nav-link i { font-size: 20px; }
+    .variant-lifesum-pure.lp-desktop .lp-nav-link[data-active="true"] {
+      background: var(--ls-leaf-soft);
+      color: var(--ls-leaf-deep);
+      font-weight: 600;
+    }
+    [data-theme="dark"] .variant-lifesum-pure.lp-desktop .lp-nav-link[data-active="true"] {
+      color: oklch(82% 0.12 150);
+    }
+
+    .variant-lifesum-pure.lp-desktop .lp-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px 40px 40px;
+    }
+    .variant-lifesum-pure.lp-desktop .lp-grid {
+      display: grid;
+      grid-template-columns: 1.55fr 1fr;
+      gap: 24px;
+      margin-top: 24px;
+      align-items: start;
+    }
+    .variant-lifesum-pure.lp-desktop .lp-col {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-width: 0;
+    }
+    .variant-lifesum-pure.lp-desktop .lp-ring-card {
+      flex-direction: row;
+      gap: 28px;
+      align-items: center;
+      padding: 24px;
+    }
+    .variant-lifesum-pure.lp-desktop .lp-ring-wrap {
+      width: 240px;
+      height: 240px;
+      flex-shrink: 0;
+    }
+    .variant-lifesum-pure.lp-desktop .lp-kcal { font-size: 3.5rem; }
+    .variant-lifesum-pure.lp-desktop .lp-macro-pills {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .variant-lifesum-pure.lp-desktop .lp-meals {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="legend">Variante A · Lifesum Pure</div>
+
+  <div class="showcase">
+
+    <!-- ─── 1. Mobile · light · populated ─────────────────────────── -->
+    <section class="showcase-section">
+      <h3>Mobile · 390 · light · populated</h3>
+      <div class="device device-mobile">
+        <div class="today-page variant-lifesum-pure">
+          <div class="lp-shell">
+            <div class="lp-scroll">
+
+              <!-- header -->
+              <header class="lp-header">
+                <div>
+                  <h1 class="lp-greeting">Buongiorno, Stefano</h1>
+                  <p class="lp-date">lunedì 5 maggio 2026</p>
+                  <p class="lp-subline">Giorno 12 · piano di 8 settimane</p>
+                </div>
+                <div class="lp-score-pill" aria-label="Buon ritmo">
+                  <i class="ph-fill ph-leaf" aria-hidden="true"></i>
+                  <span>Buon ritmo</span>
+                </div>
+              </header>
+
+              <!-- macro ring hero -->
+              <div class="lp-ring-card">
+                <div class="lp-ring-wrap">
+                  <svg viewBox="0 0 200 200" class="macro-ring" aria-hidden="true">
+                    <!-- outer track (kcal) -->
+                    <circle cx="100" cy="100" r="86" fill="none"
+                            stroke="var(--ls-leaf-soft)" stroke-width="12"/>
+                    <!-- outer progress arc 80% (1760 / 2200) -->
+                    <circle cx="100" cy="100" r="86" fill="none"
+                            stroke="var(--ls-leaf)" stroke-width="12"
+                            stroke-dasharray="432 540" stroke-linecap="round"
+                            transform="rotate(-90 100 100)"/>
+                    <!-- protein ring (78/120 = 65%) -->
+                    <circle cx="100" cy="100" r="68" fill="none"
+                            stroke="var(--ls-blueberry-soft)" stroke-width="6"/>
+                    <circle cx="100" cy="100" r="68" fill="none"
+                            stroke="var(--ls-blueberry)" stroke-width="6"
+                            stroke-dasharray="278 427" stroke-linecap="round"
+                            transform="rotate(-90 100 100)"/>
+                    <!-- carb ring (165/250 = 66%) -->
+                    <circle cx="100" cy="100" r="54" fill="none"
+                            stroke="var(--ls-carb-soft)" stroke-width="6"/>
+                    <circle cx="100" cy="100" r="54" fill="none"
+                            stroke="var(--ls-leaf-deep)" stroke-width="6"
+                            stroke-dasharray="224 339" stroke-linecap="round"
+                            transform="rotate(-90 100 100)"/>
+                    <!-- fat ring (52/75 = 69%) -->
+                    <circle cx="100" cy="100" r="40" fill="none"
+                            stroke="var(--ls-amber-soft)" stroke-width="6"/>
+                    <circle cx="100" cy="100" r="40" fill="none"
+                            stroke="var(--ls-amber)" stroke-width="6"
+                            stroke-dasharray="174 251" stroke-linecap="round"
+                            transform="rotate(-90 100 100)"/>
+                  </svg>
+                  <div class="lp-ring-center">
+                    <div class="lp-kcal">1.760</div>
+                    <div class="lp-kcal-target">su 2.200</div>
+                    <div class="lp-kcal-label">kcal oggi</div>
+                  </div>
+                </div>
+
+                <div class="lp-macro-pills">
+                  <div class="lp-macro-pill">
+                    <div class="lp-macro-head">
+                      <span class="lp-macro-dot" data-kind="protein"></span>
+                      <span>Prot.</span>
+                    </div>
+                    <div class="lp-macro-value">78 / 120 g</div>
+                    <div class="lp-macro-bar">
+                      <div class="lp-macro-bar-fill" style="width: 65%; background: var(--ls-blueberry);"></div>
+                    </div>
+                  </div>
+                  <div class="lp-macro-pill">
+                    <div class="lp-macro-head">
+                      <span class="lp-macro-dot" data-kind="carb"></span>
+                      <span>Carb.</span>
+                    </div>
+                    <div class="lp-macro-value">165 / 250 g</div>
+                    <div class="lp-macro-bar">
+                      <div class="lp-macro-bar-fill" style="width: 66%; background: var(--ls-leaf-deep);"></div>
+                    </div>
+                  </div>
+                  <div class="lp-macro-pill">
+                    <div class="lp-macro-head">
+                      <span class="lp-macro-dot" data-kind="fat"></span>
+                      <span>Grassi</span>
+                    </div>
+                    <div class="lp-macro-value">52 / 75 g</div>
+                    <div class="lp-macro-bar">
+                      <div class="lp-macro-bar-fill" style="width: 69%; background: var(--ls-amber);"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- meals -->
+              <div class="lp-section-head">
+                <h2 class="lp-section-title">I tuoi pasti</h2>
+                <span class="lp-section-meta">1 / 4 completati</span>
+              </div>
+              <div class="lp-meals">
+                <article class="lp-meal">
+                  <img class="lp-meal-photo" alt=""
+                       src="https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&q=80">
+                  <div class="lp-meal-info">
+                    <div class="lp-meal-slot">Colazione <span class="lp-meal-time">· 07:30</span></div>
+                    <h3 class="lp-meal-name">Yogurt greco, granola, mirtilli</h3>
+                    <div class="lp-meal-macros">
+                      <span class="kcal">380 kcal</span>
+                      <span>P 22 g</span>
+                      <span>C 45 g</span>
+                      <span>F 12 g</span>
+                    </div>
+                  </div>
+                  <button class="lp-meal-check" data-completed="true" aria-label="Pasto completato">
+                    <i class="ph-bold ph-check" aria-hidden="true"></i>
+                  </button>
+                </article>
+
+                <article class="lp-meal">
+                  <img class="lp-meal-photo" alt=""
+                       src="https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=400&q=80">
+                  <div class="lp-meal-info">
+                    <div class="lp-meal-slot">Pranzo <span class="lp-meal-time">· 13:00</span></div>
+                    <h3 class="lp-meal-name">Pasta integrale, pomodoro fresco, basilico</h3>
+                    <div class="lp-meal-macros">
+                      <span class="kcal">540 kcal</span>
+                      <span>P 18 g</span>
+                      <span>C 78 g</span>
+                      <span>F 14 g</span>
+                    </div>
+                  </div>
+                  <button class="lp-meal-check" aria-label="Segna come completato">
+                    <i class="ph ph-circle" aria-hidden="true"></i>
+                  </button>
+                </article>
+
+                <article class="lp-meal">
+                  <img class="lp-meal-photo" alt=""
+                       src="https://images.unsplash.com/photo-1508061253366-f7da158b6d46?w=400&q=80">
+                  <div class="lp-meal-info">
+                    <div class="lp-meal-slot">Spuntino <span class="lp-meal-time">· 17:00</span></div>
+                    <h3 class="lp-meal-name">Mandorle e arancia</h3>
+                    <div class="lp-meal-macros">
+                      <span class="kcal">220 kcal</span>
+                      <span>P 6 g</span>
+                      <span>C 28 g</span>
+                      <span>F 12 g</span>
+                    </div>
+                  </div>
+                  <button class="lp-meal-check" aria-label="Segna come completato">
+                    <i class="ph ph-circle" aria-hidden="true"></i>
+                  </button>
+                </article>
+
+                <article class="lp-meal">
+                  <img class="lp-meal-photo" alt=""
+                       src="https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&q=80">
+                  <div class="lp-meal-info">
+                    <div class="lp-meal-slot">Cena <span class="lp-meal-time">· 20:00</span></div>
+                    <h3 class="lp-meal-name">Salmone al forno, verdure grigliate, riso venere</h3>
+                    <div class="lp-meal-macros">
+                      <span class="kcal">620 kcal</span>
+                      <span>P 38 g</span>
+                      <span>C 55 g</span>
+                      <span>F 22 g</span>
+                    </div>
+                  </div>
+                  <button class="lp-meal-check" aria-label="Segna come completato">
+                    <i class="ph ph-circle" aria-hidden="true"></i>
+                  </button>
+                </article>
+              </div>
+
+              <!-- weight + workout -->
+              <div class="lp-stack-2">
+                <section class="lp-widget">
+                  <div class="lp-widget-head">
+                    <span class="lp-widget-icon" data-tone="coral" aria-hidden="true">
+                      <i class="ph-fill ph-scales"></i>
+                    </span>
+                    <div>
+                      <h3 class="lp-widget-title">Pesata di oggi</h3>
+                      <p class="lp-widget-sub">aggiorna il tuo peso</p>
+                    </div>
+                  </div>
+                  <div class="lp-weight-row">
+                    <input class="lp-weight-input" type="text" inputmode="decimal"
+                           placeholder="75,3" aria-label="Peso in kg">
+                    <button class="lp-weight-cta">Salva kg</button>
+                  </div>
+                  <div class="lp-weight-last">
+                    Ieri 75,1 kg
+                    <span class="lp-weight-delta">
+                      <i class="ph-bold ph-arrow-down" aria-hidden="true"></i> 0,2 kg
+                    </span>
+                  </div>
+                </section>
+
+                <section class="lp-widget">
+                  <div class="lp-widget-head">
+                    <span class="lp-widget-icon" data-tone="leaf" aria-hidden="true">
+                      <i class="ph-fill ph-person-simple-run"></i>
+                    </span>
+                    <div>
+                      <h3 class="lp-widget-title">Allenamento di oggi</h3>
+                      <p class="lp-widget-sub">corsa lenta · zona 2</p>
+                    </div>
+                  </div>
+                  <div class="lp-workout-stats">
+                    <div class="lp-workout-stat">
+                      <span class="lp-workout-num">32</span>
+                      <span class="lp-workout-unit">minuti</span>
+                    </div>
+                    <div class="lp-workout-stat">
+                      <span class="lp-workout-num">285</span>
+                      <span class="lp-workout-unit">kcal bruciate</span>
+                    </div>
+                  </div>
+                </section>
+              </div>
+
+              <!-- AI widget -->
+              <section class="lp-ai" aria-label="Suggerimenti AI in arrivo">
+                <span class="lp-ai-icon" aria-hidden="true">
+                  <i class="ph-fill ph-sparkle"></i>
+                </span>
+                <div class="lp-ai-body">
+                  <h3 class="lp-ai-title">Suggerimenti AI</h3>
+                  <p class="lp-ai-sub">presto disponibile</p>
+                </div>
+              </section>
+
+            </div>
+
+            <!-- bottom tabs -->
+            <nav class="lp-tabs" aria-label="Navigazione principale">
+              <button class="lp-tab" data-active="true">
+                <i class="ph-fill ph-leaf" aria-hidden="true"></i>
+                <span>Oggi</span>
+              </button>
+              <button class="lp-tab">
+                <i class="ph ph-calendar-blank" aria-hidden="true"></i>
+                <span>Settimana</span>
+              </button>
+              <button class="lp-tab">
+                <i class="ph ph-shopping-cart" aria-hidden="true"></i>
+                <span>Spesa</span>
+              </button>
+              <button class="lp-tab">
+                <i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i>
+                <span>Storico</span>
+              </button>
+              <button class="lp-tab">
+                <i class="ph ph-user" aria-hidden="true"></i>
+                <span>Profilo</span>
+              </button>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── 2. Mobile · light · empty ─────────────────────────────── -->
+    <section class="showcase-section">
+      <h3>Mobile · 390 · light · empty</h3>
+      <div class="device device-mobile">
+        <div class="today-page variant-lifesum-pure">
+          <div class="lp-shell">
+            <div class="lp-scroll" style="padding-top: 24px;">
+
+              <header class="lp-header">
+                <div>
+                  <h1 class="lp-greeting">Buongiorno, Stefano</h1>
+                  <p class="lp-date">lunedì 5 maggio 2026</p>
+                </div>
+              </header>
+
+              <div class="lp-empty">
+                <!-- original line-art: leaf rising from a plate -->
+                <svg class="lp-empty-art" viewBox="0 0 200 200" aria-hidden="true">
+                  <!-- soft ground tint -->
+                  <ellipse cx="100" cy="160" rx="74" ry="9"
+                           fill="var(--ls-leaf-soft)" opacity="0.9"/>
+                  <!-- plate ellipse -->
+                  <ellipse cx="100" cy="148" rx="62" ry="14"
+                           fill="none" stroke="var(--ls-ink-soft)" stroke-width="2"/>
+                  <ellipse cx="100" cy="146" rx="48" ry="10"
+                           fill="none" stroke="var(--ls-ink-muted)" stroke-width="1.5" opacity="0.6"/>
+                  <!-- stem -->
+                  <path d="M100 145 C 100 120, 100 92, 100 70"
+                        stroke="var(--ls-leaf-deep)" stroke-width="2.5"
+                        stroke-linecap="round" fill="none"/>
+                  <!-- leaf body -->
+                  <path d="M100 70
+                           C 70 70, 56 50, 60 28
+                           C 84 28, 102 44, 100 70 Z"
+                        fill="var(--ls-leaf-soft)"
+                        stroke="var(--ls-leaf-deep)" stroke-width="2"
+                        stroke-linejoin="round"/>
+                  <!-- leaf vein -->
+                  <path d="M62 32 C 76 44, 88 56, 100 70"
+                        stroke="var(--ls-leaf-deep)" stroke-width="1.5"
+                        stroke-linecap="round" fill="none" opacity="0.7"/>
+                  <!-- secondary smaller leaf -->
+                  <path d="M100 100
+                           C 118 96, 132 84, 138 68
+                           C 122 64, 106 76, 100 100 Z"
+                        fill="oklch(96% 0.03 150)"
+                        stroke="var(--ls-leaf-deep)" stroke-width="2"
+                        stroke-linejoin="round"/>
+                  <path d="M138 68 C 124 76, 112 88, 100 100"
+                        stroke="var(--ls-leaf-deep)" stroke-width="1.5"
+                        stroke-linecap="round" fill="none" opacity="0.7"/>
+                  <!-- spark accents -->
+                  <circle cx="46" cy="64" r="3" fill="var(--ls-coral)" opacity="0.7"/>
+                  <circle cx="156" cy="100" r="2.5" fill="var(--ls-amber)" opacity="0.7"/>
+                  <circle cx="160" cy="44" r="2" fill="var(--ls-blueberry)" opacity="0.6"/>
+                </svg>
+
+                <h2 class="lp-empty-title">Inizia caricando il tuo piano nutrizionale</h2>
+                <p class="lp-empty-body">
+                  Carica il file Markdown del tuo piano: vedrai i pasti di oggi e potrai
+                  iniziare a tracciare peso e allenamenti.
+                </p>
+                <button class="lp-empty-cta">
+                  <i class="ph-fill ph-upload-simple" aria-hidden="true"></i>
+                  Carica piano
+                </button>
+                <p class="lp-empty-help">Solo file .md · max 200 kB</p>
+              </div>
+
+            </div>
+
+            <nav class="lp-tabs" aria-label="Navigazione principale">
+              <button class="lp-tab" data-active="true">
+                <i class="ph-fill ph-leaf" aria-hidden="true"></i>
+                <span>Oggi</span>
+              </button>
+              <button class="lp-tab">
+                <i class="ph ph-calendar-blank" aria-hidden="true"></i>
+                <span>Settimana</span>
+              </button>
+              <button class="lp-tab">
+                <i class="ph ph-shopping-cart" aria-hidden="true"></i>
+                <span>Spesa</span>
+              </button>
+              <button class="lp-tab">
+                <i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i>
+                <span>Storico</span>
+              </button>
+              <button class="lp-tab">
+                <i class="ph ph-user" aria-hidden="true"></i>
+                <span>Profilo</span>
+              </button>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── 3. Mobile · dark · populated ──────────────────────────── -->
+    <section class="showcase-section" data-theme="dark">
+      <h3>Mobile · 390 · dark · populated</h3>
+      <div class="device device-mobile" data-theme="dark">
+        <div class="today-page variant-lifesum-pure" data-theme="dark">
+          <div class="lp-shell">
+            <div class="lp-scroll">
+
+              <header class="lp-header">
+                <div>
+                  <h1 class="lp-greeting">Buongiorno, Stefano</h1>
+                  <p class="lp-date">lunedì 5 maggio 2026</p>
+                  <p class="lp-subline">Giorno 12 · piano di 8 settimane</p>
+                </div>
+                <div class="lp-score-pill" aria-label="Buon ritmo">
+                  <i class="ph-fill ph-leaf" aria-hidden="true"></i>
+                  <span>Buon ritmo</span>
+                </div>
+              </header>
+
+              <div class="lp-ring-card">
+                <div class="lp-ring-wrap">
+                  <svg viewBox="0 0 200 200" class="macro-ring" aria-hidden="true">
+                    <circle cx="100" cy="100" r="86" fill="none"
+                            stroke="var(--ls-leaf-soft)" stroke-width="12"/>
+                    <circle cx="100" cy="100" r="86" fill="none"
+                            stroke="var(--ls-leaf)" stroke-width="12"
+                            stroke-dasharray="432 540" stroke-linecap="round"
+                            transform="rotate(-90 100 100)"/>
+                    <circle cx="100" cy="100" r="68" fill="none"
+                            stroke="var(--ls-blueberry-soft)" stroke-width="6"/>
+                    <circle cx="100" cy="100" r="68" fill="none"
+                            stroke="var(--ls-blueberry)" stroke-width="6"
+                            stroke-dasharray="278 427" stroke-linecap="round"
+                            transform="rotate(-90 100 100)"/>
+                    <circle cx="100" cy="100" r="54" fill="none"
+                            stroke="var(--ls-carb-soft)" stroke-width="6"/>
+                    <circle cx="100" cy="100" r="54" fill="none"
+                            stroke="var(--ls-leaf-deep)" stroke-width="6"
+                            stroke-dasharray="224 339" stroke-linecap="round"
+                            transform="rotate(-90 100 100)"/>
+                    <circle cx="100" cy="100" r="40" fill="none"
+                            stroke="var(--ls-amber-soft)" stroke-width="6"/>
+                    <circle cx="100" cy="100" r="40" fill="none"
+                            stroke="var(--ls-amber)" stroke-width="6"
+                            stroke-dasharray="174 251" stroke-linecap="round"
+                            transform="rotate(-90 100 100)"/>
+                  </svg>
+                  <div class="lp-ring-center">
+                    <div class="lp-kcal">1.760</div>
+                    <div class="lp-kcal-target">su 2.200</div>
+                    <div class="lp-kcal-label">kcal oggi</div>
+                  </div>
+                </div>
+
+                <div class="lp-macro-pills">
+                  <div class="lp-macro-pill">
+                    <div class="lp-macro-head">
+                      <span class="lp-macro-dot" data-kind="protein"></span>
+                      <span>Prot.</span>
+                    </div>
+                    <div class="lp-macro-value">78 / 120 g</div>
+                    <div class="lp-macro-bar">
+                      <div class="lp-macro-bar-fill" style="width: 65%; background: var(--ls-blueberry);"></div>
+                    </div>
+                  </div>
+                  <div class="lp-macro-pill">
+                    <div class="lp-macro-head">
+                      <span class="lp-macro-dot" data-kind="carb"></span>
+                      <span>Carb.</span>
+                    </div>
+                    <div class="lp-macro-value">165 / 250 g</div>
+                    <div class="lp-macro-bar">
+                      <div class="lp-macro-bar-fill" style="width: 66%; background: var(--ls-leaf-deep);"></div>
+                    </div>
+                  </div>
+                  <div class="lp-macro-pill">
+                    <div class="lp-macro-head">
+                      <span class="lp-macro-dot" data-kind="fat"></span>
+                      <span>Grassi</span>
+                    </div>
+                    <div class="lp-macro-value">52 / 75 g</div>
+                    <div class="lp-macro-bar">
+                      <div class="lp-macro-bar-fill" style="width: 69%; background: var(--ls-amber);"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="lp-section-head">
+                <h2 class="lp-section-title">I tuoi pasti</h2>
+                <span class="lp-section-meta">1 / 4 completati</span>
+              </div>
+              <div class="lp-meals">
+                <article class="lp-meal">
+                  <img class="lp-meal-photo" alt=""
+                       src="https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&q=80">
+                  <div class="lp-meal-info">
+                    <div class="lp-meal-slot">Colazione <span class="lp-meal-time">· 07:30</span></div>
+                    <h3 class="lp-meal-name">Yogurt greco, granola, mirtilli</h3>
+                    <div class="lp-meal-macros">
+                      <span class="kcal">380 kcal</span>
+                      <span>P 22 g</span>
+                      <span>C 45 g</span>
+                      <span>F 12 g</span>
+                    </div>
+                  </div>
+                  <button class="lp-meal-check" data-completed="true" aria-label="Pasto completato">
+                    <i class="ph-bold ph-check" aria-hidden="true"></i>
+                  </button>
+                </article>
+
+                <article class="lp-meal">
+                  <img class="lp-meal-photo" alt=""
+                       src="https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=400&q=80">
+                  <div class="lp-meal-info">
+                    <div class="lp-meal-slot">Pranzo <span class="lp-meal-time">· 13:00</span></div>
+                    <h3 class="lp-meal-name">Pasta integrale, pomodoro fresco, basilico</h3>
+                    <div class="lp-meal-macros">
+                      <span class="kcal">540 kcal</span>
+                      <span>P 18 g</span>
+                      <span>C 78 g</span>
+                      <span>F 14 g</span>
+                    </div>
+                  </div>
+                  <button class="lp-meal-check" aria-label="Segna come completato">
+                    <i class="ph ph-circle" aria-hidden="true"></i>
+                  </button>
+                </article>
+
+                <article class="lp-meal">
+                  <img class="lp-meal-photo" alt=""
+                       src="https://images.unsplash.com/photo-1508061253366-f7da158b6d46?w=400&q=80">
+                  <div class="lp-meal-info">
+                    <div class="lp-meal-slot">Spuntino <span class="lp-meal-time">· 17:00</span></div>
+                    <h3 class="lp-meal-name">Mandorle e arancia</h3>
+                    <div class="lp-meal-macros">
+                      <span class="kcal">220 kcal</span>
+                      <span>P 6 g</span>
+                      <span>C 28 g</span>
+                      <span>F 12 g</span>
+                    </div>
+                  </div>
+                  <button class="lp-meal-check" aria-label="Segna come completato">
+                    <i class="ph ph-circle" aria-hidden="true"></i>
+                  </button>
+                </article>
+
+                <article class="lp-meal">
+                  <img class="lp-meal-photo" alt=""
+                       src="https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&q=80">
+                  <div class="lp-meal-info">
+                    <div class="lp-meal-slot">Cena <span class="lp-meal-time">· 20:00</span></div>
+                    <h3 class="lp-meal-name">Salmone al forno, verdure grigliate, riso venere</h3>
+                    <div class="lp-meal-macros">
+                      <span class="kcal">620 kcal</span>
+                      <span>P 38 g</span>
+                      <span>C 55 g</span>
+                      <span>F 22 g</span>
+                    </div>
+                  </div>
+                  <button class="lp-meal-check" aria-label="Segna come completato">
+                    <i class="ph ph-circle" aria-hidden="true"></i>
+                  </button>
+                </article>
+              </div>
+
+              <div class="lp-stack-2">
+                <section class="lp-widget">
+                  <div class="lp-widget-head">
+                    <span class="lp-widget-icon" data-tone="coral" aria-hidden="true">
+                      <i class="ph-fill ph-scales"></i>
+                    </span>
+                    <div>
+                      <h3 class="lp-widget-title">Pesata di oggi</h3>
+                      <p class="lp-widget-sub">aggiorna il tuo peso</p>
+                    </div>
+                  </div>
+                  <div class="lp-weight-row">
+                    <input class="lp-weight-input" type="text" inputmode="decimal"
+                           placeholder="75,3" aria-label="Peso in kg">
+                    <button class="lp-weight-cta">Salva kg</button>
+                  </div>
+                  <div class="lp-weight-last">
+                    Ieri 75,1 kg
+                    <span class="lp-weight-delta">
+                      <i class="ph-bold ph-arrow-down" aria-hidden="true"></i> 0,2 kg
+                    </span>
+                  </div>
+                </section>
+
+                <section class="lp-widget">
+                  <div class="lp-widget-head">
+                    <span class="lp-widget-icon" data-tone="leaf" aria-hidden="true">
+                      <i class="ph-fill ph-person-simple-run"></i>
+                    </span>
+                    <div>
+                      <h3 class="lp-widget-title">Allenamento di oggi</h3>
+                      <p class="lp-widget-sub">corsa lenta · zona 2</p>
+                    </div>
+                  </div>
+                  <div class="lp-workout-stats">
+                    <div class="lp-workout-stat">
+                      <span class="lp-workout-num">32</span>
+                      <span class="lp-workout-unit">minuti</span>
+                    </div>
+                    <div class="lp-workout-stat">
+                      <span class="lp-workout-num">285</span>
+                      <span class="lp-workout-unit">kcal bruciate</span>
+                    </div>
+                  </div>
+                </section>
+              </div>
+
+              <section class="lp-ai" aria-label="Suggerimenti AI in arrivo">
+                <span class="lp-ai-icon" aria-hidden="true">
+                  <i class="ph-fill ph-sparkle"></i>
+                </span>
+                <div class="lp-ai-body">
+                  <h3 class="lp-ai-title">Suggerimenti AI</h3>
+                  <p class="lp-ai-sub">presto disponibile</p>
+                </div>
+              </section>
+
+            </div>
+
+            <nav class="lp-tabs" aria-label="Navigazione principale">
+              <button class="lp-tab" data-active="true">
+                <i class="ph-fill ph-leaf" aria-hidden="true"></i>
+                <span>Oggi</span>
+              </button>
+              <button class="lp-tab">
+                <i class="ph ph-calendar-blank" aria-hidden="true"></i>
+                <span>Settimana</span>
+              </button>
+              <button class="lp-tab">
+                <i class="ph ph-shopping-cart" aria-hidden="true"></i>
+                <span>Spesa</span>
+              </button>
+              <button class="lp-tab">
+                <i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i>
+                <span>Storico</span>
+              </button>
+              <button class="lp-tab">
+                <i class="ph ph-user" aria-hidden="true"></i>
+                <span>Profilo</span>
+              </button>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── 4. Desktop · light · populated ────────────────────────── -->
+    <section class="showcase-section" style="grid-column: 1 / -1;">
+      <h3>Desktop · 1280 · light · populated</h3>
+      <div class="device device-desktop">
+        <div class="today-page variant-lifesum-pure lp-desktop">
+          <div class="lp-shell">
+            <aside class="lp-rail">
+              <div class="lp-brand">
+                <span class="lp-brand-mark" aria-hidden="true">
+                  <i class="ph-fill ph-leaf"></i>
+                </span>
+                <span>Wellness Buddy</span>
+              </div>
+              <button class="lp-nav-link" data-active="true">
+                <i class="ph-fill ph-house" aria-hidden="true"></i>
+                <span>Oggi</span>
+              </button>
+              <button class="lp-nav-link">
+                <i class="ph ph-calendar-blank" aria-hidden="true"></i>
+                <span>Settimana</span>
+              </button>
+              <button class="lp-nav-link">
+                <i class="ph ph-shopping-cart" aria-hidden="true"></i>
+                <span>Spesa</span>
+              </button>
+              <button class="lp-nav-link">
+                <i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i>
+                <span>Storico</span>
+              </button>
+              <button class="lp-nav-link">
+                <i class="ph ph-user" aria-hidden="true"></i>
+                <span>Profilo</span>
+              </button>
+            </aside>
+
+            <main class="lp-content">
+              <header class="lp-header">
+                <div>
+                  <h1 class="lp-greeting" style="font-size: 2.25rem;">Buongiorno, Stefano</h1>
+                  <p class="lp-date">lunedì 5 maggio 2026</p>
+                  <p class="lp-subline">Giorno 12 · piano di 8 settimane</p>
+                </div>
+                <div class="lp-score-pill" aria-label="Buon ritmo">
+                  <i class="ph-fill ph-leaf" aria-hidden="true"></i>
+                  <span>Buon ritmo</span>
+                </div>
+              </header>
+
+              <div class="lp-grid">
+                <!-- LEFT: ring + meals -->
+                <div class="lp-col">
+                  <div class="lp-ring-card">
+                    <div class="lp-ring-wrap">
+                      <svg viewBox="0 0 200 200" class="macro-ring" aria-hidden="true">
+                        <circle cx="100" cy="100" r="86" fill="none"
+                                stroke="var(--ls-leaf-soft)" stroke-width="12"/>
+                        <circle cx="100" cy="100" r="86" fill="none"
+                                stroke="var(--ls-leaf)" stroke-width="12"
+                                stroke-dasharray="432 540" stroke-linecap="round"
+                                transform="rotate(-90 100 100)"/>
+                        <circle cx="100" cy="100" r="68" fill="none"
+                                stroke="var(--ls-blueberry-soft)" stroke-width="6"/>
+                        <circle cx="100" cy="100" r="68" fill="none"
+                                stroke="var(--ls-blueberry)" stroke-width="6"
+                                stroke-dasharray="278 427" stroke-linecap="round"
+                                transform="rotate(-90 100 100)"/>
+                        <circle cx="100" cy="100" r="54" fill="none"
+                                stroke="var(--ls-carb-soft)" stroke-width="6"/>
+                        <circle cx="100" cy="100" r="54" fill="none"
+                                stroke="var(--ls-leaf-deep)" stroke-width="6"
+                                stroke-dasharray="224 339" stroke-linecap="round"
+                                transform="rotate(-90 100 100)"/>
+                        <circle cx="100" cy="100" r="40" fill="none"
+                                stroke="var(--ls-amber-soft)" stroke-width="6"/>
+                        <circle cx="100" cy="100" r="40" fill="none"
+                                stroke="var(--ls-amber)" stroke-width="6"
+                                stroke-dasharray="174 251" stroke-linecap="round"
+                                transform="rotate(-90 100 100)"/>
+                      </svg>
+                      <div class="lp-ring-center">
+                        <div class="lp-kcal">1.760</div>
+                        <div class="lp-kcal-target">su 2.200</div>
+                        <div class="lp-kcal-label">kcal oggi</div>
+                      </div>
+                    </div>
+
+                    <div class="lp-macro-pills">
+                      <div class="lp-macro-pill">
+                        <div class="lp-macro-head">
+                          <span class="lp-macro-dot" data-kind="protein"></span>
+                          <span>Proteine</span>
+                        </div>
+                        <div class="lp-macro-value">78 / 120 g</div>
+                        <div class="lp-macro-bar">
+                          <div class="lp-macro-bar-fill" style="width: 65%; background: var(--ls-blueberry);"></div>
+                        </div>
+                      </div>
+                      <div class="lp-macro-pill">
+                        <div class="lp-macro-head">
+                          <span class="lp-macro-dot" data-kind="carb"></span>
+                          <span>Carboidrati</span>
+                        </div>
+                        <div class="lp-macro-value">165 / 250 g</div>
+                        <div class="lp-macro-bar">
+                          <div class="lp-macro-bar-fill" style="width: 66%; background: var(--ls-leaf-deep);"></div>
+                        </div>
+                      </div>
+                      <div class="lp-macro-pill">
+                        <div class="lp-macro-head">
+                          <span class="lp-macro-dot" data-kind="fat"></span>
+                          <span>Grassi</span>
+                        </div>
+                        <div class="lp-macro-value">52 / 75 g</div>
+                        <div class="lp-macro-bar">
+                          <div class="lp-macro-bar-fill" style="width: 69%; background: var(--ls-amber);"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="lp-section-head">
+                    <h2 class="lp-section-title">I tuoi pasti</h2>
+                    <span class="lp-section-meta">1 / 4 completati</span>
+                  </div>
+                  <div class="lp-meals">
+                    <article class="lp-meal">
+                      <img class="lp-meal-photo" alt=""
+                           src="https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&q=80">
+                      <div class="lp-meal-info">
+                        <div class="lp-meal-slot">Colazione <span class="lp-meal-time">· 07:30</span></div>
+                        <h3 class="lp-meal-name">Yogurt greco, granola, mirtilli</h3>
+                        <div class="lp-meal-macros">
+                          <span class="kcal">380 kcal</span>
+                          <span>P 22 g</span>
+                          <span>C 45 g</span>
+                          <span>F 12 g</span>
+                        </div>
+                      </div>
+                      <button class="lp-meal-check" data-completed="true" aria-label="Pasto completato">
+                        <i class="ph-bold ph-check" aria-hidden="true"></i>
+                      </button>
+                    </article>
+
+                    <article class="lp-meal">
+                      <img class="lp-meal-photo" alt=""
+                           src="https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=400&q=80">
+                      <div class="lp-meal-info">
+                        <div class="lp-meal-slot">Pranzo <span class="lp-meal-time">· 13:00</span></div>
+                        <h3 class="lp-meal-name">Pasta integrale, pomodoro fresco, basilico</h3>
+                        <div class="lp-meal-macros">
+                          <span class="kcal">540 kcal</span>
+                          <span>P 18 g</span>
+                          <span>C 78 g</span>
+                          <span>F 14 g</span>
+                        </div>
+                      </div>
+                      <button class="lp-meal-check" aria-label="Segna come completato">
+                        <i class="ph ph-circle" aria-hidden="true"></i>
+                      </button>
+                    </article>
+
+                    <article class="lp-meal">
+                      <img class="lp-meal-photo" alt=""
+                           src="https://images.unsplash.com/photo-1508061253366-f7da158b6d46?w=400&q=80">
+                      <div class="lp-meal-info">
+                        <div class="lp-meal-slot">Spuntino <span class="lp-meal-time">· 17:00</span></div>
+                        <h3 class="lp-meal-name">Mandorle e arancia</h3>
+                        <div class="lp-meal-macros">
+                          <span class="kcal">220 kcal</span>
+                          <span>P 6 g</span>
+                          <span>C 28 g</span>
+                          <span>F 12 g</span>
+                        </div>
+                      </div>
+                      <button class="lp-meal-check" aria-label="Segna come completato">
+                        <i class="ph ph-circle" aria-hidden="true"></i>
+                      </button>
+                    </article>
+
+                    <article class="lp-meal">
+                      <img class="lp-meal-photo" alt=""
+                           src="https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&q=80">
+                      <div class="lp-meal-info">
+                        <div class="lp-meal-slot">Cena <span class="lp-meal-time">· 20:00</span></div>
+                        <h3 class="lp-meal-name">Salmone al forno, verdure grigliate, riso venere</h3>
+                        <div class="lp-meal-macros">
+                          <span class="kcal">620 kcal</span>
+                          <span>P 38 g</span>
+                          <span>C 55 g</span>
+                          <span>F 22 g</span>
+                        </div>
+                      </div>
+                      <button class="lp-meal-check" aria-label="Segna come completato">
+                        <i class="ph ph-circle" aria-hidden="true"></i>
+                      </button>
+                    </article>
+                  </div>
+                </div>
+
+                <!-- RIGHT: weight + workout + AI -->
+                <aside class="lp-col">
+                  <section class="lp-widget">
+                    <div class="lp-widget-head">
+                      <span class="lp-widget-icon" data-tone="coral" aria-hidden="true">
+                        <i class="ph-fill ph-scales"></i>
+                      </span>
+                      <div>
+                        <h3 class="lp-widget-title">Pesata di oggi</h3>
+                        <p class="lp-widget-sub">aggiorna il tuo peso</p>
+                      </div>
+                    </div>
+                    <div class="lp-weight-row">
+                      <input class="lp-weight-input" type="text" inputmode="decimal"
+                             placeholder="75,3" aria-label="Peso in kg">
+                      <button class="lp-weight-cta">Salva kg</button>
+                    </div>
+                    <div class="lp-weight-last">
+                      Ieri 75,1 kg
+                      <span class="lp-weight-delta">
+                        <i class="ph-bold ph-arrow-down" aria-hidden="true"></i> 0,2 kg
+                      </span>
+                    </div>
+                  </section>
+
+                  <section class="lp-widget">
+                    <div class="lp-widget-head">
+                      <span class="lp-widget-icon" data-tone="leaf" aria-hidden="true">
+                        <i class="ph-fill ph-person-simple-run"></i>
+                      </span>
+                      <div>
+                        <h3 class="lp-widget-title">Allenamento di oggi</h3>
+                        <p class="lp-widget-sub">corsa lenta · zona 2</p>
+                      </div>
+                    </div>
+                    <div class="lp-workout-stats">
+                      <div class="lp-workout-stat">
+                        <span class="lp-workout-num">32</span>
+                        <span class="lp-workout-unit">minuti</span>
+                      </div>
+                      <div class="lp-workout-stat">
+                        <span class="lp-workout-num">285</span>
+                        <span class="lp-workout-unit">kcal bruciate</span>
+                      </div>
+                    </div>
+                  </section>
+
+                  <section class="lp-ai" aria-label="Suggerimenti AI in arrivo">
+                    <span class="lp-ai-icon" aria-hidden="true">
+                      <i class="ph-fill ph-sparkle"></i>
+                    </span>
+                    <div class="lp-ai-body">
+                      <h3 class="lp-ai-title">Suggerimenti AI</h3>
+                      <p class="lp-ai-sub">presto disponibile</p>
+                    </div>
+                  </section>
+                </aside>
+              </div>
+            </main>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</body>
+</html>
