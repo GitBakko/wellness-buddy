@@ -38,6 +38,15 @@ class Settings(BaseSettings):
     # AI provider (D-31, D-32, AI-07)
     AI_PROVIDER: Literal["null", "ollama", "openai", "anthropic"] = "null"
 
+    # Phase 2 — PDF export backend (D-11, D-14, DEP-06).
+    # Default 'weasyprint' (D-11 primary). Plan 02-01 7-day GTK3 spike on Windows Server
+    # 2019 may flip this to 'reportlab' if 5xx ≥2% over the spike window.
+    # Factory `app.services.pdf_export.get_pdf_exporter` reads this value per request.
+    PDF_BACKEND: str = Field(
+        default="weasyprint",
+        description="'weasyprint' (D-11 primary) | 'reportlab' (D-14 fallback)",
+    )
+
     # Operational
     MAX_USERS: int = 100
     ADMIN_EMAIL: str

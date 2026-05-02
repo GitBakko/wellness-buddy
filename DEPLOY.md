@@ -360,4 +360,78 @@ Wellness Buddy has no automated rotation Sprint 1. Rotate manually during low-tr
 
 ---
 
-*Last updated: Phase 1 close (Plan 08).*
+## Appendix B: GTK3/Pango runtime for WeasyPrint (Phase 2, DEP-06)
+
+WeasyPrint requires Pango/Cairo/GLib/GObject DLLs from MSYS2's mingw64 distribution.
+Install once on Windows Server 2019 production host **before Plan 02-05 ships the PDF endpoint**.
+This appendix supersedes Section 12 (the Phase 1 deferral note).
+
+Prerequisite: deploy/baseline already done per Sections 1-15. Run as Administrator.
+
+### B.1 — Install MSYS2
+
+1. Download MSYS2 installer from <https://www.msys2.org/> (~150 MB, one-time).
+2. Run installer with default options. Installs to `C:\msys64`.
+3. From Start menu open **MSYS2 MINGW64** shell (NOT MSYS2 MSYS — must be the mingw64 variant).
+
+### B.2 — Install Pango (pulls Cairo + GLib + GObject + GDK-PixBuf)
+
+Inside MSYS2 MINGW64 shell:
+
+```bash
+pacman -Syu                                  # Update package DB; close shell when prompted, reopen
+pacman -S mingw-w64-x86_64-pango             # ~120 MB; pulls dependencies
+pacman -Q mingw-w64-x86_64-pango             # Record version for spike Day 7 check
+exit
+```
+
+### B.3 — Add `C:\msys64\mingw64\bin` to System PATH (Machine scope, NOT User)
+
+PowerShell as Administrator:
+
+```powershell
+[Environment]::SetEnvironmentVariable(
+  "Path",
+  $env:Path + ";C:\msys64\mingw64\bin",
+  [EnvironmentVariableTarget]::Machine
+)
+# Reboot OR restart NSSM service so it inherits new PATH:
+nssm restart WellnessBuddyAPI
+```
+
+### B.4 — Verify in NSSM service context
+
+```powershell
+cd D:\Develop\AI\WellnessBuddy\backend
+.\.venv\Scripts\Activate.ps1
+uv sync --frozen
+python -m weasyprint --info
+```
+
+Expected output (≥3 lines):
+
+```text
+WeasyPrint version: 62.x.x
+Python: 3.12.x
+Pango: 1.x.x
+Cairo: 1.x.x
+```
+
+**If you see `OSError: cannot load library 'gobject-2.0-0'`** → PATH not propagated to NSSM service. Either reboot OR run `nssm set WellnessBuddyAPI AppEnvironmentExtra "PATH=C:\msys64\mingw64\bin;%PATH%"` then `nssm restart WellnessBuddyAPI`.
+
+### B.5 — Smoke test PDF generation with Italian accents
+
+```powershell
+python -c "from weasyprint import HTML; HTML(string='<h1>à è ì ò ù — Pasta integrale</h1>').write_pdf('test-accents.pdf')"
+start test-accents.pdf
+# Adobe Reader opens. Accents must render. If they show as ?/boxes,
+# font fallback failed — Plan 02-05 ships base64 woff2 fonts inline (D-13).
+```
+
+### B.6 — Open the 7-day stability spike
+
+After B.5 succeeds, fill the Day 0 row of `.planning/phases/02-differentiators/02-01-GTK3-SPIKE.md` and start the continuous logging window. Plan 02-07 reviews verdict before Phase 2 pause gate. If 5xx ≥2% over 7 days, flip `PDF_BACKEND=reportlab` in `.env` and `Restart-Service WellnessBuddyAPI` — the ReportLab fallback (scaffolded in Plan 02-01) takes over without code change.
+
+---
+
+*Last updated: Plan 02-01 (Phase 2 — GTK3 spike + PdfExporter ABC scaffold).*
