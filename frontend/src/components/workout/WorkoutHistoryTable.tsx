@@ -2,7 +2,7 @@
 // Phase 1 list view of workout entries grouped by month. Italian month names via
 // Intl.DateTimeFormat — no manual formatting (UI rule 11).
 
-import { Trash2 } from 'lucide-react';
+import { Trash } from '@/components/icons';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -81,7 +81,7 @@ export function WorkoutHistoryTable(): React.ReactElement {
           <ul className="flex flex-col gap-[var(--spacing-2)]">
             {rows.map((row) => (
               <li key={row.id}>
-                <Card className="p-[var(--spacing-3)] flex items-center justify-between gap-[var(--spacing-3)]">
+                <Card className="p-[var(--spacing-3)] flex items-center justify-between gap-[var(--spacing-3)] hover:bg-[var(--color-surface-muted)] transition-colors duration-[var(--duration-fast)]">
                   <div className="flex flex-col">
                     <span className="text-[var(--text-caption)] text-[color:var(--color-text-muted)] capitalize">
                       {italianDateLong(new Date(row.date))}
@@ -101,7 +101,7 @@ export function WorkoutHistoryTable(): React.ReactElement {
                     aria-label={copy.workout.deleteCta}
                     onClick={() => void onDelete(row)}
                   >
-                    <Trash2 aria-hidden="true" />
+                    <Trash size={18} aria-hidden="true" />
                   </Button>
                 </Card>
               </li>

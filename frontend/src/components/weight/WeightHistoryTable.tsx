@@ -4,7 +4,7 @@
 // Dialog-based confirm comes Phase 2 alongside variant editor.
 
 import { useState } from 'react';
-import { Pencil, Trash2 } from 'lucide-react';
+import { PencilSimple, Trash } from '@/components/icons';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -101,7 +101,7 @@ export function WeightHistoryTable(): React.ReactElement {
     <ul className="flex flex-col gap-[var(--spacing-2)]" aria-label="Storico pesate">
       {data.map((row) => (
         <li key={row.id}>
-          <Card className="p-[var(--spacing-3)] flex items-center justify-between gap-[var(--spacing-3)]">
+          <Card className="p-[var(--spacing-3)] flex items-center justify-between gap-[var(--spacing-3)] hover:bg-[var(--color-surface-muted)] transition-colors duration-[var(--duration-fast)]">
             <div className="flex flex-col">
               <span className="text-[var(--text-caption)] text-[color:var(--color-text-muted)] capitalize">
                 {italianDateLong(new Date(row.date))}
@@ -122,7 +122,7 @@ export function WeightHistoryTable(): React.ReactElement {
                   aria-label="Modifica"
                   onClick={() => setEditingId(row.id)}
                 >
-                  <Pencil aria-hidden="true" />
+                  <PencilSimple size={18} aria-hidden="true" />
                 </Button>
                 <Button
                   size="icon"
@@ -130,7 +130,7 @@ export function WeightHistoryTable(): React.ReactElement {
                   aria-label={copy.weight.deleteCta}
                   onClick={() => void onDelete(row)}
                 >
-                  <Trash2 aria-hidden="true" />
+                  <Trash size={18} aria-hidden="true" />
                 </Button>
               </div>
             )}

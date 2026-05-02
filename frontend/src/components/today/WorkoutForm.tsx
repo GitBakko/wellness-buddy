@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { PersonSimpleRun } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -97,12 +98,20 @@ export function WorkoutForm({ existing, todayIso }: Props): React.ReactElement {
 
   return (
     <Card
-      className="p-[var(--spacing-4)] flex flex-col gap-[var(--spacing-3)]"
+      className="p-[var(--spacing-4)] flex flex-col gap-[var(--spacing-3)] rounded-[var(--radius-card)]"
       aria-label={copy.workout.heading}
     >
-      <h2 className="text-[var(--text-base)] font-semibold text-[color:var(--color-text)]">
-        {copy.workout.heading}
-      </h2>
+      <header className="flex items-center gap-[var(--spacing-3)]">
+        <span
+          className="w-9 h-9 rounded-[var(--radius-sm)] inline-flex items-center justify-center flex-shrink-0 bg-[var(--color-leaf-100)] text-[color:var(--color-leaf-700)]"
+          aria-hidden="true"
+        >
+          <PersonSimpleRun size={18} weight="fill" aria-hidden="true" />
+        </span>
+        <h2 className="text-[var(--text-base)] font-semibold text-[color:var(--color-text)] m-0">
+          {copy.workout.heading}
+        </h2>
+      </header>
       <form onSubmit={onSubmit} className="flex flex-col gap-[var(--spacing-3)]" noValidate>
         <label className="inline-flex items-center justify-between gap-[var(--spacing-3)] min-h-11">
           <span className="text-[var(--text-base)] text-[color:var(--color-text)]">

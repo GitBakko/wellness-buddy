@@ -20,6 +20,10 @@ export interface TodayMeal {
   title: string;
   macros: MealMacro;
   completed: boolean;
+  /** Plan 01-09 — optional Lifesum-style meal photo URL. Null when the parser
+   * didn't find a `**Foto:** <url>` line in the section body. Frontend renders
+   * a leaf-tinted gradient placeholder when null. */
+  photo_url: string | null;
 }
 
 export interface TodayWeight {

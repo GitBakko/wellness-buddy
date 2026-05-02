@@ -1,14 +1,15 @@
 // frontend/src/components/today/DayStatusIndicator.tsx
 // UI-SPEC §6.4 — pill indicator for day status.
+// Plan 01-09 — switched from lucide-react to Phosphor via the icon facade.
 //
 // Color rules (UI-SPEC §6.4 — verbatim):
-//   completed → leaf-green (success)
+//   completed → leaf-500 / leaf-soft pill (success)
 //   partial   → neutral half-tone (text-muted)
 //   planned   → neutral outline
 //   NEVER red — even when nothing logged. Empty state is "planned" (neutral),
 //   never failure.
 
-import { CheckCircle2, Circle, CircleDot } from 'lucide-react';
+import { CheckCircle, Circle } from '@/components/icons';
 
 export type DayStatus = 'planned' | 'partial' | 'completed';
 
@@ -20,7 +21,7 @@ const LABEL: Record<DayStatus, string> = {
 
 const PILL_BASE =
   'inline-flex items-center gap-[var(--spacing-1)] px-[var(--spacing-3)] ' +
-  'py-[var(--spacing-1)] rounded-[var(--radius-pill)] text-[var(--text-caption)]';
+  'py-[var(--spacing-1)] rounded-[var(--radius-pill)] text-[var(--text-caption)] font-semibold';
 
 export function DayStatusIndicator({
   status,
@@ -30,11 +31,11 @@ export function DayStatusIndicator({
   if (status === 'completed') {
     return (
       <span
-        className={`${PILL_BASE} bg-[var(--color-success-bg)] text-[color:var(--color-success)]`}
+        className={`${PILL_BASE} bg-[var(--color-leaf-100)] text-[color:var(--color-leaf-700)]`}
         role="status"
         aria-label={LABEL.completed}
       >
-        <CheckCircle2 size={16} aria-hidden="true" /> {LABEL.completed}
+        <CheckCircle size={16} weight="fill" aria-hidden="true" /> {LABEL.completed}
       </span>
     );
   }
@@ -45,7 +46,7 @@ export function DayStatusIndicator({
         role="status"
         aria-label={LABEL.partial}
       >
-        <CircleDot size={16} aria-hidden="true" /> {LABEL.partial}
+        <Circle size={16} weight="fill" aria-hidden="true" /> {LABEL.partial}
       </span>
     );
   }
@@ -55,7 +56,7 @@ export function DayStatusIndicator({
       role="status"
       aria-label={LABEL.planned}
     >
-      <Circle size={16} aria-hidden="true" /> {LABEL.planned}
+      <Circle size={16} weight="regular" aria-hidden="true" /> {LABEL.planned}
     </span>
   );
 }

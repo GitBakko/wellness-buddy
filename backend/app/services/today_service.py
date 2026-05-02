@@ -58,9 +58,24 @@ def _coerce_macros(raw: object) -> MealMacro:
     )
 
 
+def _coerce_photo_url(raw: object) -> str | None:
+    """Pass-through for parsed_json photo_url (Plan 01-09).
+
+    Returns the value when it's a non-empty string ≤500 chars, else None.
+    The strict cap mirrors `MealOption.photo_url` Pydantic validator and
+    keeps Spoofing-class threats contained at the service boundary.
+    """
+    if not isinstance(raw, str):
+        return None
+    val = raw.strip()
+    if not val or len(val) > 500:
+        return None
+    return val
+
+
 def _meals_from_parsed(parsed: dict) -> list[MealEntry]:
     """Emit Phase 1 meal list from parsed_json. Variant selection (Phase 2) defaults
-    to first option per slot."""
+    to first option per slot. Plan 01-09: passes optional photo_url through."""
     meals: list[MealEntry] = []
 
     breakfast = parsed.get("breakfast")
@@ -71,6 +86,7 @@ def _meals_from_parsed(parsed: dict) -> list[MealEntry]:
                 variant_key=str(breakfast.get("key") or "default"),
                 title=str(breakfast.get("title") or "Colazione"),
                 macros=_coerce_macros(breakfast.get("macros")),
+                photo_url=_coerce_photo_url(breakfast.get("photo_url")),
             )
         )
 
@@ -93,6 +109,7 @@ def _meals_from_parsed(parsed: dict) -> list[MealEntry]:
                 variant_key=str(opt.get("key") or "default"),
                 title=str(opt.get("title") or slot.capitalize()),
                 macros=_coerce_macros(opt.get("macros")),
+                photo_url=_coerce_photo_url(opt.get("photo_url")),
             )
         )
 
@@ -107,6 +124,7 @@ def _meals_from_parsed(parsed: dict) -> list[MealEntry]:
                     variant_key=str(sn.get("key") or "default"),
                     title=str(sn.get("title") or "Spuntino"),
                     macros=_coerce_macros(sn.get("macros")),
+                    photo_url=_coerce_photo_url(sn.get("photo_url")),
                 )
             )
 

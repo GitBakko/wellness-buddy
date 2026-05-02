@@ -1,25 +1,41 @@
 // frontend/src/components/layout/NavigationRail.tsx
 // UI-SPEC §6.3 — desktop ≥768px navigation rail.
-// Phase 1 ships compact 64px-wide rail with 4 destinations.
-// Plan 08+ may extend to collapsible 64/224 with labels.
+// Plan 01-09 — Phosphor icons via facade; active state leaf-100 bg + leaf-700 text
+// (Lifesum signature). Compact 64px-wide rail with 4 destinations.
 import { NavLink } from 'react-router';
-import { Home, History, FileText, Settings } from 'lucide-react';
+import {
+  CalendarBlank,
+  ClockCounterClockwise,
+  House,
+  UserIcon,
+} from '@/components/icons';
 import { copy } from '@/i18n/copy.it';
 import { cn } from '@/lib/cn';
+import type { ComponentType, SVGProps } from 'react';
 
-const ITEMS = [
-  { to: '/today', label: copy.appBar.today, Icon: Home },
-  { to: '/storico', label: copy.appBar.history, Icon: History },
-  { to: '/piano', label: copy.appBar.plan, Icon: FileText },
-  { to: '/impostazioni', label: copy.appBar.settings, Icon: Settings },
+type IconC = ComponentType<
+  { size?: number; weight?: 'regular' | 'fill' | 'bold' } & SVGProps<SVGSVGElement>
+>;
+
+interface RailItem {
+  to: string;
+  label: string;
+  Icon: IconC;
+}
+
+const ITEMS: RailItem[] = [
+  { to: '/today', label: copy.appBar.today, Icon: House as IconC },
+  { to: '/storico', label: copy.appBar.history, Icon: ClockCounterClockwise as IconC },
+  { to: '/piano', label: copy.appBar.plan, Icon: CalendarBlank as IconC },
+  { to: '/impostazioni', label: copy.appBar.settings, Icon: UserIcon as IconC },
 ];
 
 export function NavigationRail() {
   return (
     <aside
-      className="hidden md:flex flex-col py-[var(--spacing-6)] px-[var(--spacing-2)] gap-[var(--spacing-2)] border-r"
+      className="hidden md:flex flex-col py-[var(--spacing-6)] px-[var(--spacing-2)] gap-[var(--spacing-2)] border-r bg-[var(--color-surface)]"
       style={{
-        borderColor: 'var(--color-neutral-200)',
+        borderColor: 'var(--color-border)',
         minWidth: 64,
         width: 64,
       }}
@@ -33,14 +49,16 @@ export function NavigationRail() {
             cn(
               'flex items-center justify-center w-11 h-11 rounded-[var(--radius-md)] mx-auto',
               isActive
-                ? 'bg-[var(--color-surface-muted)] text-[var(--color-coral-500)]'
-                : 'text-[var(--color-neutral-500)]',
+                ? 'bg-[var(--color-leaf-100)] text-[color:var(--color-leaf-700)]'
+                : 'text-[color:var(--color-text-muted)]',
             )
           }
           title={label}
           aria-label={label}
         >
-          <Icon size={20} strokeWidth={1.75} aria-hidden="true" />
+          {({ isActive }) => (
+            <Icon size={20} weight={isActive ? 'fill' : 'regular'} aria-hidden="true" />
+          )}
         </NavLink>
       ))}
     </aside>
