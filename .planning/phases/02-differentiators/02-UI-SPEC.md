@@ -8,12 +8,14 @@ inherits_from: .planning/phases/01-foundation/01-UI-SPEC.md
 visual_ground_truth: mockups/tone-calibration-v2/A-lifesum-pure.html
 created: 2026-05-02
 revised: 2026-05-02
-revision: 1
+revision: 2
 ---
 
 # Phase 2 — UI Design Contract (Differentiators)
 
 > **Inheritance contract.** Phase 2 inherits Phase 1 §1-§5 (Design System, Spacing, Type, Color, Motion) **verbatim** and adds only the surfaces, components, copy, and icons required by REQ WEEK-* / SHOP-* / FAM-* / DEP-06. Anywhere this document says "(inherited from Phase 1 §X)" it means **read Phase 1 §X — no overrides, no additions**. Drift is forbidden; if a Phase 2 surface needs a token Phase 1 didn't lock, this document amends Phase 1 §12 explicitly under §12.NEW below.
+
+> **Revision 2 (2026-05-02 — checker fixes):** (a) BLOCKER fix — removed Fraunces silently introduced in §6.4 PDF template; date subtitle now uses Instrument Serif italic (Phase 1 escape-hatch font reused in PDF context per §3 amendment), so `theme.css` remains untouched and §12.NEW "no new fonts" claim holds. (b) FLAG 1 fix — Condimenti category icon corrected `BowlSteam` → `Wine` (BowlSteam reads as soup; Wine reads as decanter/bottle, semantically aligned with oils/vinegars/dressings). (c) FLAG 2 fix — removed `SwitchHorizontal` dead-code reservation from facade additions (ToggleGroup primitive labels are self-explanatory; if a future plan needs the icon, add then). (d) FLAG 3 fix — copy-key count corrected from "~75" to precise leaf count **95** across namespaces. (e) FLAG 4 fix — §14 reworded to distinguish Phase 1 already-added blocks (`dropdown-menu`, `dialog`, `sheet`, `tabs`) from Phase 2 net-new blocks (`popover`, `tooltip`, `alert-dialog`, `collapsible`, `toggle-group` — 5 net new). (f) FLAG 5 fix — §7.3 adds dual-framing note clarifying swipe-reveal red (gesture-intent signal) vs AlertDialog leaf-500 confirm (action recoverable). No decisions in §1-§5 changed; no new components added; italian copy semantically unchanged.
 
 > **Locked design language:** Variant A · Lifesum Pure (`mockups/tone-calibration-v2/A-lifesum-pure.html`). Every Phase 2 surface — `/week`, `/spesa`, shopping-list PDF, condiviso badge, variant selector, conflict toast — must converge on this DNA. No new tone exploration in Phase 2.
 
@@ -49,7 +51,7 @@ Phase 2 reuses the entire Phase 1 design system without modification:
 - shadcn/ui primitives over Radix UI
 - **Plus Jakarta Sans** primary `--font-sans` (post Plan 09 — NOT Geist Sans, which Phase 1 §1 references in the original draft; the propagated Lifesum Pure theme in `theme.css` lines 59-61 is canonical)
 - **Geist Mono** for tabular numerics
-- **Instrument Serif** display escape hatch — STILL `/today` greeting only, FORBIDDEN on `/week`, `/spesa`, PDF, modals
+- **Instrument Serif** display escape hatch — `/today` greeting AND PDF date subtitle (§6.4 — 1 occurrence per page); FORBIDDEN on `/week`, `/spesa`, modals (see §3 amendment for the second permitted context)
 - **Phosphor Icons** via `@/components/icons/index.ts` facade (NEVER direct `@phosphor-icons/react` imports — CI grep gate inherited)
 - Motion v12 (`motion/react`) + tailwindcss-animate
 - sonner for toasts
@@ -86,7 +88,7 @@ Phase 2 introduces ZERO new typography tokens.
 **Fonts:**
 - `--font-sans`: Plus Jakarta Sans (primary)
 - `--font-mono`: Geist Mono (tabular numerics — macro chips, quantities, dates)
-- `--font-display`: Instrument Serif (escape hatch — `/today` greeting only)
+- `--font-display`: Instrument Serif (escape hatch — `/today` greeting AND shopping list PDF date subtitle, see §6.4)
 
 **Base scale (4 sizes — Dimension 4 cap holds):**
 - `--text-caption` 12px — day-name caption, category count badges, share-badge name, PDF item rows
@@ -95,8 +97,9 @@ Phase 2 introduces ZERO new typography tokens.
 - `--text-display` 28px — WeeklyMacroRing center kcal value (rendered with Geist Mono tabular-nums — same size step, font-family swap, NOT a new token)
 
 **Escape hatch (`--text-display-serif` 36px) — Instrument Serif:**
-- ❌ FORBIDDEN on `/week`, `/spesa`, shopping-list PDF, variant selector, condiviso badge, conflict toast, deploy checklist
-- ✅ ALLOWED only on `/today` greeting (already in production via `pages/Today.tsx` per Plan 07/09)
+- ❌ FORBIDDEN on `/week`, `/spesa`, variant selector, condiviso badge, conflict toast, deploy checklist
+- ✅ ALLOWED on `/today` greeting (already in production via `pages/Today.tsx` per Plan 07/09)
+- ✅ ALLOWED in the shopping list PDF date subtitle (1 occurrence per page, 14pt italic — see §6.4) as a permitted second escape-hatch context. This is the only PDF context where Instrument Serif may be used; all other PDF surfaces (titles, body, captions, category headings, page chrome) MUST use Plus Jakarta or Geist Mono per §6.4. No new font family is introduced — `--font-display` is reused in print.
 
 **Italian numeric formatting (UI-18) inherited:**
 - Quantities: `400 g`, `2 confezioni`, `1 pizzico` — `Intl.NumberFormat('it-IT')` (italianNumberInt for ints, italianNumberDecimal for decimals)
@@ -293,10 +296,10 @@ Phase 2 NEW components below. **Phase 1 primitives, composites, and app-shell co
     font-display: block;
   }
   @font-face {
-    font-family: "Fraunces";
+    font-family: "Instrument Serif";
     src: url(data:font/woff2;base64,...) format("woff2");
     font-style: italic;
-    font-weight: 400 500;
+    font-weight: 400;
     font-display: block;
   }
   body {
@@ -312,7 +315,7 @@ Phase 2 NEW components below. **Phase 1 primitives, composites, and app-shell co
     color: oklch(22% 0.015 240); /* --color-text */
   }
   .subtitle {
-    font-family: "Fraunces", serif;
+    font-family: "Instrument Serif", serif;
     font-style: italic;
     font-weight: 400;
     font-size: 14pt;
@@ -402,7 +405,7 @@ Phase 2 NEW components below. **Phase 1 primitives, composites, and app-shell co
 ```
 
 **Tone target (D-11 / D-12 spec):**
-- Feels like a *lista plastificata per il frigo* — warm, hand-set via Fraunces italic on the date, NOT corporate Helvetica/Times.
+- Feels like a *lista plastificata per il frigo* — warm, hand-set via Instrument Serif italic on the date (Phase 1 escape-hatch font reused in PDF context per §3 amendment), NOT corporate Helvetica/Times.
 - Print-friendly: ≤3% accent surface area (only category underlines + subtitle); no large coral/leaf backgrounds.
 - Italian accents native: woff2 fonts embedded base64 inline → WeasyPrint always renders à è ì ò ù correctly without OS font fallback.
 - Same OKLCH coords as `frontend/src/styles/theme.css` (drift-detection: CI grep enforces that any color literal in `shopping_list.html` matches a known token in theme.css; mismatch fails build).
@@ -417,19 +420,18 @@ Add to `frontend/src/components/icons/index.ts` (NEVER direct `@phosphor-icons/r
 | `Snowflake` | Shopping category "Frigo & Freschi" |
 | `Carrot` | Shopping category "Frutta & Verdura" |
 | `Package` | Shopping category "Dispensa" |
-| `BowlSteam` | Shopping category "Condimenti" |
+| `Wine` | Shopping category "Condimenti" (oils, vinegars, dressings — Wine glyph reads as decanter/bottle, semantically aligned with liquid condiments per CONTEXT D-12) |
 | `Pill` | Shopping category "Integratori" |
 | `DotsThreeOutline` | MealCard `⋯` share-toggle menu trigger (owner-only) |
 | `ArrowCounterClockwise` | "/spesa" Reset settimana button |
 | `ClipboardText` | "/spesa" Copia testo export button |
 | `FilePdf` | "/spesa" Esporta PDF export button |
-| `SwitchHorizontal` | (reserved — currently unused, available if VariantSelector ever needs a horizontal variant indicator) |
 | `ArrowsClockwise` | ConflictToast info icon (FAM-05 — paired with leaf-500 stripe + italian copy) |
 | `Check` | Already exported Phase 1 — reused in VariantSelector active item indicator |
 | `CaretDown` | Already exported Phase 1 — reused in VariantSelector pill + ShoppingCategorySection collapse caret |
 | `X` | Already exported Phase 1 — reused in ShoppingItemRow swipe-delete button |
 
-**Net new exports added to `index.ts`:** 12 (UsersThree, Snowflake, Carrot, Package, BowlSteam, Pill, DotsThreeOutline, ArrowCounterClockwise, ClipboardText, FilePdf, SwitchHorizontal, ArrowsClockwise). Three (Check, CaretDown, X) are already in Phase 1's export.
+**Net new exports added to `index.ts`:** 11 (UsersThree, Snowflake, Carrot, Package, Wine, Pill, DotsThreeOutline, ArrowCounterClockwise, ClipboardText, FilePdf, ArrowsClockwise). Three (Check, CaretDown, X) are already in Phase 1's export.
 
 ### 6.6 Plan 02-03 deploy checklist artifact
 
@@ -703,6 +705,8 @@ Plurals must be enforced at every `{count}` template (UI-SPEC §7.1 rule 8 inher
 
 Both use `Dialog` (Radix AlertDialog modal), never inline. **Reset settimana** uses primary `--color-leaf-500` confirm button (NOT `--color-destructive` — the action is recoverable; user can re-aggregate from variants without data loss). **Remove item** ALSO uses `--color-leaf-500` confirm (same reasoning — list item is rebuildable from plan + variants). Phase 2 introduces NO truly destructive actions on user data — Phase 4 admin will own the first true `--color-destructive` action (revoke invite).
 
+**ShoppingItemRow swipe-reveal vs AlertDialog confirm — intentional dual-framing:** the swipe-reveal delete button uses `--color-destructive` red as a **gesture-intent signal** (mid-gesture — the red warns about the consequence of release); the subsequent AlertDialog confirmation uses `--color-leaf-500` because the action is **recoverable** (server is canonical, the row can be re-aggregated from variant choices). The mid-gesture warns; the confirmation softens once the user has paused to read. This is intentional, not inconsistent — color signals the *certainty* of the moment, not the destructiveness of the action.
+
 ### 7.4 Tone audit gates (must pass before merge — extends Phase 1 §7.1)
 
 For every new Phase 2 string above:
@@ -730,7 +734,7 @@ For every new Phase 2 string above:
 | `/spesa` populated (per categoria) | 70/30 | First category section header "Frigo & Freschi" with Phosphor `Snowflake` 22px + count badge — list-of-lists composition reads from top-down, no hero | Routine grocery surface — list IS the surface; no hero competes with the rows | pending |
 | `/spesa` populated (per giorno) | 70/30 | First day section header "Lunedì" + first item row — same list-of-lists composition rotated by day axis | Same rationale | pending |
 | `/spesa` empty | 60/40 | Phosphor `ShoppingCart` 200×200 leaf-200 fill + heading + body + "Vai alla settimana →" secondary link | Onboarding before week filled | pending |
-| Shopping list PDF | 75% elegant / 25% playful | Page header: "Lista spesa" 28pt Plus Jakarta 700 + Fraunces italic 14pt date subtitle + leaf-700 underline on category headings — typography IS the entire warmth signal in print | Print medium — Fraunces italic on date is the singular hand-set touch; everything else is restrained editorial | pending — Stefano+Marta in-person sign off Plan 02-05 |
+| Shopping list PDF | 75% elegant / 25% playful | Page header: "Lista spesa" 28pt Plus Jakarta 700 + Instrument Serif italic 14pt date subtitle + leaf-700 underline on category headings — typography IS the entire warmth signal in print | Print medium — Instrument Serif italic 14pt date subtitle is the singular hand-set touch (reuses Phase 1 escape-hatch font in PDF context per §3 amendment); everything else is restrained editorial | pending — Stefano+Marta in-person sign off Plan 02-05 |
 | VariantSelector dropdown open | 65/35 | Active variant indicator dot leaf-500 6×6 + variant name Plus Jakarta 600 + macro chip preview row — quick decision moment, decision support data ON-SCREEN | Decision-making surface — must show macro tradeoff before commit; dot + chip preview together carry the "smart but warm" tone | pending |
 | Condiviso badge inline | 80% elegant / 20% playful | Phosphor `UsersThree` 14px + partner name 12px in surface-muted pill — small, semantic, never noisy (D-18) | Background context, not foreground — restraint is the win | pending |
 | ShareToggleMenu open (`⋯` dropdown) | 70/30 | Single menu item: `UsersThree` icon + "Condividi con la famiglia" label + Switch component current state — minimal decision surface | Single-action menu, not exploratory — restraint reflects functional intent | pending |
@@ -903,7 +907,7 @@ Playwright `getBoundingClientRect` test extends Phase 1 list:
 
 **No new design tokens** — `theme.css` is unchanged by Phase 2.
 
-**Icons added to facade (12 net new exports):**
+**Icons added to facade (11 net new exports):**
 
 ```typescript
 // frontend/src/components/icons/index.ts
@@ -919,26 +923,26 @@ export {
   Snowflake,
   Carrot,
   Package,
-  BowlSteam,
+  Wine,
   Pill,
   DotsThreeOutline,
   ArrowCounterClockwise,
   ClipboardText,
   FilePdf,
-  SwitchHorizontal,
   ArrowsClockwise,
 } from '@phosphor-icons/react';
 ```
 
-**Copy keys added to `copy.it.ts` (count: ~75 new keys total across namespaces):**
+**Copy keys added to `copy.it.ts` (count: 95 new leaves total across namespaces — counted excluding wrapper objects like `dayLabels`; CONTEXT D-33 estimate of ~30 was conservative — actual count is the table below):**
 
 | Namespace | Keys count | Listed in §7.1 |
 |-----------|-----------|----------------|
-| `week.*` | 26 | yes |
-| `shopping.*` | 35 | yes |
-| `family.*` | 13 | yes |
+| `week.*` | 31 (incl. 7 `dayLabels` leaves: mon-sun) | yes |
+| `shopping.*` | 42 | yes |
+| `family.*` | 15 | yes |
 | `sync.*` (extends Phase 1) | 4 added | yes |
 | `pwa.*` (extends Phase 1) | 3 added | yes |
+| **Total** | **95 leaves** | — |
 
 **No new color tokens.** No new spacing tokens. No new motion durations. No new font families. No new radius tokens. No new shadows.
 
@@ -969,7 +973,7 @@ Extension of Phase 1 §13. New surfaces and their consumed components:
 
 ---
 
-## 14. Registry Safety
+## 14. Registry Safety — Phase 2 ADDED/EXTENDED registry blocks
 
 **(inherited from Phase 1 UI-SPEC §14 verbatim — only shadcn official used; no third-party blocks)**
 
@@ -977,7 +981,7 @@ Phase 2 declares ZERO new third-party shadcn registries. All composites (`Dialog
 
 | Registry | Phase 2 blocks added | Safety Gate |
 |----------|----------------------|-------------|
-| **shadcn official** (ui.shadcn.com) | `dropdown-menu`, `popover`, `tooltip`, `alert-dialog`, `tabs`, `collapsible`, `toggle-group` (Phase 2 net new — others reused from Phase 1 §14 list) | not required (official registry, vetted upstream) |
+| **shadcn official** (ui.shadcn.com) | Phase 1 already added: `dropdown-menu`, `dialog`, `sheet`, `tabs`. Phase 2 ADDS: `popover`, `tooltip`, `alert-dialog`, `collapsible`, `toggle-group` (5 net new). All others reused from Phase 1 §14 list. | not required (official registry, vetted upstream) |
 | Third-party registries | **none declared for Phase 2** | not applicable |
 
 If a Phase 2 plan emerges that needs a third-party block (e.g. specialty calendar/date-picker registry), gsd-ui-researcher must run the safety vetting protocol (`npx shadcn view` → scan for `fetch(`, `eval(`, `process.env`, dynamic external imports) BEFORE the registry entry can be merged into this UI-SPEC. See agent definition §registry-safety.
@@ -990,7 +994,7 @@ Beyond the Phase 1 §15 inheritance, Phase 3-5 also inherit:
 
 - **VariantSelector** component pattern (Phase 5 may extend with AI-suggested variant — same component contract, new menu item type)
 - **WeeklyMacroRing** SVG anatomy (Phase 3 may extend with adherence ring band — same 4-arc base, new outer band)
-- **Shopping list PDF brand contract** (Phase 3+ PDF deliverables — meal plan PDF, weekly summary PDF — MUST mirror the same OKLCH coords + Plus Jakarta + Fraunces italic accent typography)
+- **Shopping list PDF brand contract** (Phase 3+ PDF deliverables — meal plan PDF, weekly summary PDF — MUST mirror the same OKLCH coords + Plus Jakarta + Instrument Serif italic date-subtitle accent per §6.4)
 - **SharedBadge** + **ShareToggleMenu** (Phase 4 admin gains group-merge UI — reuses same SharedBadge to indicate cross-merged meals)
 - **ConflictToast** (Phase 4 admin operations + Phase 5 AI streaming may surface 409 conflicts — reuse the same component with extended copy keys)
 - **Italian time-ago helper** (`italianTimeAgo`) — Phase 3 push notification copy reuses for "ultimo accesso" indicators
