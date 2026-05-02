@@ -19,6 +19,15 @@ dependencies = [
     "markdown>=3.7",
     "structlog>=24",
     "bcrypt<4.1",
+    # Phase 2 — PDF export (D-11..D-14, DEP-06).
+    # WeasyPrint primary requires GTK3/Pango on Windows Server (DEPLOY.md Appendix B);
+    # ReportLab fallback activates via PDF_BACKEND=reportlab if 02-01 spike trips 5xx >2%.
+    "weasyprint>=62,<63",
+    "reportlab>=4,<5",
+    "jinja2>=3.1,<4",
+    # Phase 2 — APScheduler for shopping list weekly reset cron (D-09).
+    # Already needed Phase 3 for push reminders; install once now.
+    "apscheduler>=3.11,<4",
 ]
 
 [dependency-groups]
