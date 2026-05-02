@@ -14,7 +14,7 @@ export default function History(): React.ReactElement {
   return (
     <main className="p-[var(--spacing-4)] flex flex-col gap-[var(--spacing-6)] max-w-3xl mx-auto">
       <header className="flex flex-col gap-[var(--spacing-1)]">
-        <h1 className="text-[var(--text-display)] font-semibold text-[color:var(--color-text)]">
+        <h1 className="text-[length:var(--text-display)] font-bold tracking-tight text-[color:var(--color-text)] m-0">
           Storico
         </h1>
       </header>

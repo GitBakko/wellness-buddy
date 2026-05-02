@@ -41,6 +41,8 @@ export {
   Sun,
   Moon,
   X,
+  PencilSimple,
+  Trash,
   CaretDown,
   CaretUp,
   CaretLeft,

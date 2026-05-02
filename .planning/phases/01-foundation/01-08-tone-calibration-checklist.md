@@ -127,4 +127,57 @@ Notes: _________________________________________________________________________
 
 ---
 
-*Generated: Phase 1 Plan 08 Task 1 (Wave 6). Filed for archival in `.planning/phases/01-foundation/`.*
+## DECISION (User Sign-Off)
+
+**Date:** 2026-05-02
+**Decided by:** Stefano Brunelli (project owner)
+**Locked variant:** **A · Lifesum Pure** (`mockups/tone-calibration-v2/A-lifesum-pure.html`)
+**Rationale:**
+
+- Lifesum is the established visual reference; users (Stefano + Marta) already understand the language
+- Macro ring as hero element validated as core focal point (kcal + 4-arc P/C/F/kcal in one glance)
+- Sage + cream + coral palette: warm-clinical, premium without being aggressive
+- Plus Jakarta Sans + Phosphor Icons set the friendly-rounded foundation across the app
+- New blueberry-purple (protein) + amber (fat) macro families give clear color-coding without infantile overload
+
+### Tasks deferred to Phase 2 pause gate
+
+Production-bound verifications (Plan 08 Task 3 sub-items) are explicitly **DEFERRED** to the Phase 2 pause gate per project owner decision (2026-05-02):
+
+- Real iPhone install + offline /today verification
+- Lighthouse PWA 100/100 score
+- DEPLOY.md walk-through on Windows Server 2019
+- win-acme cert for `wellness-buddy.epartner.it`
+- Stefano + Marta in-person sign-off ritual
+
+**Reasoning:** Variant A is now locked in code via Plan 01-09 propagation, so Phase 2 (variants + shopping list + family sync) ships on the right design foundation. Production deploy + iPhone install + Lighthouse run combine more naturally with Phase 2 deliverables at the next pause gate; verifying those production criteria today would only re-verify them after the Phase 2 surface area lands.
+
+Plan 01-09 fulfills the **code-side** half of the Phase 1 pause gate ("tone calibration locked" → variant A propagated to source). Plan 08 Task 3 production-side criteria are reclassified as **Phase 2 pause gate prerequisites**.
+
+### What Plan 01-09 actually shipped
+
+Code-side propagation (commits on `plan-01-09-lifesum-pure` branch, merged via Wave 7 reconciliation):
+
+- `frontend/src/styles/theme.css` — full OKLCH palette migration (warm-cream bg, sage-leaf 150-hue, refined coral 30-hue, NEW blueberry 280, NEW amber 75, `--color-carb-soft` for macro ring tracks). Light + dark variants for every token.
+- `frontend/src/components/today/MacroRing.tsx` — Lifesum-signature 4-arc SVG ring (kcal outer + P/C/F inner) consuming token colors only. Plus Jakarta 800 kcal value (NOT Instrument Serif — escape hatch reserved for /today greeting). Italian `aria-label` "{consumed} di {target} kcal oggi".
+- `frontend/src/components/today/MacroDisplay.tsx` — restyled 3-up macro pills (blueberry/leaf-deep/amber).
+- `frontend/src/components/today/MealCard.tsx` — Lifesum Pure layout: 80×80 photo (or gradient placeholder + Phosphor slot icon) + info column + 44×44 Phosphor check button. Photo `<img>` uses `loading="lazy"` + explicit dimensions (DoS mitigation).
+- `frontend/src/components/icons/index.ts` — Phosphor facade enforced via grep gate (CI / `pnpm lint`).
+- `frontend/src/pages/Today.tsx` — restructured to mockup A populated layout (greeting + score pill, hero ring card, "I tuoi pasti" section, meal list, weight+workout, AI placeholder).
+- `frontend/src/pages/{History,Settings}.tsx` + layout (`AppBar`, `BottomTabBar`, `NavigationRail`) — Phosphor + leaf-700 active state.
+- `frontend/src/i18n/copy.it.ts` — italian copy keys added for the macro ring and section headers (FND-09 source-of-truth preserved; no inline italian in components).
+- Backend: `MealOption.photo_url: str | None (max 500)` + parser opt-into `**Foto:** <url>` line + today_service passes through. Existing 134 backend tests stay green; 6 evil-corpus parser fixtures unchanged.
+
+**Verification snapshot (worktree before merge):**
+
+- Backend: 134/134 pass
+- Frontend unit: 62/62 pass (was 48 — +7 MacroRing + +7 MealCard)
+- `pnpm typecheck` / `pnpm lint` / `pnpm build` all green
+- Hex grep on `frontend/src` clean (zero hits)
+- Phosphor facade grep clean (no direct `@phosphor-icons/react` imports outside the facade)
+
+Visual regression Playwright baselines need a one-time refresh post-merge (TODO in `frontend/tests/visual/{light,dark}.spec.ts`).
+
+---
+
+*Generated: Phase 1 Plan 08 Task 1 (Wave 6). Locked: Plan 01-09 (Wave 7) — variant A · Lifesum Pure. Filed for archival in `.planning/phases/01-foundation/`.*

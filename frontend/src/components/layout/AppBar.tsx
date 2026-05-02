@@ -23,10 +23,10 @@ export function AppBar() {
         background: 'color-mix(in oklch, var(--color-bg) 85%, transparent)',
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
-        borderBottom: '1px solid var(--color-neutral-200)',
+        borderBottom: '1px solid var(--color-border)',
       }}
     >
-      <h1 className="text-[var(--text-base)] font-[600]">{title}</h1>
+      <h1 className="text-[var(--text-base)] font-semibold tracking-tight">{title}</h1>
       <div className="ml-auto flex items-center gap-[var(--spacing-3)]">
         <SyncStatusPip />
       </div>

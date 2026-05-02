@@ -11,6 +11,7 @@ import { useState } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { Scales } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -69,12 +70,20 @@ export function WeightQuickLog({ existing, todayIso }: Props): React.ReactElemen
 
   return (
     <Card
-      className="p-[var(--spacing-4)] flex flex-col gap-[var(--spacing-3)]"
+      className="p-[var(--spacing-4)] flex flex-col gap-[var(--spacing-3)] rounded-[var(--radius-card)]"
       aria-label={copy.weight.heading}
     >
-      <h2 className="text-[var(--text-base)] font-semibold text-[color:var(--color-text)]">
-        {copy.weight.heading}
-      </h2>
+      <header className="flex items-center gap-[var(--spacing-3)]">
+        <span
+          className="w-9 h-9 rounded-[var(--radius-sm)] inline-flex items-center justify-center flex-shrink-0 bg-[var(--color-coral-100)] text-[color:var(--color-coral-700)]"
+          aria-hidden="true"
+        >
+          <Scales size={18} weight="fill" aria-hidden="true" />
+        </span>
+        <h2 className="text-[var(--text-base)] font-semibold text-[color:var(--color-text)] m-0">
+          {copy.weight.heading}
+        </h2>
+      </header>
       <form
         onSubmit={onSubmit}
         className="flex flex-wrap items-end gap-[var(--spacing-3)]"
