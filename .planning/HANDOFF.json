@@ -1,55 +1,71 @@
 {
   "version": "1.0",
-  "timestamp": "2026-05-01T15:28:54.350Z",
+  "timestamp": "2026-05-02T10:19:12.783Z",
   "source": "auto-postool",
   "partial": false,
   "phase": "1",
   "phase_name": "Foundation",
   "phase_dir": ".planning/phases/01-foundation",
-  "plan": "1",
+  "plan": "01",
   "task": null,
-  "total_tasks": 8,
+  "total_tasks": 11,
   "status": "auto-checkpoint",
-  "completed_tasks": [],
-  "remaining_tasks": [
+  "completed_tasks": [
     {
       "id": "01",
       "name": "Task 1: Monorepo root + workspace + Docker Compose dev postgres + plans/ scaffold",
-      "status": "not_started"
+      "status": "done"
     },
     {
-      "id": "02",
-      "name": "Task 1: Core scaffolding (config + database + logging + middleware + exceptions + deps stubs) + main.py with lifespan",
-      "status": "not_started"
+      "id": "02a",
+      "name": "Task 1: Core scaffolding (config + database + security + deps stubs + exceptions + logging + middleware) + main.py with lifespan stub + health/version/errors endpoints + conftest",
+      "status": "done"
+    },
+    {
+      "id": "02b",
+      "name": "Task 1: AI ABC + NullProvider + factory + schemas + lifespan extension in main.py + stub routers + AI endpoints",
+      "status": "done"
     },
     {
       "id": "03",
       "name": "Task 1: Backend auth — security.py rotation logic + auth_service + /api/auth/* real endpoints + invite flow + integration tests",
-      "status": "not_started"
+      "status": "done"
     },
+    {
+      "id": "05a",
+      "name": "Task 1: Frontend deps install + Vite + TypeScript + Tailwind 4 @theme + shadcn/ui CLI init + 17 primitives + ESLint 9 flat + Prettier",
+      "status": "done"
+    },
+    {
+      "id": "05b",
+      "name": "Task 1: Italian copy.it.ts + lib/format.ts + hooks + Zustand stores (theme/ui/sync)",
+      "status": "done"
+    },
+    {
+      "id": "06",
+      "name": "Task 1: vite-plugin-pwa Workbox config + manifest + version polling + update toast hook + Dexie schema v1 + mutation queue + persistQueryClient",
+      "status": "done"
+    },
+    {
+      "id": "07",
+      "name": "Task 1: Backend /api/today aggregator + /api/weight + /api/workout CRUD + cross-user authz tests",
+      "status": "done"
+    }
+  ],
+  "remaining_tasks": [
     {
       "id": "04",
       "name": "Task 1: MD parser pipeline (normalizer + plan_parser + plan_sections + Pydantic v2 strict schema) + evil-corpus fixtures + unit tests",
       "status": "not_started"
     },
     {
-      "id": "05",
-      "name": "Task 1: Frontend deps install + Vite + TypeScript + Tailwind 4 @theme + shadcn/ui CLI init + 17 primitives + globals.css + format.ts + copy.it.ts",
-      "status": "not_started"
-    },
-    {
-      "id": "06",
-      "name": "Task 1: vite-plugin-pwa Workbox config + manifest + version polling + update toast hook + Dexie schema v1 + mutation queue + persistQueryClient",
-      "status": "not_started"
-    },
-    {
-      "id": "07",
-      "name": "Task 1: Backend /api/today aggregator + /api/weight + /api/workout CRUD + cross-user authz tests",
-      "status": "not_started"
-    },
-    {
       "id": "08",
       "name": "Task 1: Three /today tone calibration HTML mockups (A 75/25 elegant, B 50/50 balanced, C 25/75 playful) consuming production @theme tokens + index page + sign-off checklist",
+      "status": "not_started"
+    },
+    {
+      "id": "09",
+      "name": "Task 1: Tokens + fonts + dependencies — theme.css migration to Lifesum Pure palette",
       "status": "not_started"
     }
   ],
@@ -63,37 +79,13 @@
     },
     {
       "status": "??",
-      "path": ".planning/phases/01-foundation/01-01-PLAN.md"
+      "path": ".claude/"
     },
     {
       "status": "??",
-      "path": ".planning/phases/01-foundation/01-02-PLAN.md"
-    },
-    {
-      "status": "??",
-      "path": ".planning/phases/01-foundation/01-03-PLAN.md"
-    },
-    {
-      "status": "??",
-      "path": ".planning/phases/01-foundation/01-04-PLAN.md"
-    },
-    {
-      "status": "??",
-      "path": ".planning/phases/01-foundation/01-05-PLAN.md"
-    },
-    {
-      "status": "??",
-      "path": ".planning/phases/01-foundation/01-06-PLAN.md"
-    },
-    {
-      "status": "??",
-      "path": ".planning/phases/01-foundation/01-07-PLAN.md"
-    },
-    {
-      "status": "??",
-      "path": ".planning/phases/01-foundation/01-08-PLAN.md"
+      "path": ".planning/phases/02-differentiators/"
     }
   ],
-  "next_action": "Roadmap approved, awaiting plan generation for Phase 1",
-  "context_notes": "Status: Roadmap approved, awaiting plan generation for Phase 1\n\nRecent commits:\n797ac07 docs(01): add validation strategy .planning/phases/01-foundation/01-VALIDATION.md\n3afb677 docs(01): phase research .planning/phases/01-foundation/01-RESEARCH.md\n1e90e24 chore: relocate phase-01 dir to canonical .planning/phases/, add .gitignore for plans/, CLAUDE.md, contract\nafd2d8d docs(01): capture phase context .planning/phase-01-foundation/01-CONTEXT.md .planning/phase-01-foundation/01-DISCUSSION-LOG.md\n6adaedb docs(01): UI-SPEC approved (6/6 dimensions PASS) .planning/phase-01-foundation/01-UI-SPEC.md"
+  "next_action": "**Phase 1 COMPLETE code-side.** All 10 plans merged to master (HEAD `43a8551`). Tests 134 backend + 62 frontend GREEN. Tone calibration locked = Variante A (Lifesum Pure, mockup `mockups/tone-calibration-v2/A-lifesum-pure.html`). Plan 08 Task 3 production-bound items (iPhone install + win-acme + Lighthouse PWA 100/100 + Stefano+Marta in-person sign-off) **DEFERRED to Phase 2 pause gate** per project owner decision 2026-05-02. Ready for `/gsd:transition` → Phase 2 (Differentiators: weekly variants + shopping list + family sync).",
+  "context_notes": "Status: **Phase 1 COMPLETE code-side.** All 10 plans merged to master (HEAD `43a8551`). Tests 134 backend + 62 frontend GREEN. Tone calibration locked = Variante A (Lifesum Pure, mockup `mockups/tone-calibration-v2/A-lifesum-pure.html`). Plan 08 Task 3 production-bound items (iPhone install + win-acme + Lighthouse PWA 100/100 + Stefano+Marta in-person sign-off) **DEFERRED to Phase 2 pause gate** per project owner decision 2026-05-02. Ready for `/gsd:transition` → Phase 2 (Differentiators: weekly variants + shopping list + family sync).\n\nRecent commits:\naf10705 docs(01-09): STATE.md — Phase 1 code-side complete (10/10 plans), variant A locked, T3 deferred to Phase 2 gate\n43a8551 merge(01-09): Lifesum Pure theme propagation (Phase 1 closure)\na597151 docs(01-09): Plan 01-09 + tone calibration v2 mockups (Lifesum Pure approved variant A)\n3f6d330 feat(01-09-03): remaining components + tone-calibration checklist locked + Plan 08 T3 deferred\ne037ad0 feat(01-09-02): MacroRing component + icon facade + MealCard photo support + backend schema extension"
 }
