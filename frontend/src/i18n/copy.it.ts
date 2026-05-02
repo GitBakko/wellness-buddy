@@ -78,6 +78,17 @@ export const copy = {
     macroCarbChip: 'carbo',
     macroCarbFull: 'carboidrati',
     macroFat: 'grassi',
+    // Plan 01-09 Lifesum Pure macro ring labels (placeholders substituted
+    // at render time using italianNumberInt).
+    macroRingAria: '{consumed} di {target} kcal oggi',
+    macroKcalSuffix: 'kcal oggi',
+    macroKcalSubtitle: 'su {target}',
+    macroProtShort: 'Prot.',
+    macroCarbShort: 'Carb.',
+    macroFatShort: 'Grassi',
+    sectionMeals: 'I tuoi pasti',
+    sectionMealsCount: '{done} / {total} completati',
+    scorePillGood: 'Buon ritmo',
   },
 
   // ───── Weight quick-log ─────

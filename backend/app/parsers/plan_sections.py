@@ -1,13 +1,20 @@
 """Per-section parsers. Phase 1 minimal extraction.
 
-Source: PLAN-02 sections list, RESEARCH Pattern 10 stub `_parse_section`.
+Source: PLAN-02 sections list, RESEARCH Pattern 10 stub `_parse_section`,
+        PLAN-01-09 (optional `**Foto:** <url>` extraction for Lifesum-style cards).
 
 Phase 1 strategy:
   * `personal_data` + `macro_target` get regex extraction so the strict schema
     has populated fields downstream.
   * Other sections capture the body verbatim (or as a list-of-dicts wrapper)
     to satisfy the schema's `list[dict]` / `dict[str, list[MealOption]]` shape.
-  * Phase 2 will deepen ingredient/quantity extraction.
+  * Plan 01-09: meal-bearing sections (breakfast / lunches / dinners / snacks)
+    OPT-INTO photo_url extraction. The `_extract_photo_url` helper sniffs a
+    literal `**Foto:** <url>` line in the body. Absence → photo_url stays None,
+    so the existing 6 evil-corpus fixtures (none of which carry photos) keep
+    parsing green.
+  * Phase 2 will deepen ingredient/quantity extraction + plan editor will
+    populate photo_url through the upload flow after sanitization.
 
 The parser emits Phase-1-shaped dicts that match `PlanParsedSchema` field types
 (post-`model_validate`).
@@ -18,6 +25,22 @@ from __future__ import annotations
 import re
 
 _NUMBER_RE = re.compile(r"(\d+(?:[.,]\d+)?)")
+# Plan 01-09 — optional photo line "**Foto:** <url>" (case-insensitive, allows
+# leading whitespace before the bold marker). Length cap 500 enforced
+# downstream by the Pydantic v2 schema and the today_service coercer.
+_PHOTO_RE = re.compile(
+    r"^\s*\*\*\s*foto\s*:\s*\*\*\s+(\S{1,500})\s*$",
+    flags=re.IGNORECASE | re.MULTILINE,
+)
+
+
+def _extract_photo_url(body: str) -> str | None:
+    """Plan 01-09 — sniff `**Foto:** <url>` line. Returns None when absent."""
+    m = _PHOTO_RE.search(body)
+    if not m:
+        return None
+    url = m.group(1).strip()
+    return url or None
 
 
 def _to_float(s: str) -> float | None:
@@ -75,41 +98,69 @@ def _parse_macros(body: str) -> tuple[dict, list[str]]:
     return data, warnings
 
 
+def _option_body_segments(body: str) -> list[tuple[str, str]]:
+    """Split a meal section's body into [(title_line, segment_body), ...] chunks.
+
+    Each `### TITLE` line begins a new chunk. Lines before the first `###` are
+    discarded — Phase 1 doesn't surface preamble. If there are no `###` headings,
+    a single (first-non-empty-line, full-body) chunk is returned so per-option
+    metadata (e.g. photo_url) can still be sniffed from the section body.
+    """
+    chunks: list[tuple[str, str]] = []
+    current_title: str | None = None
+    current_lines: list[str] = []
+    has_subheading = False
+    for raw_line in body.splitlines():
+        line = raw_line.rstrip()
+        if line.startswith("### "):
+            has_subheading = True
+            if current_title is not None:
+                chunks.append((current_title, "\n".join(current_lines)))
+            current_title = line[4:].strip()
+            current_lines = []
+        elif current_title is not None:
+            current_lines.append(line)
+    if current_title is not None:
+        chunks.append((current_title, "\n".join(current_lines)))
+    if not has_subheading:
+        first_line = next((ln.strip() for ln in body.splitlines() if ln.strip()), "")
+        chunks.append((first_line or "", body))
+    return chunks
+
+
 def _parse_meal_options(body: str) -> tuple[dict[str, list[dict]], list[str]]:
     """Parse `### Opzione X` chunks under a section.
 
     Phase 1: keys are "default" + a list of MealOption-shaped dicts. Each `### TITLE`
     becomes one option with `key=TITLE`, `title=TITLE`, and empty ingredients/macros
     (Phase 2 deepens). If no `###` headings present, body becomes a single option.
+
+    Plan 01-09: each option opt-into photo_url via `**Foto:** <url>` line in its
+    own segment body — populates the `photo_url` field on the resulting MealOption.
     """
     options: list[dict] = []
-    current: dict | None = None
-    has_subheading = False
-    for raw_line in body.splitlines():
-        line = raw_line.rstrip()
-        if line.startswith("### "):
-            has_subheading = True
-            title = line[4:].strip()
-            current = {
-                "key": title or f"opzione_{len(options) + 1}",
-                "title": title or "Opzione",
-                "ingredients": [],
-                "macros": {},
-            }
-            options.append(current)
-        elif current is not None:
-            if line.strip():
-                # Append body lines to title for now (Phase 2 promotes to ingredients)
-                current["title"] = current["title"]  # keep title; body deferred
-    if not has_subheading:
-        # Single-option fallback
-        first_line = next((ln.strip() for ln in body.splitlines() if ln.strip()), "")
+    chunks = _option_body_segments(body)
+    has_subheading = any(t for t, _b in chunks if t and chunks.index((t, _b)) >= 0)
+    # Re-derive has_subheading reliably — chunks always has ≥1 entry; the
+    # subheading-flag is true iff `_option_body_segments` populated multiple
+    # chunks OR the first chunk's title was set from a `### ...` line. The
+    # safest signal: input contains an explicit "### " line.
+    has_subheading = any(line.lstrip().startswith("### ") for line in body.splitlines())
+
+    for idx, (title, segment_body) in enumerate(chunks):
+        if has_subheading:
+            key = title or f"opzione_{idx + 1}"
+            display_title = title or "Opzione"
+        else:
+            key = "default"
+            display_title = (title or "Opzione")[:200]
         options.append(
             {
-                "key": "default",
-                "title": (first_line or "Opzione")[:200],
+                "key": key,
+                "title": display_title,
                 "ingredients": [],
                 "macros": {},
+                "photo_url": _extract_photo_url(segment_body),
             }
         )
     return {"default": options}, []
@@ -125,6 +176,7 @@ def _parse_breakfast(body: str) -> tuple[dict | None, list[str]]:
             "title": (first_line[:200] or "Colazione"),
             "ingredients": [],
             "macros": {},
+            "photo_url": _extract_photo_url(body),
         },
         [],
     )
@@ -138,6 +190,7 @@ def _parse_snacks(body: str) -> tuple[list[dict], list[str]]:
             "title": (first_line[:200] or "Spuntino"),
             "ingredients": [],
             "macros": {},
+            "photo_url": _extract_photo_url(body),
         }
     ], []
 

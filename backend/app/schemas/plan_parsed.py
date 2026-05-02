@@ -54,6 +54,13 @@ class MealOption(BaseModel):
     title: str
     ingredients: list[Ingredient] = Field(default_factory=list)
     macros: Macros = Field(default_factory=Macros)
+    # Plan 01-09 — optional photo URL for Lifesum-style meal cards.
+    # Phase 1: parser leaves None unless the .md contains a literal `**Foto:** <url>`
+    # line in the meal section (extraction is opt-in; existing fixtures parse green).
+    # Phase 2 plan editor + upload flow will populate this after URL sanitization.
+    # `str | None` rather than HttpUrl so internal URLs / future blob refs stay valid;
+    # length capped at 500 chars (Plan 01-09 STRIDE — spoofing mitigation).
+    photo_url: str | None = Field(default=None, max_length=500)
 
 
 class PlanParsedSchema(BaseModel):

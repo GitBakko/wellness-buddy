@@ -34,6 +34,10 @@ class MealEntry(BaseModel):
     title: str
     macros: MealMacro = Field(default_factory=MealMacro)
     completed: bool = False
+    # Plan 01-09 — optional Lifesum-style photo URL passed through from parsed_json.
+    # Phase 1: usually None (parser only extracts when `**Foto:** <url>` line present).
+    # Frontend MealCard renders gradient placeholder when null.
+    photo_url: str | None = Field(default=None, max_length=500)
 
 
 class TodayWeight(BaseModel):
