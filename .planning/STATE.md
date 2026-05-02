@@ -1,6 +1,6 @@
 # State: Wellness Buddy
 
-**Last updated:** 2026-05-01 (Plan 01-07 /today + weight + workout complete — Wave 5 done)
+**Last updated:** 2026-05-02 (Plans 01-08 + 01-09 complete — Phase 1 closure, Lifesum Pure theme propagated)
 
 ## Project Reference
 
@@ -16,13 +16,13 @@
 ## Current Position
 
 - **Phase:** 1 — Foundation
-- **Plan:** 01-07 complete — /today aggregator + weight + workout CRUD + WeightChart + History + Settings (Wave 5)
-- **Status:** Wave 5 complete — Plan 07 lands on branch `plan-01-07-today` (4 atomic commits 417c093, 88c821a, ad2e835, a09131e); ready for Wave 6 (Plan 01-08 tone calibration mockups + DEPLOY.md)
-- **Progress:** Phase 0/5 phases complete · Plans 9/10
+- **Plan:** 01-09 complete — Lifesum Pure theme propagated (Plus Jakarta Sans + Phosphor icons + MacroRing + warmer cream/sage palette + blueberry/amber macro families). Phase 1 code-side closure done.
+- **Status:** **Phase 1 COMPLETE code-side.** All 10 plans merged to master (HEAD `43a8551`). Tests 134 backend + 62 frontend GREEN. Tone calibration locked = Variante A (Lifesum Pure, mockup `mockups/tone-calibration-v2/A-lifesum-pure.html`). Plan 08 Task 3 production-bound items (iPhone install + win-acme + Lighthouse PWA 100/100 + Stefano+Marta in-person sign-off) **DEFERRED to Phase 2 pause gate** per project owner decision 2026-05-02. Ready for `/gsd:transition` → Phase 2 (Differentiators: weekly variants + shopping list + family sync).
+- **Progress:** Phase 0/5 phases complete · Plans 10/10 in Phase 1
 - **Phase progress bar:**
 
   ```text
-  [######### ] 90% — Phase 1: Foundation (9/10 plans)
+  [##########] 100% — Phase 1: Foundation (10/10 plans, code-side closure)
   ```
 
 ## Performance Metrics
@@ -30,7 +30,7 @@
 | Metric | Value |
 |--------|-------|
 | Phases complete | 0 / 5 |
-| Plans complete | 9 / 10 (Phase 1) |
+| Plans complete | 10 / 10 (Phase 1) |
 | v1 requirements mapped | 145 / 145 (100%) |
 | Orphan requirements | 0 |
 | Pause gates passed | 0 / 5 |
@@ -45,6 +45,8 @@
 | 01-03 auth       | ~20 min  | 2/2   | 10 created + 11 modified | 4       |
 | 01-04 md-parser  | ~50 min  | 3/3   | 22 created +  4 modified | 5       |
 | 01-07 today      | ~75 min  | 3/3   | 20 created + 10 modified | 4       |
+| 01-08 mockups+dep| ~50 min  | 2/2   | 15 created (T3 deferred) | 4       |
+| 01-09 lifesum-px | ~28 min  | 3/3   | 4 created + 22 modified  | 3       |
 
 ## Accumulated Context
 
@@ -137,7 +139,7 @@
 
 ### Next Action
 
-Wave 6 — execute Plan 01-08 (tone calibration mockups 3 variants + complete DEPLOY.md Windows Server 2019 + smoke test script). Final Phase 1 plan; CHECKPOINT human-verify on tone calibration sign-off blocks Phase 1 pause gate.
+**`/gsd:transition`** — Phase 1 code-side closed. Tone calibration locked = Variante A · Lifesum Pure (`mockups/tone-calibration-v2/A-lifesum-pure.html`). Plan 08 T3 production-bound items deferred to Phase 2 pause gate. Ready to plan Phase 2 (Differentiators: weekly meal variants + shopping list aggregation + family sync via Group entity). Roadmap §Phase 2 spelled out at `.planning/ROADMAP.md`.
 
 ---
 *State initialized: 2026-05-01 — Phase 1 (Foundation) is the current focus.*
