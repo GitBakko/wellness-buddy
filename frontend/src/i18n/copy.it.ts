@@ -200,6 +200,51 @@ export const copy = {
     offline: 'Offline',
     tooltip: 'Ultima sincronizzazione: {time}',
     offlineToast: 'Nessuna connessione. Le modifiche verranno inviate quando torni online.',
+    // Phase 2 (Plan 02-02) — LWW conflict toast (FAM-05)
+    conflictToastHeading: 'Aggiornato da {partnerName}',
+    conflictToastBody: "Ricarica per vedere l'ultima versione.",
+    conflictToastAction: 'Ricarica',
+    conflictToastAria:
+      'Conflitto di sincronizzazione: {partnerName} ha modificato questo elemento',
+  },
+
+  // ───── /settimana (Phase 2 — vista settimanale + variant selector) ─────
+  // Source: UI-SPEC §7.1, FND-09 (italian-only), Plan 02-02 31-leaf namespace.
+  week: {
+    heading: 'La settimana',
+    weekPickerJumpAria: "Scegli un'altra settimana",
+    weekPickerCurrentLabel: 'Settimana corrente',
+    weekPickerChipFormat: '{startDate}',
+    dayLabels: {
+      mon: 'Lunedì',
+      tue: 'Martedì',
+      wed: 'Mercoledì',
+      thu: 'Giovedì',
+      fri: 'Venerdì',
+      sat: 'Sabato',
+      sun: 'Domenica',
+    } as Record<string, string>,
+    daySummaryFormat: '{count} pasti · {kcal} kcal previsti',
+    weeklyTotalLabel: 'Settimana',
+    weeklyTotalSubtitle: 'su {target}',
+    weeklyKcalSuffix: 'kcal · settimana',
+    weeklyMacroRingAria:
+      '{consumed} di {target} kcal questa settimana, {done} pasti su {total} completati',
+    completionStripDayDone: 'Tutti i pasti completati',
+    completionStripDayPartial: '{done} di {total} pasti completati',
+    completionStripDayPlanned: 'Pianificato',
+    completionStripDayBlank: 'Nessun piano',
+    variantOptionA: 'Opzione A',
+    variantOptionB: 'Opzione B',
+    variantSpecial: 'Pasta speciale',
+    variantSelectorAria: 'Cambia variante per {meal}',
+    variantSelectorActive: 'attiva',
+    variantSelectorMacroFormat: '{kcal} kcal · P {protein} · C {carbs} · F {fat}',
+    variantUpdateSuccess: 'Variante aggiornata',
+    variantUpdateError: 'Aggiornamento variante non riuscito. Riprova.',
+    emptyHeading: 'Nessuna settimana pianificata',
+    emptyBody: 'Carica un piano per vedere i pasti della settimana.',
+    emptyCta: 'Carica piano',
   },
 
   // ───── Generic errors (D-20: API errors → italian via copy.it.ts code lookup) ─────

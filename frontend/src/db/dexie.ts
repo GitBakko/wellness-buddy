@@ -1,6 +1,6 @@
 // frontend/src/db/dexie.ts
-// Dexie v1 schema — FND-07.
-// Source: 01-RESEARCH.md Pattern 5.
+// Dexie schema — FND-07.
+// Source: 01-RESEARCH.md Pattern 5; Phase 2 — Plan 02-02 v2 bump.
 //
 // PITFALLS #5 contract (locked):
 //   - mutation_queue stores OPAQUE HTTP requests {endpoint, method, body} —
@@ -12,6 +12,12 @@
 // PITFALLS #1 (iOS storage eviction) mitigation hook:
 //   - isEmptyButShouldHaveData() detects Dexie-empty-but-JWT-valid state.
 //     Used by useDexieResync to trigger full server resync on app boot.
+//
+// Version history:
+//   v1 — Phase 1 baseline: cache_users / cache_plans / cache_today /
+//        cache_workout_log / cache_weight_log / mutation_queue / drafts.
+//   v2 — Phase 2 (Plan 02-02): adds cache_weekly + cache_shopping. Existing
+//        v1 stores carried forward unchanged. PITFALLS #5 — DROP + refetch.
 
 import Dexie, { type EntityTable } from 'dexie';
 import type {
@@ -20,6 +26,8 @@ import type {
   CachedToday,
   CachedWorkoutLog,
   CachedWeightLog,
+  CachedWeekly,
+  CachedShopping,
   QueuedMutation,
   Draft,
 } from './schema';
@@ -30,11 +38,15 @@ export class WellnessBuddyDB extends Dexie {
   cache_today!: EntityTable<CachedToday, 'date'>;
   cache_workout_log!: EntityTable<CachedWorkoutLog, 'id'>;
   cache_weight_log!: EntityTable<CachedWeightLog, 'id'>;
+  // Phase 2 (v2)
+  cache_weekly!: EntityTable<CachedWeekly, 'week_start'>;
+  cache_shopping!: EntityTable<CachedShopping, 'week_start'>;
   mutation_queue!: EntityTable<QueuedMutation, 'id'>;
   drafts!: EntityTable<Draft, 'key'>;
 
   constructor() {
     super('wellness-buddy');
+    // v1 — Phase 1 baseline
     this.version(1).stores({
       cache_users: 'id, email',
       cache_plans: 'id, user_id, is_active',
@@ -43,6 +55,11 @@ export class WellnessBuddyDB extends Dexie {
       cache_weight_log: 'id, [user_id+date]',
       mutation_queue: 'id, created_at',
       drafts: 'key, updated_at',
+    });
+    // v2 — Phase 2 (Plan 02-02): cache_weekly + cache_shopping
+    this.version(2).stores({
+      cache_weekly: '[user_id+week_start], user_id',
+      cache_shopping: '[user_id+week_start], user_id',
     });
   }
 

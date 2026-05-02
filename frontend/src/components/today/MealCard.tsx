@@ -22,12 +22,18 @@ import { BowlFood, Check, Circle, Cookie, Fish, OrangeSlice } from '@/components
 import { copy } from '@/i18n/copy.it';
 import { italianNumberInt } from '@/lib/format';
 import type { TodayMeal } from '@/services/today';
-import type { ComponentType, SVGProps } from 'react';
+import type { ComponentType, ReactNode, SVGProps } from 'react';
 
 interface Props {
   meal: TodayMeal;
   onToggle: () => void;
   disabled?: boolean;
+  /**
+   * Plan 02-02 — optional slot rendered under the macros chip row.
+   * Used by /settimana to dock a VariantSelector pill per meal.
+   * /today does not pass this prop; legacy callsites unaffected.
+   */
+  variantSlot?: ReactNode;
 }
 
 type IconC = ComponentType<
@@ -41,7 +47,12 @@ const SLOT_ICON: Record<string, IconC> = {
   snack: Cookie as IconC,
 };
 
-export function MealCard({ meal, onToggle, disabled }: Props): React.ReactElement {
+export function MealCard({
+  meal,
+  onToggle,
+  disabled,
+  variantSlot,
+}: Props): React.ReactElement {
   const slotLabel = copy.today.mealLabels[meal.meal_type] ?? meal.meal_type;
   const ariaLabel = `${slotLabel}: ${meal.title}`;
   const SlotIcon = SLOT_ICON[meal.meal_type] ?? (OrangeSlice as IconC);
@@ -106,6 +117,9 @@ export function MealCard({ meal, onToggle, disabled }: Props): React.ReactElemen
             F {italianNumberInt(Math.round(meal.macros.fat_g))} g
           </span>
         </div>
+        {variantSlot ? (
+          <div className="mt-[var(--spacing-1)]">{variantSlot}</div>
+        ) : null}
       </div>
 
       {/* Check button — 44×44 minimum */}

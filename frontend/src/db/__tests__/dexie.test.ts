@@ -8,25 +8,56 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import 'fake-indexeddb/auto';
 import { db } from '@/db/dexie';
 
-describe('Dexie schema v1 (FND-07)', () => {
+describe('Dexie schema v2 (FND-07 + Plan 02-02 bump)', () => {
   beforeEach(async () => {
     await db.delete();
     await db.open();
   });
 
-  it('opens with all 7 tables', () => {
+  it('opens with all 9 tables (v1 7 + v2 cache_weekly + cache_shopping)', () => {
     const tableNames = db.tables.map((t) => t.name).sort();
     expect(tableNames).toEqual(
       [
         'cache_plans',
+        'cache_shopping',
         'cache_today',
         'cache_users',
+        'cache_weekly',
         'cache_weight_log',
         'cache_workout_log',
         'drafts',
         'mutation_queue',
       ].sort(),
     );
+  });
+
+  it('cache_weekly stores opaque payload keyed by [user_id+week_start]', async () => {
+    await db.cache_weekly.put({
+      user_id: 'u1',
+      week_start: '2026-05-04',
+      payload: { week_start: '2026-05-04', days: [], totals: {} },
+      fetched_at: '2026-05-04T10:00:00Z',
+    });
+    const row = await db.cache_weekly
+      .where('[user_id+week_start]')
+      .equals(['u1', '2026-05-04'])
+      .first();
+    expect(row).toBeDefined();
+    expect(row?.user_id).toBe('u1');
+  });
+
+  it('cache_shopping defined as separate per-week mirror', async () => {
+    await db.cache_shopping.put({
+      user_id: 'u1',
+      week_start: '2026-05-04',
+      payload: { items: [] },
+      fetched_at: '2026-05-04T10:00:00Z',
+    });
+    const row = await db.cache_shopping
+      .where('[user_id+week_start]')
+      .equals(['u1', '2026-05-04'])
+      .first();
+    expect(row).toBeDefined();
   });
 
   it('cache_users uses string id (server UUID, not auto-increment)', async () => {
