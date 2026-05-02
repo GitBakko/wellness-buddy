@@ -1,3 +1,17 @@
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: completed
+last_updated: "2026-05-02T10:19:55.582Z"
+progress:
+  total_phases: 5
+  completed_phases: 0
+  total_plans: 11
+  completed_plans: 8
+  percent: 73
+---
+
 # State: Wellness Buddy
 
 **Last updated:** 2026-05-02 (Plans 01-08 + 01-09 complete — Phase 1 closure, Lifesum Pure theme propagated)
@@ -53,6 +67,7 @@
 ### Key Decisions Carried Forward
 
 (From PROJECT.md — verbatim, do not repeat unless changed)
+
 - TailwindCSS 4 (override of contract v3) for WIN REQUISITE UI/UX foundation
 - WeasyPrint primary + ReportLab fallback for shopping list PDF (Sprint 2 GTK3 spike validates)
 - Vite 7 (hold for Sprint 1 stability, re-evaluate Sprint 4)
@@ -113,6 +128,7 @@
 ## Session Continuity
 
 ### Files of record
+
 - `.planning/PROJECT.md` — vision, constraints, key decisions
 - `.planning/REQUIREMENTS.md` — ~145 v1 reqs, traceability table locked
 - `.planning/ROADMAP.md` — 5 phases, success criteria, pause gates
@@ -121,6 +137,7 @@
 - `.planning/config.json` — granularity standard, mode yolo, parallelization on
 
 ### Hard dependency locks (must respect during planning)
+
 - Group entity in schema Sprint 1 (Phase 1) even though family sync arrives Sprint 2 (Phase 2)
 - AI ABC + NullProvider Sprint 1 (Phase 1) before any AI endpoint
 - MD parser Sprint 1 (Phase 1) before /today
@@ -131,6 +148,7 @@
 - WIN REQUISITE foundations (tokens, axe-core CI, dark-mode CI screenshots, tone mockups) Phase 1 — every later phase inherits, never retrofits
 
 ### Pause gates roadmap
+
 - **Phase 1 gate:** Real iPhone install + offline /today + upgrade path + Dexie wipe resync + axe-core green + Lighthouse PWA 100/100 + tone calibration locked
 - **Phase 2 gate:** Family-sync authz matrix verde + PDF Italian accents on iPhone Safari/Mail + condiviso badge convergence ≤5s + GTK3 stability decision
 - **Phase 3 gate:** DST notification test verde + VoiceOver pass + dark mode contrast green + tone review Stefano+Marta

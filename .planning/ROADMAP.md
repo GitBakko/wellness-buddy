@@ -109,7 +109,15 @@ UI-01 â€” UI-20 (cross-cutting â€” every new component inherits tokens
 
 **Pause Gate (exit criteria)**: Family-sync authz tests verdi (matrix completa own/shared/private/non-family/ex-member); PDF shopping list rende correttamente accenti italiani su iPhone Safari + Mail.app; badge "condiviso" converge entro 5s in test concorrente; WeasyPrint GTK3 stabile in produzione (5xx <2% in spike di 7 giorni) â€” altrimenti decisione esplicita fallback ReportLab.
 
-**Plans**: TBD
+**Plans**: 7 plans
+
+- [ ] 02-01-PLAN.md - WeasyPrint GTK3 spike Windows Server + PdfExporter ABC + ReportLab fallback (DEP-06)
+- [ ] 02-02-PLAN.md - /settimana route + variant selector + LWW If-Unmodified-Since 409 + visual baselines regen (WEEK-01..05, FAM-04, D-31)
+- [ ] 02-03-PLAN.md - Production deploy CHECKPOINT + Stefano+Marta iPhone install + Lighthouse PWA/a11y >=95 + tone calibration locked (D-26..D-28)
+- [ ] 02-04-PLAN.md - Italian quantity parser + 5-category mapper + shopping aggregator + APScheduler weekly reset cron + /spesa route + BroadcastChannel (SHOP-01..06, SHOP-08)
+- [ ] 02-05-PLAN.md - shopping_list.html WeasyPrint template + woff2 base64 inline + export-pdf endpoint live + iPhone Safari accent verify (SHOP-07, D-12, D-13)
+- [ ] 02-06-PLAN.md - Alembic 0001 group activation + cross-user authz + family share endpoint + 40-test authz matrix + SharedBadge + ShareToggleMenu (FAM-01..09)
+- [ ] 02-07-PLAN.md - Phase 2 closure CHECKPOINT: VERIFICATION.md + e2e family-convergence + axe + Lighthouse + tone review + STATE/ROADMAP updates
 
 **UI hint**: yes
 
