@@ -100,7 +100,7 @@ exclude = ["alembic/versions"]
 plugins = []
 
 [[tool.mypy.overrides]]
-module = ["passlib.*", "jose.*"]
+module = ["passlib.*", "jose.*", "weasyprint.*", "reportlab.*"]
 ignore_missing_imports = true
 
 [build-system]
