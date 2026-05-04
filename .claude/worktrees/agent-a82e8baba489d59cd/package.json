@@ -1,0 +1,26 @@
+{
+  "name": "wellness-buddy",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "frontend:dev": "pnpm --filter frontend dev",
+    "frontend:build": "pnpm --filter frontend build",
+    "frontend:lint": "pnpm --filter frontend lint",
+    "frontend:typecheck": "pnpm --filter frontend typecheck",
+    "frontend:test": "pnpm --filter frontend test",
+    "backend:dev": "cd backend && uv run uvicorn app.main:app --reload --port 8000",
+    "backend:test": "cd backend && uv run pytest -x",
+    "backend:lint": "cd backend && uv run ruff check && uv run mypy app",
+    "dev": "concurrently -n frontend,backend -c blue,green \"pnpm frontend:dev\" \"pnpm backend:dev\"",
+    "ci:all": "pnpm frontend:lint && pnpm frontend:typecheck && pnpm frontend:build && pnpm frontend:test && pnpm backend:lint && pnpm backend:test",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "concurrently": "^9",
+    "husky": "^9",
+    "lint-staged": "^15",
+    "prettier": "^3",
+    "prettier-plugin-tailwindcss": "^0.6"
+  },
+  "packageManager": "pnpm@10.0.0"
+}

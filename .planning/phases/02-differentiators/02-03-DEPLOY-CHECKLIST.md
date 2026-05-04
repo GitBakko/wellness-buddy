@@ -43,9 +43,9 @@ Lo script:
 
 Verifiche:
 
-- [ ] Output finale stampa percorso zip + dimensione (~10-30 MB tipico)
-- [ ] File esiste: `dist-package\wellness-buddy-<sha>-<timestamp>.zip`
-- [ ] File checksum esiste: `dist-package\wellness-buddy-<sha>-<timestamp>.zip.sha256`
+- [X] Output finale stampa percorso zip + dimensione (~10-30 MB tipico)
+- [X] File esiste: `dist-package\wellness-buddy-<sha>-<timestamp>.zip`
+- [X] File checksum esiste: `dist-package\wellness-buddy-<sha>-<timestamp>.zip.sha256`
 - [ ] Working tree NON dirty (se warning "uncommitted changes" → committa o stash prima di rebuild per coerenza sha)
 
 **Opzioni:**
