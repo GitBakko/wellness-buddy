@@ -166,7 +166,14 @@ def _section_present(value: object) -> bool:
 async def diff_against_active(
     session: AsyncSession, *, user_id: UUID, candidate_plan_id: UUID
 ) -> dict[str, list[str]]:
-    """Compute section-level diff of `candidate_plan_id` vs the user's active plan."""
+    """Compute section-level diff of `candidate_plan_id` vs the user's active plan.
+
+    Plan 02-04: lunches/dinners parsed_json is a `dict[str, list[MealOption]]` keyed by
+    day_slug ('lun'..'dom') for grid format, or 'default' for subheading format. Equality
+    (`a.get(key) != c.get(key)`) compares the dict deeply, so any change in keys or option
+    titles per day surfaces as `lunches_changed` / `dinners_changed`. Section-level
+    granularity is the Phase 2 contract — per-day cell highlighting deferred to Phase 3.
+    """
     candidate = (
         await session.scalars(
             select(NutritionPlan).where(

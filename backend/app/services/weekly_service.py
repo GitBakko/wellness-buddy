@@ -24,6 +24,9 @@ from app.models.variant import WeeklyPlanVariant
 
 MEAL_SLOTS = ("breakfast", "lunch", "dinner", "snack")
 
+# Plan 02-04 — Italian day slugs ordered by Monday=0..Sunday=6 (matches plan_sections).
+_INT_TO_DAY_SLUG = ("lun", "mar", "mer", "gio", "ven", "sab", "dom")
+
 
 async def build_weekly_payload(
     session: AsyncSession, *, user: User, week_start: date_t
@@ -59,7 +62,12 @@ async def build_weekly_payload(
         meals: list[dict[str, Any]] = []
         for slot in MEAL_SLOTS:
             v = variant_map.get((d, slot))
-            meal_block = _resolve_meal(plan.parsed_json, slot, v.variant_key if v else "default")
+            meal_block = _resolve_meal(
+                plan.parsed_json,
+                slot,
+                v.variant_key if v else "default",
+                day_of_week=d,
+            )
             meals.append(
                 {
                     "slot": slot,
@@ -128,17 +136,29 @@ _SLOT_KEYS = {
 }
 
 
-def _resolve_meal(parsed: dict[str, Any] | None, slot: str, variant_key: str) -> dict[str, Any]:
-    """Look up the meal block in parsed_json by slot + variant.
+def _resolve_meal(
+    parsed: dict[str, Any] | None,
+    slot: str,
+    variant_key: str,
+    *,
+    day_of_week: int = 0,
+) -> dict[str, Any]:
+    """Look up the meal block in parsed_json by slot + variant + (Plan 02-04) day_of_week.
 
-    parsed_json layout (from MD parser, Plan 04):
-      breakfast: { title, macros, ... }       (single dict)
-      lunches:   { default: [ {key, title, macros, ...}, ... ] }
+    parsed_json layout (from MD parser, Plan 04 + Plan 02-04):
+      breakfast: { title, macros, ... }                    (single dict)
+      lunches:   { lun: [opts], mar: [opts], ... }         (per-day grid format) OR
+                 { default: [opts] }                       (subheading format)
       dinners:   same as lunches
-      snacks:    [ { key, title, macros, ... }, ... ]   (flat list)
+      snacks:    [ { key, title, macros, ... }, ... ]      (flat list)
 
-    Phase 1 today_service walks the same shapes; here we honor variant_key but
-    fall back to the first available option (D-03 default behavior) when not found.
+    Lunch/dinner lookup precedence (Plan 02-04):
+      1. lunches[day_slug] — today's options from grid
+      2. lunches['default'] — subheading-format fallback
+      3. first non-empty list value — defensive fallback
+    Then within the chosen list:
+      1. option whose `.key` matches `variant_key`
+      2. first option (D-03 default behavior)
     """
     if not isinstance(parsed, dict) or not parsed:
         return {}
@@ -153,10 +173,12 @@ def _resolve_meal(parsed: dict[str, Any] | None, slot: str, variant_key: str) ->
         section = parsed.get(plural) or {}
         if not isinstance(section, dict):
             return {}
-        # The parser indexes lunches/dinners by a top-level "default" → list
-        # of variants. variant_key 'A'/'B'/'pasta'/'special'/'default' picks
-        # the matching item by `.key`; falls back to first option.
-        options = section.get("default") or next(iter(section.values()), [])
+        day_slug = _INT_TO_DAY_SLUG[day_of_week] if 0 <= day_of_week <= 6 else None
+        options = (
+            (section.get(day_slug) if day_slug else None)
+            or section.get("default")
+            or next((v for v in section.values() if isinstance(v, list) and v), [])
+        )
         if not isinstance(options, list):
             return {}
         for opt in options:

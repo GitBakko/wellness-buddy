@@ -33,6 +33,32 @@ from app.schemas.today import (
 
 MEAL_TYPES = ("breakfast", "lunch", "dinner", "snack")
 
+# Plan 02-04: ordered Italian day slugs (0=Mon..6=Sun) — mirrors plan_sections._INT_TO_DAY_SLUG.
+_INT_TO_DAY_SLUG = ("lun", "mar", "mer", "gio", "ven", "sab", "dom")
+
+
+def _options_for_day(slot_dict: dict, day_of_week: int) -> list:
+    """Resolve a list of MealOption-shaped dicts for a given day_of_week.
+
+    Plan 02-04 contract — `slot_dict` may be:
+      * `{day_slug: [opts]}` (grid format, real Stefano + Marta plans), OR
+      * `{'default': [opts]}` (subheading format, EXAMPLE.md backward compat).
+
+    Lookup precedence: today's day_slug → 'default' → first dict value (defensive).
+    Returns `[]` when no options found.
+    """
+    if not isinstance(slot_dict, dict) or not slot_dict:
+        return []
+    today_slug = _INT_TO_DAY_SLUG[day_of_week]
+    options = slot_dict.get(today_slug) or slot_dict.get("default")
+    if not options:
+        # Defensive — return any first non-empty list so callers degrade gracefully.
+        for v in slot_dict.values():
+            if isinstance(v, list) and v:
+                options = v
+                break
+    return list(options) if isinstance(options, list) else []
+
 
 def _greeting_period(now: datetime) -> str:
     """UI-SPEC §7.2 buckets, computed in user's IANA tz."""
@@ -73,14 +99,23 @@ def _coerce_photo_url(raw: object) -> str | None:
     return val
 
 
-def _meals_from_parsed(parsed: dict) -> list[MealEntry]:
-    """Emit Phase 1 meal list from parsed_json. Variant selection (Phase 2) defaults
-    to first option per slot. Plan 01-09: passes optional photo_url through.
+def _meals_from_parsed(
+    parsed: dict,
+    day_of_week: int = 0,
+    variant_by_meal: dict[str, WeeklyPlanVariant] | None = None,
+) -> list[MealEntry]:
+    """Emit today's meal list from parsed_json. Variant selection defaults to first option.
+
+    Plan 02-04: lunches/dinners are resolved per-day. `day_of_week` (0=Mon..6=Sun) drives
+    the day_slug lookup; falls back to 'default' for subheading-format plans.
+    `variant_by_meal` (when provided) lets the user's stored selection override the
+    "first option" fallback so the recipe title shown matches the chosen variant.
 
     Display order (Plan 02-03 gap closure): breakfast → lunch → snack → dinner.
     Spuntino sits between lunch and dinner because Stefano/Marta consume it
     mid-afternoon (15:30-16:00), not after dinner.
     """
+    variant_by_meal = variant_by_meal or {}
     breakfast_meal: MealEntry | None = None
     lunch_meal: MealEntry | None = None
     dinner_meal: MealEntry | None = None
@@ -98,14 +133,19 @@ def _meals_from_parsed(parsed: dict) -> list[MealEntry]:
 
     for slot, parsed_key in (("lunch", "lunches"), ("dinner", "dinners")):
         slot_dict = parsed.get(parsed_key)
-        if not isinstance(slot_dict, dict) or not slot_dict:
-            continue
-        options = slot_dict.get("default")
-        if not options:
-            options = next(iter(slot_dict.values()), [])
+        options = _options_for_day(slot_dict if isinstance(slot_dict, dict) else {}, day_of_week)
         if not options:
             continue
-        opt = options[0] if isinstance(options, list) else None
+        # Pick the user's selected variant if present; otherwise first option (default).
+        selected_key = variant_by_meal[slot].variant_key if slot in variant_by_meal else None
+        opt: dict | None = None
+        if selected_key:
+            for candidate in options:
+                if isinstance(candidate, dict) and str(candidate.get("key")) == selected_key:
+                    opt = candidate
+                    break
+        if opt is None:
+            opt = options[0] if isinstance(options[0], dict) else None
         if not isinstance(opt, dict):
             continue
         entry = MealEntry(
@@ -170,9 +210,8 @@ async def build_today_payload(session: AsyncSession, user: User) -> TodayRespons
 
     meals: list[MealEntry] = []
     if plan:
-        meals = _meals_from_parsed(plan.parsed_json or {})
-
-        # Apply completion state from this week's variants
+        # Plan 02-04: variants drive both completion AND which lunch/dinner variant
+        # to surface. Build a lookup by meal_type → WeeklyPlanVariant for today's row.
         variants = (
             await session.scalars(
                 select(WeeklyPlanVariant).where(
@@ -182,6 +221,14 @@ async def build_today_payload(session: AsyncSession, user: User) -> TodayRespons
                 )
             )
         ).all()
+        variant_by_meal: dict[str, WeeklyPlanVariant] = {v.meal_type: v for v in variants}
+
+        meals = _meals_from_parsed(
+            plan.parsed_json or {},
+            day_of_week=day_of_week,
+            variant_by_meal=variant_by_meal,
+        )
+
         # When multiple snacks share meal_type='snack', mark them all complete if a
         # variant row says so — Phase 1 behavior; Phase 2 may distinguish per snack key.
         completed_meal_types = {v.meal_type for v in variants if v.completed}
