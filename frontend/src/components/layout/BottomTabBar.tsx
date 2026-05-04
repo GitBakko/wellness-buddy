@@ -10,7 +10,7 @@ import {
   CalendarDots,
   ClockCounterClockwise,
   House,
-  UserIcon,
+  ShoppingCart,
 } from '@/components/icons';
 import { copy } from '@/i18n/copy.it';
 import { cn } from '@/lib/cn';
@@ -29,9 +29,9 @@ interface Tab {
 const TABS: Tab[] = [
   { to: '/today', label: copy.appBar.today, Icon: House as IconC },
   { to: '/settimana', label: copy.appBar.week, Icon: CalendarDots as IconC },
+  { to: '/spesa', label: copy.appBar.shopping, Icon: ShoppingCart as IconC },
   { to: '/storico', label: copy.appBar.history, Icon: ClockCounterClockwise as IconC },
   { to: '/piano', label: copy.appBar.plan, Icon: CalendarBlank as IconC },
-  { to: '/impostazioni', label: copy.appBar.settings, Icon: UserIcon as IconC },
 ];
 
 export function BottomTabBar() {

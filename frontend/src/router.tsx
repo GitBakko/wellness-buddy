@@ -101,6 +101,16 @@ export const router = createBrowserRouter([
         lazy: async () => ({ Component: (await import('./pages/Week')).default }),
       },
       {
+        // Phase 2 (Plan 02-05) — /spesa with optional explicit weekStart param.
+        // /spesa → resolves to today's Monday inside Shopping.tsx.
+        path: 'spesa',
+        lazy: async () => ({ Component: (await import('./pages/Shopping')).default }),
+      },
+      {
+        path: 'spesa/:weekStart',
+        lazy: async () => ({ Component: (await import('./pages/Shopping')).default }),
+      },
+      {
         path: 'piano',
         lazy: async () => ({ Component: (await import('./pages/Plans')).default }),
       },

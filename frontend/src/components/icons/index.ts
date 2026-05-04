@@ -50,4 +50,20 @@ export {
   CaretRight,
   // Phase 2 (Plan 02-02) — /settimana additions
   ArrowsClockwise,
+  // Phase 2 (Plan 02-05) — /spesa shopping list. Each category icon must
+  // feel like a "kitchen object" so the bucket is recognisable at a glance:
+  //   Snowflake          → Frigo & Freschi (refrigerated items)
+  //   Carrot             → Frutta & Verdura (fresh produce)
+  //   Package            → Dispensa (pantry, dry goods)
+  //   BowlSteam          → Condimenti (sauces, oils, condiments)
+  //   Pill               → Integratori (supplements)
+  // Plus 3 actions: ArrowCounterClockwise (Reset), ClipboardText (Copia), FilePdf (Esporta).
+  Snowflake,
+  Carrot,
+  Package,
+  BowlSteam,
+  Pill,
+  ArrowCounterClockwise,
+  ClipboardText,
+  FilePdf,
 } from '@phosphor-icons/react';
