@@ -593,7 +593,7 @@ Import-Module WebAdministration
 Get-WebBinding -Name 'wellness-buddy' | Select-Object protocol, bindingInformation, sslFlags
 ```
 
-- [ ] Output include riga `protocol: https`, `bindingInformation: *:443:wellness-buddy.epartner.it`
+- [X] Output include riga `protocol: https`, `bindingInformation: *:443:wellness-buddy.epartner.it`
 - [ ] Se manca binding HTTPS → IIS Manager → site bindings → Add → https + cert wildcard + host header `wellness-buddy.epartner.it` + tick "Require Server Name Indication"
 
 ### 7.2 Verifica certificato bound
@@ -604,27 +604,69 @@ $cert = Get-ChildItem Cert:\LocalMachine\My | Where-Object { $_.Thumbprint -eq $
 $cert | Select-Object Subject, Issuer, NotAfter, Thumbprint | Format-List
 ```
 
-- [ ] `Subject` contiene `*.epartner.it` (wildcard)
-- [ ] `NotAfter` data scadenza futura (verifica che ci siano almeno 30 giorni)
-- [ ] `Issuer` riconosciuto (Let's Encrypt / Sectigo / DigiCert / etc.)
+- [X] `Subject` contiene `*.epartner.it` (wildcard)
+- [X] `NotAfter` data scadenza futura (verifica che ci siano almeno 30 giorni)
+- [X] `Issuer` riconosciuto (Let's Encrypt / Sectigo / DigiCert / etc.)
 
 ### 7.3 Verifica HTTPS pubblico (da rete ESTERNA — 4G mobile NON LAN)
 
-- [ ] Browser su iPhone (4G ON, wifi OFF): `https://wellness-buddy.epartner.it` → carica
-- [ ] Lucchetto verde, "Connessione protetta"
-- [ ] Cert details mostra issuer wildcard + dominio `*.epartner.it`
-- [ ] Nessun warning "certificate not trusted" / "name mismatch"
+- [X] Browser su iPhone (4G ON, wifi OFF): `https://wellness-buddy.epartner.it` → carica
+- [X] Lucchetto verde, "Connessione protetta"
+- [X] Cert details mostra issuer wildcard + dominio `*.epartner.it`
+- [X] Nessun warning "certificate not trusted" / "name mismatch"
 
 ### 7.4 Forza HTTPS redirect
 
+> **Setup richiesto:** rule `Redirect to HTTPS` deve essere presente in `web.config` come PRIMA rule (prima di proxy + SPA fallback). Versioni master `>= 4c72938` includono già la rule. Se hai estratto pacchetto vecchio → applica step manuali sotto.
+
+#### 7.4.1 Verifica rule presente in web.config attivo
+
 ```powershell
-# Test redirect HTTP → HTTPS (web.config rule)
+Select-String -Path E:\www\wellnessBuddy\frontend\dist\web.config -Pattern 'Redirect to HTTPS' -Context 0,5
+```
+
+- [ ] Output mostra rule `<rule name="Redirect to HTTPS" stopProcessing="true">` con condition `{HTTPS}` `^OFF$` → action redirect 301
+
+#### 7.4.2 Se rule MANCA → aggiungi manualmente
+
+Apri `E:\www\wellnessBuddy\frontend\dist\web.config` e inserisci come **prima rule** dentro `<rules>` (sopra "Proxy /api to backend"):
+
+```xml
+<rule name="Redirect to HTTPS" stopProcessing="true">
+  <match url="(.*)" />
+  <conditions>
+    <add input="{HTTPS}" pattern="^OFF$" />
+  </conditions>
+  <action type="Redirect" url="https://{HTTP_HOST}/{R:1}" redirectType="Permanent" />
+</rule>
+```
+
+⚠️ **Ordine critico:** PRIMA di "Proxy /api to backend" e "SPA fallback". Altrimenti queste matchano `(.*)` e proxano HTTP traffic senza redirect.
+
+#### 7.4.3 Restart sito + app pool dopo modifica web.config
+
+```powershell
+Import-Module WebAdministration
+$pool = (Get-Website -Name 'wellness-buddy').applicationPool
+Restart-WebAppPool -Name $pool
+Stop-Website -Name 'wellness-buddy' -ErrorAction SilentlyContinue
+Start-Website -Name 'wellness-buddy'
+Start-Sleep 2
+```
+
+#### 7.4.4 Test redirect
+
+```powershell
 $resp = Invoke-WebRequest http://wellness-buddy.epartner.it -MaximumRedirection 0 -ErrorAction SilentlyContinue
 Write-Host "Status: $($resp.StatusCode) | Location: $($resp.Headers.Location)"
 ```
 
-- [ ] Status `301` o `302` con Location header verso `https://wellness-buddy.epartner.it`
-- [ ] Se status 200 → redirect mancante in web.config (verifica `<rule name="Redirect to HTTPS">` presente)
+- [ ] Status `301` con Location header verso `https://wellness-buddy.epartner.it/`
+- [ ] Se status 200 → rule non attiva → verifica:
+  1. Posizione rule (deve essere PRIMA delle altre)
+  2. URL Rewrite module installato (`Get-WebGlobalModule | ? Name -eq 'RewriteModule'`)
+  3. App pool restartato dopo modifica web.config
+  4. Errori parser web.config: `Get-WinEvent -ProviderName 'IIS-W3SVC-WP' -MaxEvents 5`
 
 ### 7.5 Smoke HTTPS dal server
 
