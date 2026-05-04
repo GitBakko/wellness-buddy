@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-05-02T10:19:12.783Z",
+  "timestamp": "2026-05-04T07:51:55.195Z",
   "source": "auto-postool",
   "partial": false,
   "phase": "1",
@@ -78,14 +78,18 @@
       "path": ".planning/HANDOFF.json"
     },
     {
+      "status": "M",
+      "path": ".planning/phases/02-differentiators/02-03-DEPLOY-CHECKLIST.md"
+    },
+    {
       "status": "??",
       "path": ".claude/"
     },
     {
       "status": "??",
-      "path": ".planning/phases/02-differentiators/"
+      "path": "deploy/scripts/package-release.ps1"
     }
   ],
   "next_action": "**Phase 1 COMPLETE code-side.** All 10 plans merged to master (HEAD `43a8551`). Tests 134 backend + 62 frontend GREEN. Tone calibration locked = Variante A (Lifesum Pure, mockup `mockups/tone-calibration-v2/A-lifesum-pure.html`). Plan 08 Task 3 production-bound items (iPhone install + win-acme + Lighthouse PWA 100/100 + Stefano+Marta in-person sign-off) **DEFERRED to Phase 2 pause gate** per project owner decision 2026-05-02. Ready for `/gsd:transition` → Phase 2 (Differentiators: weekly variants + shopping list + family sync).",
-  "context_notes": "Status: **Phase 1 COMPLETE code-side.** All 10 plans merged to master (HEAD `43a8551`). Tests 134 backend + 62 frontend GREEN. Tone calibration locked = Variante A (Lifesum Pure, mockup `mockups/tone-calibration-v2/A-lifesum-pure.html`). Plan 08 Task 3 production-bound items (iPhone install + win-acme + Lighthouse PWA 100/100 + Stefano+Marta in-person sign-off) **DEFERRED to Phase 2 pause gate** per project owner decision 2026-05-02. Ready for `/gsd:transition` → Phase 2 (Differentiators: weekly variants + shopping list + family sync).\n\nRecent commits:\naf10705 docs(01-09): STATE.md — Phase 1 code-side complete (10/10 plans), variant A locked, T3 deferred to Phase 2 gate\n43a8551 merge(01-09): Lifesum Pure theme propagation (Phase 1 closure)\na597151 docs(01-09): Plan 01-09 + tone calibration v2 mockups (Lifesum Pure approved variant A)\n3f6d330 feat(01-09-03): remaining components + tone-calibration checklist locked + Plan 08 T3 deferred\ne037ad0 feat(01-09-02): MacroRing component + icon facade + MealCard photo support + backend schema extension"
+  "context_notes": "Status: **Phase 1 COMPLETE code-side.** All 10 plans merged to master (HEAD `43a8551`). Tests 134 backend + 62 frontend GREEN. Tone calibration locked = Variante A (Lifesum Pure, mockup `mockups/tone-calibration-v2/A-lifesum-pure.html`). Plan 08 Task 3 production-bound items (iPhone install + win-acme + Lighthouse PWA 100/100 + Stefano+Marta in-person sign-off) **DEFERRED to Phase 2 pause gate** per project owner decision 2026-05-02. Ready for `/gsd:transition` → Phase 2 (Differentiators: weekly variants + shopping list + family sync).\n\nRecent commits:\n573cf69 merge(02-03-01): deploy checklist artifact + pwa install follow-up copy keys (Wave 3 Task 1)\n49b1bca docs(02-03-01): deploy checklist artifact + pwa install follow-up copy keys (D-26)\nc38e26d merge(02-02): /settimana + variant LWW + WeeklyMacroRing + visual baselines (Wave 2)\n180c4ba docs(02-02): complete /settimana route + variant LWW plan summary\n7cf3e04 test(02-02): regenerate visual baselines post Lifesum Pure + /settimana route (D-31)"
 }
