@@ -593,6 +593,41 @@ _SNACK_OPTION_RE = re.compile(
     flags=re.IGNORECASE,
 )
 
+# Plan 02-05 — generic bullet detector for SERALE-style sections that use plain
+# `- text` bullets joined by `oppure`/`o ` connectors instead of `Opzione X:`
+# markers. We capture the rest-of-line; connector stripping happens downstream
+# so we know whether a bullet is the FIRST option (no leading connector) or an
+# alternative (`oppure ...`). Must NOT match table rows, headings, or
+# `Opzione X:` bullets (those have already been processed).
+_GENERIC_SNACK_BULLET_RE = re.compile(
+    r"^\s*[-*]\s+(.+?)\s*$",
+)
+
+# Plan 02-05 — leading "oppure"/"o " connector stripped before splitting on `+`.
+# Use `\b` to avoid eating words like "olio".
+_OPPURE_PREFIX_RE = re.compile(r"^\s*(?:oppure|o)\s+", flags=re.IGNORECASE)
+
+# Plan 02-05 — section heading keywords that mark an EVENING snack slot.
+# Default for unmatched headings is "afternoon".
+_EVENING_KEYWORDS_RE = re.compile(
+    r"\b(?:serale|notte|notturn[oa]|post[\s\-]?cena|sera)\b",
+    flags=re.IGNORECASE,
+)
+
+
+def _classify_snack_slot(heading: str) -> str:
+    """Plan 02-05 — return "evening" when heading matches evening keywords, else "afternoon".
+
+    Examples:
+      "SPUNTINO SERALE (opzionale - solo se fame vera)"  → "evening"
+      "SPUNTINO POST-CENA"                                → "evening"
+      "SPUNTINO POMERIGGIO (15:30-16:00) + Elettroliti"   → "afternoon"
+      ""                                                  → "afternoon"
+    """
+    if heading and _EVENING_KEYWORDS_RE.search(heading):
+        return "evening"
+    return "afternoon"
+
 
 def _extract_snack_alternatives(body: str) -> list[tuple[str, str]]:
     """Plan 02-05 gap-closure — extract `- Opzione X: <text>` snack alternatives.
@@ -622,6 +657,63 @@ def _extract_snack_alternatives(body: str) -> list[tuple[str, str]]:
             continue
         out.append((letter, text[:400]))
     return out
+
+
+def _extract_plain_snack_alternatives(body: str) -> list[str]:
+    """Plan 02-05 gap-closure — fallback for SERALE-style plain bullet lists.
+
+    Real Stefano SPUNTINO SERALE format:
+        - 200 g yogurt di soia non zuccherato
+        - oppure 1 scatoletta tonno con cetrioli
+        - oppure 20 g cioccolato fondente 85%+
+
+    Bullet 1 is the first alternative; bullets 2..N typically open with a
+    connector (`oppure` / `o `) to make the alternative explicit. We strip
+    the connector before returning the text.
+
+    Returns the raw bullet texts (≥2 entries to be considered alternatives).
+    Skips bullets that match `_SNACK_OPTION_RE` (those are handled by the
+    Opzione X: branch). Skips table rows, headings, code fences, and empty
+    lines. Returns `[]` when there are <2 plain bullets so the caller can
+    fall back to the legacy single-option path.
+    """
+    texts: list[str] = []
+    in_code_fence = False
+    for raw_line in body.splitlines():
+        stripped = raw_line.strip()
+        # Toggle on code fence; never consume bullets inside ```...```.
+        if stripped.startswith("```"):
+            in_code_fence = not in_code_fence
+            continue
+        if in_code_fence:
+            continue
+        if not stripped:
+            continue
+        # Skip headings and table rows.
+        if stripped.startswith("#"):
+            continue
+        if _is_table_row(raw_line):
+            continue
+        # Skip bullets already matched by the Opzione X: regex (let the
+        # primary path own them — mixing patterns would double-count).
+        if _SNACK_OPTION_RE.match(raw_line):
+            continue
+        m = _GENERIC_SNACK_BULLET_RE.match(raw_line)
+        if not m:
+            continue
+        text = m.group(1).strip()
+        # Strip leading "oppure"/"o " connector for alternatives 2..N.
+        text = _OPPURE_PREFIX_RE.sub("", text, count=1).strip()
+        # Drop trailing parenthetical macro hint "(~180 kcal / ~14 g proteine)".
+        text = re.split(r"\s*\(~?\s*\d", text, maxsplit=1)[0].strip().rstrip(".,;")
+        if not text:
+            continue
+        texts.append(text[:400])
+    # Need ≥2 bullets to call this an alternatives list — single bullet
+    # falls through to the legacy single-option path.
+    if len(texts) < 2:
+        return []
+    return texts
 
 
 def _split_snack_text_into_ingredients(text: str) -> list[dict]:
@@ -657,9 +749,18 @@ def _parse_snacks(body: str, heading: str = "") -> tuple[list[dict], list[str]]:
     one of — emit ONE MealOption PER bullet. Title becomes `<Section> -
     Opzione X` so the user clearly sees they're alternatives. Ingredients are
     split on `+` matching the grid-cell convention.
+
+    Plan 02-05 (Bug 1 follow-up): when no `Opzione X:` bullets exist BUT the
+    body has ≥2 plain `- text` bullets (typical SERALE format with `oppure`
+    connectors), emit one MealOption per bullet keyed `<base>__alt_<n>`.
+
+    Plan 02-05 (Bug 2): every emitted option carries a `slot` field
+    (`afternoon` | `evening`) derived from the section heading so today_service
+    can render evening snacks AFTER dinner.
     """
     base_title = _clean_meal_title(heading, "Spuntino") if heading else "Spuntino"
     base_slug = _slug(base_title) or "spuntino"
+    slot = _classify_snack_slot(heading)
 
     # Plan 02-05 gap-closure: detect `Opzione X:` bullets at the section level
     # BEFORE splitting into subheading segments. When present, emit one option
@@ -671,9 +772,23 @@ def _parse_snacks(body: str, heading: str = "") -> tuple[list[dict], list[str]]:
             base_title=base_title,
             base_slug=base_slug,
             full_body=body,
+            slot=slot,
         ), []
 
-    # Legacy / backward-compat path: snack body has no `Opzione X:` bullets.
+    # Plan 02-05 Bug 1 — fallback for plain bullet lists with `oppure` connectors
+    # (real SERALE format). Only when ≥2 plain bullets present.
+    plain_alts = _extract_plain_snack_alternatives(body)
+    if plain_alts:
+        return _build_plain_snack_alternatives(
+            plain_alts,
+            base_title=base_title,
+            base_slug=base_slug,
+            full_body=body,
+            slot=slot,
+        ), []
+
+    # Legacy / backward-compat path: snack body has no recognisable bullet
+    # alternatives (single bullet, prose, or sub-headings).
     snacks: list[dict] = []
     segments = _split_into_segments(body)
     for idx, (title, segment_body) in enumerate(segments):
@@ -691,6 +806,7 @@ def _parse_snacks(body: str, heading: str = "") -> tuple[list[dict], list[str]]:
             key=key,
             title_fallback=title_fallback,
         )
+        opt["slot"] = slot
         snacks.append(opt)
     return snacks, []
 
@@ -701,6 +817,7 @@ def _build_snack_alternatives(
     base_title: str,
     base_slug: str,
     full_body: str,
+    slot: str = "afternoon",
 ) -> list[dict]:
     """Plan 02-05 gap-closure — emit one MealOption per `Opzione X:` bullet.
 
@@ -712,6 +829,8 @@ def _build_snack_alternatives(
         weekly_service so each option carries its full section share.
       * `notes`, `photo_url`, `category` — extracted from the SECTION body so
         a `**Foto:** <url>` line attaches to all alternatives uniformly.
+      * `slot` — Plan 02-05 Bug 2: `afternoon` | `evening` for today_service
+        ordering (evening snacks render AFTER dinner).
     """
     photo_url = _extract_photo_url(full_body)
     category = _extract_category(full_body)
@@ -727,6 +846,44 @@ def _build_snack_alternatives(
                 "notes": None,
                 "photo_url": photo_url,
                 "category": category,
+                "slot": slot,
+            }
+        )
+    return out
+
+
+def _build_plain_snack_alternatives(
+    texts: list[str],
+    *,
+    base_title: str,
+    base_slug: str,
+    full_body: str,
+    slot: str = "afternoon",
+) -> list[dict]:
+    """Plan 02-05 Bug 1 — emit one MealOption per plain bullet (SERALE format).
+
+    Bullet text already has the `oppure`/`o ` connector stripped by
+    :func:`_extract_plain_snack_alternatives`. Each option is keyed
+    `<base_slug>__alt_<N>` (1-based) and titled `"<Base> - Alternativa <N>"`
+    so the user clearly sees these are mutually exclusive choices.
+
+    Ingredients split on `+` matching the grid + Opzione convention.
+    """
+    photo_url = _extract_photo_url(full_body)
+    category = _extract_category(full_body)
+    out: list[dict] = []
+    for idx, text in enumerate(texts, start=1):
+        ingredients = _split_snack_text_into_ingredients(text)
+        out.append(
+            {
+                "key": f"{base_slug}__alt_{idx}",
+                "title": f"{base_title} - Alternativa {idx}"[:200],
+                "ingredients": ingredients,
+                "macros": {"kcal": 0, "protein_g": 0, "carbs_g": 0, "fat_g": 0},
+                "notes": None,
+                "photo_url": photo_url,
+                "category": category,
+                "slot": slot,
             }
         )
     return out

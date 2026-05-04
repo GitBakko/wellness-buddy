@@ -82,6 +82,13 @@ class MealOption(BaseModel):
     # by parser regex to ≤50 chars; shopping_service additionally validates
     # against the 5 locked categories before applying (T-02-05-01 mitigation).
     category: str | None = Field(default=None, max_length=50)
+    # Plan 02-05 — temporal placement for snack options ("afternoon" | "evening").
+    # `None` for non-snack meals (breakfast/lunch/dinner) and legacy parsed_json
+    # (treated as afternoon by today_service for backward compat). The parser
+    # classifies snack sections by heading keyword: `serale|notte|post.?cena|
+    # sera|notturno` → "evening", otherwise "afternoon". today_service uses
+    # this field to render evening snacks AFTER dinner instead of before.
+    slot: str | None = Field(default=None, max_length=16)
 
 
 class PlanParsedSchema(BaseModel):
