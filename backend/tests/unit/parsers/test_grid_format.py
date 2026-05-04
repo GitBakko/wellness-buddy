@@ -83,22 +83,39 @@ def test_parse_day_label_unknown_returns_empty() -> None:
 
 
 def test_grid_option_default_macros_when_unparseable() -> None:
-    """Cell-level macro extraction is best-effort — empty dict / zero macros are valid."""
+    """Cell-level macros stay zero; ingredients are derived from cell text via `+` split.
+
+    Plan 02-04 gap-closure: each `+`-separated chunk in a grid cell becomes one
+    Ingredient row. Single-chunk cells produce a single ingredient.
+    """
     md = """| Giorno | Opzione A |
 |--------|-----------|
 | Lun | Insalata mista |
 """
     result = _parse_meal_grid(md)
     opt = result["lun"][0]
-    # ingredients always [] for grid cells; macros either {} or all-zero
-    assert opt["ingredients"] == []
+    # Plan 02-04 gap-closure — single-ingredient cell yields a 1-row list.
+    assert opt["ingredients"] == [{"name": "Insalata mista"}]
     macros = opt.get("macros", {})
-    # Either empty (which Pydantic will fill in via Macros default factory) or zeroed
+    # Either empty (which Pydantic will fill in via Macros default factory) or zeroed.
+    # Proportional macro allocation happens downstream in today_service / weekly_service.
     if macros:
         assert macros.get("kcal", 0) == 0
         assert macros.get("protein_g", 0) == 0
         assert macros.get("carbs_g", 0) == 0
         assert macros.get("fat_g", 0) == 0
+
+
+def test_grid_cell_with_plus_separators_yields_multiple_ingredients() -> None:
+    """Plan 02-04 gap-closure — `+`-separated cell text becomes multiple ingredients."""
+    md = """| Giorno | Opzione A |
+|--------|-----------|
+| Lun | 200 g salmone + 200 g patate + verdura saltata |
+"""
+    result = _parse_meal_grid(md)
+    opt = result["lun"][0]
+    names = [ing["name"] for ing in opt["ingredients"]]
+    assert names == ["200 g salmone", "200 g patate", "verdura saltata"]
 
 
 def test_subheading_format_backward_compat() -> None:

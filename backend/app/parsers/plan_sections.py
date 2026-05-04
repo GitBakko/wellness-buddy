@@ -562,6 +562,36 @@ def _parse_meal_options(
     return {"default": options}, []
 
 
+_SNACK_OPTION_RE = re.compile(
+    r"^\s*[-*]\s*(?:opzione\s+[a-d]|opzione\s+\d+|alt\.\s*[a-d])\s*:\s*(.+?)\s*$",
+    flags=re.IGNORECASE,
+)
+
+
+def _extract_snack_bullet_ingredients(body: str) -> list[dict]:
+    """Plan 02-04 gap-closure — extract `- Opzione A: <text>` snack bullets.
+
+    Real Stefano/Marta SPUNTINO POMERIGGIO sections are bullet lists like:
+      - Opzione A: 200 g yogurt di soia + 10 g noci
+      - Opzione B: 30 g mandorle o noci miste
+      - Opzione C: 1 frutto + 20 g noci
+
+    Each becomes one Ingredient row so MealCard can render the user's choices.
+    Returns `[]` when the body has no `Opzione X:` bullets.
+    """
+    out: list[dict] = []
+    for raw_line in body.splitlines():
+        m = _SNACK_OPTION_RE.match(raw_line)
+        if not m:
+            continue
+        text = m.group(1).strip()
+        # Drop trailing parenthetical macro hint "(~180 kcal / ~14 g proteine)".
+        text = re.split(r"\s*\(~?\s*\d", text, maxsplit=1)[0].strip().rstrip(".,;")
+        if text:
+            out.append({"name": text[:200]})
+    return out
+
+
 def _parse_snacks(body: str, heading: str = "") -> tuple[list[dict], list[str]]:
     """Parse SPUNTINI section — emit a flat list of MealOption dicts.
 
@@ -569,10 +599,15 @@ def _parse_snacks(body: str, heading: str = "") -> tuple[list[dict], list[str]]:
     subheadings) and a separate `## SPUNTINO SERALE`. When the body has no
     `###` subheadings, emit a single option keyed by the cleaned heading. When
     it does, each subheading becomes a snack entry.
+
+    Plan 02-04 gap-closure: when the section body has `- Opzione X: <text>`
+    bullets (real plan format), surface those as `ingredients` so MealCard
+    can render the user's choices instead of showing a blank composition.
     """
     snacks: list[dict] = []
     segments = _split_into_segments(body)
     base_title = _clean_meal_title(heading, "Spuntino") if heading else "Spuntino"
+    bullet_ingredients = _extract_snack_bullet_ingredients(body)
     for idx, (title, segment_body) in enumerate(segments):
         if title:
             key = _slug(title) or f"spuntino_{idx + 1}"
@@ -588,6 +623,11 @@ def _parse_snacks(body: str, heading: str = "") -> tuple[list[dict], list[str]]:
             key=key,
             title_fallback=title_fallback,
         )
+        # When parser-built ingredients list is empty (no ingredient table)
+        # but we found `- Opzione X:` bullets at the section level, surface
+        # them on the single non-subheading option.
+        if not opt.get("ingredients") and bullet_ingredients and not title:
+            opt["ingredients"] = list(bullet_ingredients)
         snacks.append(opt)
     return snacks, []
 
@@ -599,6 +639,25 @@ def _slug(s: str) -> str:
     low = s.strip().lower()
     low = _SLUG_RE.sub("_", low).strip("_")
     return low
+
+
+# Plan 02-04 gap-closure — grid header columns that should NOT become variants.
+# Real Stefano + Marta plans add helper columns (Note, Porzione Marta, Extra Stefano)
+# that aren't user-selectable alternatives — they're either annotations or
+# partner-specific portion sizes. Filter them by header slug prefix.
+_NON_VARIANT_HEADERS = (
+    "note",
+    "porzione_",  # Porzione Marta, Porzione Stefano
+    "extra_",  # Extra Stefano, Extra Marta
+    "macro_",  # "Macro Marta" column on dinners table
+    "kcal",
+    "calorie",
+)
+
+
+def _is_non_variant_header(header_slug: str) -> bool:
+    """True for grid header columns that are annotations, not variant choices."""
+    return any(header_slug.startswith(prefix) for prefix in _NON_VARIANT_HEADERS)
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -681,6 +740,33 @@ def _grid_variant_key_from_header(header_label: str, idx: int) -> str:
     return slug or f"opzione_{idx + 1}"
 
 
+def _split_cell_into_ingredients(cell_text: str) -> list[dict]:
+    """Plan 02-04 gap-closure — split a grid cell into Ingredient-shaped dicts.
+
+    Real Stefano/Marta cells use `+` as the canonical separator between
+    ingredients, e.g. `"3 uova strapazzate + 80 g riso basmati + insalata"` →
+    three ingredients. Each part becomes one Ingredient row with both `name`
+    and free-form display set to the trimmed text. Per-ingredient quantity
+    parsing is deferred to Phase 2 (the schema's `quantity` field is optional).
+
+    Returns `[]` when the cell is empty or doesn't contain meaningful text.
+    """
+    if not cell_text or not cell_text.strip():
+        return []
+    # Drop leading "Libero" / "—" placeholder cells.
+    parts = [p.strip() for p in cell_text.split("+") if p.strip()]
+    if not parts:
+        return []
+    ingredients: list[dict] = []
+    for part in parts:
+        # Strip trailing punctuation / parentheticals (e.g. "(15:30-16:00)").
+        clean = part.strip().rstrip(".,;")
+        if not clean:
+            continue
+        ingredients.append({"name": clean[:200]})
+    return ingredients
+
+
 def _build_grid_option(
     *,
     title: str,
@@ -689,14 +775,18 @@ def _build_grid_option(
 ) -> dict:
     """Schema-shaped MealOption dict for a single grid cell.
 
-    Cell-level macro extraction is best-effort and not done here — real grids
-    (Stefano + Marta) keep macros only on the daily-target row, not per cell.
-    Pydantic Macros default factory will fill {kcal:0, protein_g:0, ...}.
+    Plan 02-04 gap-closure:
+      * `ingredients` is now populated by splitting the cell text on `+`.
+        Real Stefano/Marta cells encode their composition inline (e.g.
+        `"200 g salmone + 200 g patate + verdura saltata"`).
+      * `macros` stay zero here — proportional allocation against the daily
+        macro_target happens downstream in today_service / weekly_service so
+        the per-meal totals add up to the plan's daily kcal target.
     """
     return {
         "key": key,
         "title": title.strip()[:200],
-        "ingredients": [],
+        "ingredients": _split_cell_into_ingredients(title),
         "macros": {"kcal": 0, "protein_g": 0, "carbs_g": 0, "fat_g": 0},
         "notes": None,
         "photo_url": None,
@@ -737,9 +827,25 @@ def _parse_meal_grid(body: str) -> dict[str, list[dict]]:
     if target_table is None:
         return {}
 
-    # Derive variant keys from header columns 1..N
-    variant_headers = header_cells[1:]
-    variant_keys = [_grid_variant_key_from_header(h, i) for i, h in enumerate(variant_headers)]
+    # Derive variant keys from header columns 1..N. Plan 02-04 gap-closure:
+    # filter non-variant helper columns (Note, Porzione Marta, Extra Stefano,
+    # Macro Marta, kcal/calorie) so they don't pollute the variant selector.
+    variant_headers_raw = header_cells[1:]
+    variant_indices: list[int] = []
+    variant_keys: list[str] = []
+    for i, h in enumerate(variant_headers_raw):
+        slug = _slug(h)
+        if _is_non_variant_header(slug):
+            continue
+        variant_keys.append(_grid_variant_key_from_header(h, i))
+        variant_indices.append(i)
+
+    if not variant_keys:
+        # All helper columns? Fall back to using every column except the day cell.
+        variant_indices = list(range(len(variant_headers_raw)))
+        variant_keys = [
+            _grid_variant_key_from_header(h, i) for i, h in enumerate(variant_headers_raw)
+        ]
 
     for row in target_table[1:]:
         if not row:
@@ -750,13 +856,13 @@ def _parse_meal_grid(body: str) -> dict[str, list[dict]]:
             # Row whose first cell isn't a recognised day label — skip.
             continue
         cells = row[1:]
-        for col_idx, cell in enumerate(cells):
-            if col_idx >= len(variant_keys):
+        for variant_pos, col_idx in enumerate(variant_indices):
+            if col_idx >= len(cells):
                 break
-            cell_text = cell.strip()
+            cell_text = cells[col_idx].strip()
             if not cell_text:
                 continue
-            variant_key = variant_keys[col_idx]
+            variant_key = variant_keys[variant_pos]
             option = _build_grid_option(
                 title=cell_text,
                 key=variant_key,
