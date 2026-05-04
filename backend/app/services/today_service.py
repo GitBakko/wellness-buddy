@@ -191,6 +191,20 @@ def _coerce_photo_url(raw: object) -> str | None:
     return val
 
 
+def _snack_slot(sn: dict) -> str:
+    """Plan 02-05 Bug 2 — read MealOption.slot defensively from parsed_json.
+
+    Returns "evening" when the parsed dict carries `slot == "evening"` (or any
+    case variant), else "afternoon". Legacy parsed_json without `slot` field
+    defaults to afternoon so today_service keeps the previous render order
+    for plans parsed before this fix landed.
+    """
+    raw = sn.get("slot")
+    if isinstance(raw, str) and raw.strip().lower() == "evening":
+        return "evening"
+    return "afternoon"
+
+
 def _meals_from_parsed(
     parsed: dict,
     day_of_week: int = 0,
@@ -207,9 +221,13 @@ def _meals_from_parsed(
     non-zero daily macro_target, allocate proportional macros per slot (25/35/30/10).
     Ingredients are surfaced from parsed_json so MealCard can render the composition.
 
-    Display order (Plan 02-03 gap closure): breakfast → lunch → snack → dinner.
-    Spuntino sits between lunch and dinner because Stefano/Marta consume it
-    mid-afternoon (15:30-16:00), not after dinner.
+    Display order (Plan 02-05 Bug 2):
+      breakfast → lunch → afternoon snacks → dinner → evening snacks
+
+    Snacks are split by `MealOption.slot` (`afternoon` | `evening`). Stefano's
+    SPUNTINO SERALE is consumed AFTER dinner ("opzionale - solo se fame vera"),
+    so evening snacks render at the end. Legacy parsed_json without `slot`
+    defaults to afternoon (renders BEFORE dinner like the old behaviour).
     """
     variant_by_meal = variant_by_meal or {}
     daily_target = _coerce_macros(parsed.get("macro_target") if isinstance(parsed, dict) else None)
@@ -217,7 +235,8 @@ def _meals_from_parsed(
     breakfast_meal: MealEntry | None = None
     lunch_meal: MealEntry | None = None
     dinner_meal: MealEntry | None = None
-    snack_meals: list[MealEntry] = []
+    afternoon_snacks: list[MealEntry] = []
+    evening_snacks: list[MealEntry] = []
 
     breakfast = parsed.get("breakfast")
     if isinstance(breakfast, dict) and breakfast:
@@ -290,25 +309,31 @@ def _meals_from_parsed(
                 continue
             raw_macros = _coerce_macros(sn.get("macros"))
             macros = raw_macros if raw_macros.kcal > 0 else per_section_target
-            snack_meals.append(
-                MealEntry(
-                    meal_type="snack",
-                    variant_key=str(sn.get("key") or "default"),
-                    title=str(sn.get("title") or "Spuntino"),
-                    macros=macros,
-                    photo_url=_coerce_photo_url(sn.get("photo_url")),
-                    ingredients=_coerce_ingredients(sn.get("ingredients")),
-                )
+            entry = MealEntry(
+                meal_type="snack",
+                variant_key=str(sn.get("key") or "default"),
+                title=str(sn.get("title") or "Spuntino"),
+                macros=macros,
+                photo_url=_coerce_photo_url(sn.get("photo_url")),
+                ingredients=_coerce_ingredients(sn.get("ingredients")),
             )
+            # Plan 02-05 Bug 2 — bucket by slot so we can render evening AFTER dinner.
+            if _snack_slot(sn) == "evening":
+                evening_snacks.append(entry)
+            else:
+                afternoon_snacks.append(entry)
 
     ordered: list[MealEntry] = []
     if breakfast_meal:
         ordered.append(breakfast_meal)
     if lunch_meal:
         ordered.append(lunch_meal)
-    ordered.extend(snack_meals)  # snack sits between lunch and dinner
+    # Afternoon snacks render BEFORE dinner (consumed mid-afternoon).
+    ordered.extend(afternoon_snacks)
     if dinner_meal:
         ordered.append(dinner_meal)
+    # Evening snacks render AFTER dinner (Stefano post-cena, "se fame vera").
+    ordered.extend(evening_snacks)
     return ordered
 
 

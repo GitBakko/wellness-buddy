@@ -537,3 +537,107 @@ async def test_patch_variant_invalid_day_of_week_rejected(
     )
     assert r.status_code == 422
     assert r.json()["code"] == "validation_error"
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Plan 02-04 gap-closure — Bug C (composition + macros + non-zero per-meal kcal)
+# ──────────────────────────────────────────────────────────────────────────────
+
+
+async def test_weekly_meal_entries_carry_ingredients_and_macros(
+    async_client: AsyncClient,
+    test_user: User,
+    active_plan: NutritionPlan,
+) -> None:
+    """Plan 02-04 gap-closure — every weekly meal entry has ingredients[] and
+    macros.kcal > 0. Mirrors the Bug B/C win condition for /settimana."""
+    access = await _login(async_client, "weekly-user@test.example.com", "Password123!")
+    r = await async_client.get(
+        f"/api/weekly/{WEEK_START}", headers={"Authorization": f"Bearer {access}"}
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert len(body["days"]) == 7
+    for day in body["days"]:
+        for m in day["meals"]:
+            assert "ingredients" in m
+            assert isinstance(m["ingredients"], list)
+            assert "macros" in m
+            assert "kcal" in m["macros"]
+            assert m["macros"]["kcal"] > 0  # always non-zero (proportional fallback)
+
+
+async def test_weekly_proportional_macros_for_grid_plan_without_per_cell_macros(
+    async_client: AsyncClient,
+    db_session: AsyncSession,
+    test_user: User,
+) -> None:
+    """Plan 02-04 gap-closure — when parsed_json grid cells carry zero macros,
+    weekly_service falls back to proportional split (25/35/30/10) so /settimana
+    shows realistic kcal values per slot instead of 0 across the board."""
+    grid_plan_parsed = {
+        "personal_data": {"name": "Grid"},
+        "macro_target": {"kcal": 2000, "protein_g": 160, "carbs_g": 200, "fat_g": 60},
+        "daily_structure": [],
+        "breakfast": {
+            "key": "default",
+            "title": "Colazione",
+            "ingredients": [{"name": "avena + whey"}],
+            "macros": {"kcal": 0, "protein_g": 0, "carbs_g": 0, "fat_g": 0},
+        },
+        "lunches": {
+            "lun": [
+                {
+                    "key": "opzione_a",
+                    "title": "Pranzo lun",
+                    "ingredients": [{"name": "uova + riso"}],
+                    "macros": {"kcal": 0, "protein_g": 0, "carbs_g": 0, "fat_g": 0},
+                    "day_of_week": [0],
+                }
+            ]
+        },
+        "dinners": {
+            "lun": [
+                {
+                    "key": "piatto",
+                    "title": "Cena lun",
+                    "ingredients": [{"name": "salmone + patate"}],
+                    "macros": {"kcal": 0, "protein_g": 0, "carbs_g": 0, "fat_g": 0},
+                    "day_of_week": [0],
+                }
+            ]
+        },
+        "snacks": [
+            {
+                "key": "afternoon",
+                "title": "Spuntino",
+                "ingredients": [{"name": "yogurt"}],
+                "macros": {"kcal": 0, "protein_g": 0, "carbs_g": 0, "fat_g": 0},
+            }
+        ],
+        "supplements": [],
+        "weight_projection": [],
+        "rules": [],
+    }
+    plan = NutritionPlan(
+        id=uuid4(),
+        user_id=test_user.id,
+        name="Grid plan",
+        raw_md="# Plan",
+        parsed_json=grid_plan_parsed,
+        is_active=True,
+    )
+    db_session.add(plan)
+    await db_session.commit()
+
+    access = await _login(async_client, "weekly-user@test.example.com", "Password123!")
+    r = await async_client.get(
+        f"/api/weekly/{WEEK_START}", headers={"Authorization": f"Bearer {access}"}
+    )
+    assert r.status_code == 200
+    monday = r.json()["days"][0]  # day_of_week=0
+    by_slot = {m["slot"]: m for m in monday["meals"]}
+    assert by_slot["breakfast"]["macros"]["kcal"] == 500  # 25%
+    assert by_slot["lunch"]["macros"]["kcal"] == 700  # 35%
+    assert by_slot["dinner"]["macros"]["kcal"] == 600  # 30%
+    assert by_slot["snack"]["macros"]["kcal"] == 200  # 10%

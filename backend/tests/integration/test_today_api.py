@@ -343,3 +343,148 @@ async def test_today_greeting_period_is_one_of_known_buckets(
     assert r.status_code == 200
     period = r.json()["greeting_period"]
     assert period in {"morning", "afternoon", "evening", "night"}
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Plan 02-04 gap-closure — Bug A (advisory sections), Bug B (ingredients + macros)
+# ──────────────────────────────────────────────────────────────────────────────
+
+
+async def test_today_surfaces_macro_target_from_active_plan(
+    async_client: AsyncClient, test_user: User, active_plan: NutritionPlan
+) -> None:
+    """Plan 02-04 gap-closure — TodayResponse.macro_target mirrors plan macro_target.
+
+    Frontend MacroRing uses this as the ring target so 0% consumed renders 0%
+    fill (not 100% as it did when target was inferred from per-meal sums).
+    """
+    access = await _login(async_client, "today-user@test.example.com", "Password123!")
+    r = await async_client.get("/api/today", headers={"Authorization": f"Bearer {access}"})
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert "macro_target" in body
+    assert body["macro_target"]["kcal"] == 2100
+    assert body["macro_target"]["protein_g"] == 160
+    assert body["macro_target"]["carbs_g"] == 210
+    assert body["macro_target"]["fat_g"] == 70
+
+
+async def test_today_meal_entries_carry_ingredients_field(
+    async_client: AsyncClient, test_user: User, active_plan: NutritionPlan
+) -> None:
+    """Plan 02-04 gap-closure — every MealEntry has an `ingredients` list."""
+    access = await _login(async_client, "today-user@test.example.com", "Password123!")
+    r = await async_client.get("/api/today", headers={"Authorization": f"Bearer {access}"})
+    assert r.status_code == 200
+    for m in r.json()["meals"]:
+        assert "ingredients" in m
+        assert isinstance(m["ingredients"], list)
+
+
+async def test_today_proportional_macros_when_meal_macros_zero(
+    async_client: AsyncClient,
+    db_session: AsyncSession,
+    test_user: User,
+) -> None:
+    """Plan 02-04 gap-closure — meal.macros.kcal > 0 for ALL slots even when
+    the parser left per-meal macros zero (real grid plans scenario).
+
+    Ratios: breakfast 25% | lunch 35% | dinner 30% | snack 10%.
+    """
+    grid_plan_parsed = {
+        "personal_data": {"name": "Test"},
+        "macro_target": {"kcal": 2000, "protein_g": 160, "carbs_g": 200, "fat_g": 60},
+        "daily_structure": [],
+        "breakfast": {
+            "key": "default",
+            "title": "Colazione",
+            "ingredients": [{"name": "Whey + avena"}],
+            "macros": {"kcal": 0, "protein_g": 0, "carbs_g": 0, "fat_g": 0},
+        },
+        "lunches": {
+            "lun": [
+                {
+                    "key": "opzione_a",
+                    "title": "Pranzo lun A",
+                    "ingredients": [{"name": "3 uova + riso + insalata"}],
+                    "macros": {"kcal": 0, "protein_g": 0, "carbs_g": 0, "fat_g": 0},
+                    "day_of_week": [0],
+                }
+            ]
+        },
+        "dinners": {
+            "lun": [
+                {
+                    "key": "piatto",
+                    "title": "Cena lun",
+                    "ingredients": [{"name": "salmone + patate"}],
+                    "macros": {"kcal": 0, "protein_g": 0, "carbs_g": 0, "fat_g": 0},
+                    "day_of_week": [0],
+                }
+            ]
+        },
+        "snacks": [
+            {
+                "key": "pomeriggio",
+                "title": "Spuntino",
+                "ingredients": [{"name": "yogurt"}],
+                "macros": {"kcal": 0, "protein_g": 0, "carbs_g": 0, "fat_g": 0},
+            }
+        ],
+        "supplements": [],
+        "weight_projection": [],
+        "rules": [],
+    }
+    plan = NutritionPlan(
+        id=uuid4(),
+        user_id=test_user.id,
+        name="Grid plan",
+        raw_md="# Plan",
+        parsed_json=grid_plan_parsed,
+        is_active=True,
+    )
+    db_session.add(plan)
+    await db_session.commit()
+
+    access = await _login(async_client, "today-user@test.example.com", "Password123!")
+    r = await async_client.get("/api/today", headers={"Authorization": f"Bearer {access}"})
+    assert r.status_code == 200
+    body = r.json()
+    by_type = {m["meal_type"]: m for m in body["meals"]}
+    # Every slot must have non-zero kcal after proportional allocation.
+    assert by_type["breakfast"]["macros"]["kcal"] == 500  # 25% of 2000
+    assert by_type["lunch"]["macros"]["kcal"] == 700  # 35%
+    assert by_type["dinner"]["macros"]["kcal"] == 600  # 30%
+    assert by_type["snack"]["macros"]["kcal"] == 200  # 10%
+    # Sanity: ingredients survived the round trip
+    assert len(by_type["lunch"]["ingredients"]) == 1
+    assert by_type["lunch"]["ingredients"][0]["name"] == "3 uova + riso + insalata"
+
+
+async def test_plan_upload_silent_on_idratazione_avvertenze(
+    async_client: AsyncClient, test_user: User
+) -> None:
+    """Plan 02-04 gap-closure — IDRATAZIONE / AVVERTENZE TECNICHE are advisory
+    sections recognized but NOT reported as unrecognized_headings."""
+    md = (
+        "# Test\n\n"
+        "## DATI PERSONALI\n- Nome: Test\n\n"
+        "## IDRATAZIONE\n- Bere 2 L di acqua al giorno\n\n"
+        "## AVVERTENZE TECNICHE\n- Non superare 55 gradi\n\n"
+        "## APP ALLENAMENTO CONSIGLIATA (iOS)\n- Nike Training Club\n"
+    )
+    access = await _login(async_client, "today-user@test.example.com", "Password123!")
+    files = {"file": ("plan.md", md.encode("utf-8"), "text/markdown")}
+    r = await async_client.post(
+        "/api/plans/upload",
+        headers={"Authorization": f"Bearer {access}"},
+        files=files,
+        data={"name": "advisory-only"},
+    )
+    assert r.status_code in (200, 201), r.text
+    body = r.json()
+    # The three advisory sections must NOT appear in unrecognized_headings.
+    headings = [h.upper() for h in body.get("unrecognized_headings", [])]
+    assert not any("IDRATAZIONE" in h for h in headings)
+    assert not any("AVVERTENZE" in h for h in headings)
+    assert not any("APP ALLENAMENTO" in h for h in headings)
