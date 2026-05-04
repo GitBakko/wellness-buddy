@@ -25,6 +25,7 @@ from app.models.weight import WeightLog
 from app.models.workout import WorkoutLog
 from app.schemas.today import (
     MealEntry,
+    MealIngredient,
     MealMacro,
     TodayResponse,
     TodayWeight,
@@ -35,6 +36,16 @@ MEAL_TYPES = ("breakfast", "lunch", "dinner", "snack")
 
 # Plan 02-04: ordered Italian day slugs (0=Mon..6=Sun) — mirrors plan_sections._INT_TO_DAY_SLUG.
 _INT_TO_DAY_SLUG = ("lun", "mar", "mer", "gio", "ven", "sab", "dom")
+
+# Plan 02-04 gap-closure — proportional split of daily macro target across meal
+# slots when the parser couldn't find per-meal macros (real grid plans only
+# carry daily totals, not per-cell). Sum = 1.0.
+MEAL_MACRO_FRACTIONS: dict[str, float] = {
+    "breakfast": 0.25,
+    "lunch": 0.35,
+    "dinner": 0.30,
+    "snack": 0.10,
+}
 
 
 def _options_for_day(slot_dict: dict, day_of_week: int) -> list:
@@ -84,6 +95,58 @@ def _coerce_macros(raw: object) -> MealMacro:
     )
 
 
+def _coerce_ingredients(raw: object) -> list[MealIngredient]:
+    """Plan 02-04 gap-closure — coerce parsed_json ingredient list to MealIngredient.
+
+    parsed_json may carry per-row macros (legacy ingredient-table plans) and
+    quantity strings. We surface only `name` + `quantity` to the frontend
+    (Phase 1 MealCard scope); macros stay attached to the meal as a whole.
+    Drops malformed entries silently for defensive rendering.
+    """
+    if not isinstance(raw, list):
+        return []
+    out: list[MealIngredient] = []
+    for entry in raw:
+        if not isinstance(entry, dict):
+            continue
+        name = str(entry.get("name") or "").strip()
+        if not name:
+            continue
+        quantity_raw = entry.get("quantity")
+        quantity = str(quantity_raw).strip() if quantity_raw else None
+        out.append(MealIngredient(name=name[:200], quantity=quantity))
+    return out
+
+
+def _apply_proportional_macros(
+    meal_type: str,
+    current: MealMacro,
+    daily_target: MealMacro,
+) -> MealMacro:
+    """Plan 02-04 gap-closure — fill zero macros from a fraction of daily target.
+
+    Real grid plans (Stefano + Marta) keep macros only on the daily MACRO TARGET
+    section, not per-cell. When the parser left `current.kcal == 0` AND we have
+    a non-zero daily target, allocate the fixed fraction for this meal slot.
+    Returns `current` unchanged when it already carries non-zero kcal.
+
+    Fractions: breakfast 25% | lunch 35% | dinner 30% | snack 10% (sum=100%).
+    """
+    if current.kcal > 0:
+        return current
+    if daily_target.kcal <= 0:
+        return current
+    fraction = MEAL_MACRO_FRACTIONS.get(meal_type, 0.0)
+    if fraction <= 0:
+        return current
+    return MealMacro(
+        kcal=int(round(daily_target.kcal * fraction)),
+        protein_g=round(daily_target.protein_g * fraction, 1),
+        carbs_g=round(daily_target.carbs_g * fraction, 1),
+        fat_g=round(daily_target.fat_g * fraction, 1),
+    )
+
+
 def _coerce_photo_url(raw: object) -> str | None:
     """Pass-through for parsed_json photo_url (Plan 01-09).
 
@@ -111,11 +174,17 @@ def _meals_from_parsed(
     `variant_by_meal` (when provided) lets the user's stored selection override the
     "first option" fallback so the recipe title shown matches the chosen variant.
 
+    Plan 02-04 gap-closure: when meal-level macros are zero AND the plan has a
+    non-zero daily macro_target, allocate proportional macros per slot (25/35/30/10).
+    Ingredients are surfaced from parsed_json so MealCard can render the composition.
+
     Display order (Plan 02-03 gap closure): breakfast → lunch → snack → dinner.
     Spuntino sits between lunch and dinner because Stefano/Marta consume it
     mid-afternoon (15:30-16:00), not after dinner.
     """
     variant_by_meal = variant_by_meal or {}
+    daily_target = _coerce_macros(parsed.get("macro_target") if isinstance(parsed, dict) else None)
+
     breakfast_meal: MealEntry | None = None
     lunch_meal: MealEntry | None = None
     dinner_meal: MealEntry | None = None
@@ -123,12 +192,14 @@ def _meals_from_parsed(
 
     breakfast = parsed.get("breakfast")
     if isinstance(breakfast, dict) and breakfast:
+        raw_macros = _coerce_macros(breakfast.get("macros"))
         breakfast_meal = MealEntry(
             meal_type="breakfast",
             variant_key=str(breakfast.get("key") or "default"),
             title=str(breakfast.get("title") or "Colazione"),
-            macros=_coerce_macros(breakfast.get("macros")),
+            macros=_apply_proportional_macros("breakfast", raw_macros, daily_target),
             photo_url=_coerce_photo_url(breakfast.get("photo_url")),
+            ingredients=_coerce_ingredients(breakfast.get("ingredients")),
         )
 
     for slot, parsed_key in (("lunch", "lunches"), ("dinner", "dinners")):
@@ -148,12 +219,14 @@ def _meals_from_parsed(
             opt = options[0] if isinstance(options[0], dict) else None
         if not isinstance(opt, dict):
             continue
+        raw_macros = _coerce_macros(opt.get("macros"))
         entry = MealEntry(
             meal_type=slot,
             variant_key=str(opt.get("key") or "default"),
             title=str(opt.get("title") or slot.capitalize()),
-            macros=_coerce_macros(opt.get("macros")),
+            macros=_apply_proportional_macros(slot, raw_macros, daily_target),
             photo_url=_coerce_photo_url(opt.get("photo_url")),
+            ingredients=_coerce_ingredients(opt.get("ingredients")),
         )
         if slot == "lunch":
             lunch_meal = entry
@@ -162,16 +235,33 @@ def _meals_from_parsed(
 
     snacks = parsed.get("snacks") or []
     if isinstance(snacks, list):
+        # When the plan has multiple snack sections (POMERIGGIO + SERALE), share
+        # the snack 10% slice across them so totals don't blow past target.
+        snack_count = sum(1 for sn in snacks if isinstance(sn, dict))
+        share_fraction = MEAL_MACRO_FRACTIONS["snack"]
+        per_snack_target = (
+            MealMacro(
+                kcal=int(round(daily_target.kcal * share_fraction / max(snack_count, 1))),
+                protein_g=round(daily_target.protein_g * share_fraction / max(snack_count, 1), 1),
+                carbs_g=round(daily_target.carbs_g * share_fraction / max(snack_count, 1), 1),
+                fat_g=round(daily_target.fat_g * share_fraction / max(snack_count, 1), 1),
+            )
+            if daily_target.kcal > 0 and snack_count > 0
+            else MealMacro()
+        )
         for sn in snacks:
             if not isinstance(sn, dict):
                 continue
+            raw_macros = _coerce_macros(sn.get("macros"))
+            macros = raw_macros if raw_macros.kcal > 0 else per_snack_target
             snack_meals.append(
                 MealEntry(
                     meal_type="snack",
                     variant_key=str(sn.get("key") or "default"),
                     title=str(sn.get("title") or "Spuntino"),
-                    macros=_coerce_macros(sn.get("macros")),
+                    macros=macros,
                     photo_url=_coerce_photo_url(sn.get("photo_url")),
+                    ingredients=_coerce_ingredients(sn.get("ingredients")),
                 )
             )
 
@@ -265,6 +355,12 @@ async def build_today_payload(session: AsyncSession, user: User) -> TodayRespons
         else None
     )
 
+    # Plan 02-04 gap-closure — surface plan.macro_target so MacroRing has a
+    # non-zero target. Stays MealMacro() default (all zero) when no active plan.
+    macro_target = MealMacro()
+    if plan and isinstance(plan.parsed_json, dict):
+        macro_target = _coerce_macros(plan.parsed_json.get("macro_target"))
+
     return TodayResponse(
         date=today,
         day_of_week=day_of_week,
@@ -272,6 +368,7 @@ async def build_today_payload(session: AsyncSession, user: User) -> TodayRespons
         meals=meals,
         weight_today=weight_today,
         workout_today=workout_today,
+        macro_target=macro_target,
     )
 
 

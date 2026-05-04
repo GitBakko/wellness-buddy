@@ -24,6 +24,20 @@ class MealMacro(BaseModel):
     fat_g: float = 0
 
 
+class MealIngredient(BaseModel):
+    """Plan 02-04 gap-closure — single ingredient line shown under MealCard title.
+
+    Carries free-form `name` (e.g. "200 g salmone al forno") and optional
+    `quantity` for legacy ingredient-table plans. Real grid plans encode the
+    quantity inline in the name; quantity stays None.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: str
+    quantity: str | None = None
+
+
 class MealEntry(BaseModel):
     """One meal slot for today — emitted from the active plan's parsed_json."""
 
@@ -38,6 +52,10 @@ class MealEntry(BaseModel):
     # Phase 1: usually None (parser only extracts when `**Foto:** <url>` line present).
     # Frontend MealCard renders gradient placeholder when null.
     photo_url: str | None = Field(default=None, max_length=500)
+    # Plan 02-04 gap-closure — composition list shown on /today MealCard.
+    # Empty when the meal has no parsed ingredients (legacy plans without
+    # tables AND without grid cells).
+    ingredients: list[MealIngredient] = Field(default_factory=list)
 
 
 class TodayWeight(BaseModel):
@@ -69,6 +87,11 @@ class TodayResponse(BaseModel):
     meals: list[MealEntry] = Field(default_factory=list)
     weight_today: TodayWeight | None = None
     workout_today: TodayWorkout | None = None
+    # Plan 02-04 gap-closure — daily macro target from active plan.
+    # Frontend uses these as the MacroRing target so the rings show partial
+    # fill instead of "100% full" when consumed sums to 0 (no meals completed).
+    # All zero when no active plan or plan has no macro_target section.
+    macro_target: MealMacro = Field(default_factory=MealMacro)
 
 
 class MealCompleteResponse(BaseModel):

@@ -27,6 +27,48 @@ MEAL_SLOTS = ("breakfast", "lunch", "dinner", "snack")
 # Plan 02-04 — Italian day slugs ordered by Monday=0..Sunday=6 (matches plan_sections).
 _INT_TO_DAY_SLUG = ("lun", "mar", "mer", "gio", "ven", "sab", "dom")
 
+# Plan 02-04 gap-closure — proportional split of daily macro target across slots
+# (matches today_service.MEAL_MACRO_FRACTIONS). Sum = 1.0.
+MEAL_MACRO_FRACTIONS: dict[str, float] = {
+    "breakfast": 0.25,
+    "lunch": 0.35,
+    "dinner": 0.30,
+    "snack": 0.10,
+}
+
+
+def _proportional_macros(slot: str, daily_target: dict[str, Any]) -> dict[str, Any]:
+    """Build a MealMacro-shaped dict from a fraction of the daily target.
+
+    Returns all-zero dict when `daily_target` has zero kcal — caller may use
+    this output as the meal's macros so frontend can render non-zero values
+    even when the parser couldn't extract per-cell macros (real grid plans).
+    """
+    target_kcal = float(daily_target.get("kcal") or 0)
+    if target_kcal <= 0:
+        return {"kcal": 0, "protein_g": 0, "carbs_g": 0, "fat_g": 0}
+    fraction = MEAL_MACRO_FRACTIONS.get(slot, 0.0)
+    if fraction <= 0:
+        return {"kcal": 0, "protein_g": 0, "carbs_g": 0, "fat_g": 0}
+    return {
+        "kcal": int(round(target_kcal * fraction)),
+        "protein_g": round(float(daily_target.get("protein_g") or 0) * fraction, 1),
+        "carbs_g": round(float(daily_target.get("carbs_g") or 0) * fraction, 1),
+        "fat_g": round(float(daily_target.get("fat_g") or 0) * fraction, 1),
+    }
+
+
+def _merge_macros(slot: str, raw: Any, daily_target: dict[str, Any]) -> dict[str, Any]:
+    """Return raw macros when non-zero, otherwise fall back to proportional split."""
+    if isinstance(raw, dict):
+        try:
+            kcal = float(raw.get("kcal") or 0)
+        except (TypeError, ValueError):
+            kcal = 0.0
+        if kcal > 0:
+            return dict(raw)
+    return _proportional_macros(slot, daily_target)
+
 
 async def build_weekly_payload(
     session: AsyncSession, *, user: User, week_start: date_t
@@ -56,6 +98,13 @@ async def build_weekly_payload(
         (v.day_of_week, v.meal_type): v for v in variants
     }
 
+    # Plan 02-04 gap-closure — daily macro target drives proportional fallback
+    # for grid-format plans whose cells carry no per-cell macros.
+    daily_target_raw = (
+        plan.parsed_json.get("macro_target") if isinstance(plan.parsed_json, dict) else None
+    )
+    daily_target: dict[str, Any] = daily_target_raw if isinstance(daily_target_raw, dict) else {}
+
     days: list[dict[str, Any]] = []
     for d in range(7):
         day_date = week_start + timedelta(days=d)
@@ -68,7 +117,9 @@ async def build_weekly_payload(
                 v.variant_key if v else "default",
                 day_of_week=d,
             )
-            options = _options_for_slot(plan.parsed_json, slot, day_of_week=d)
+            options = _options_for_slot(
+                plan.parsed_json, slot, day_of_week=d, daily_target=daily_target
+            )
             meals.append(
                 {
                     "slot": slot,
@@ -79,7 +130,7 @@ async def build_weekly_payload(
                     "updated_at": (v.updated_at.isoformat() if v else None),
                     "completed": v.completed if v else False,
                     "owner_user_id": str(user.id),
-                    "macros": dict(meal_block.get("macros") or {}),
+                    "macros": _merge_macros(slot, meal_block.get("macros"), daily_target),
                     "ingredients": list(meal_block.get("ingredients") or []),
                     "options": options,
                 }
@@ -143,15 +194,21 @@ def _options_for_slot(
     slot: str,
     *,
     day_of_week: int = 0,
+    daily_target: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     """Plan 02-04 — list of MealOptionPayload-shaped dicts for the given (day, slot).
 
     Surfaces the alternatives the frontend variant selector needs. Empty when
     the slot has no alternatives (breakfast = single dict, snack = flat list
     where each entry is its own card).
+
+    Plan 02-04 gap-closure: when option-level macros are zero AND the plan has
+    a non-zero daily macro_target, fall back to the proportional split so the
+    variant selector preview shows realistic kcal numbers.
     """
     if not isinstance(parsed, dict) or not parsed:
         return []
+    target = daily_target if isinstance(daily_target, dict) else {}
     if slot in ("lunch", "dinner"):
         plural = _SLOT_KEYS[slot]
         section = parsed.get(plural) or {}
@@ -169,7 +226,7 @@ def _options_for_slot(
             {
                 "key": str(o.get("key") or ""),
                 "title": str(o.get("title") or ""),
-                "macros": dict(o.get("macros") or {}),
+                "macros": _merge_macros(slot, o.get("macros"), target),
             }
             for o in opts
             if isinstance(o, dict)
