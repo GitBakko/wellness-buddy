@@ -110,10 +110,20 @@ if ($PostgresService -ne '') {
 & $nssmExe set $serviceName AppExit Default Restart | Out-Null
 & $nssmExe set $serviceName AppRestartDelay 5000 | Out-Null
 
-# Run as LocalService for least privilege (DEPLOY.md threat T-DEPLOY-01).
-# If file ACLs need elevated access, switch to a dedicated service account
-# (NT SERVICE\WellnessBuddyAPI) or LocalSystem and document in DEPLOY.md.
-& $nssmExe set $serviceName ObjectName 'NT AUTHORITY\LocalService' | Out-Null
+# Service account: LocalSystem default (full machine access, needed for uv +
+# Python interpreter discovery + .venv invocation). LocalService blocked by
+# 'Failed to query Python interpreter — Access denied' on Windows Server 2019
+# even with explicit ACL grants on uv.exe + backend/.venv/.
+#
+# Backend is network-bound to 127.0.0.1 (proxied via IIS); no public attack
+# surface from the elevated context. Logs the only writable side-effect.
+#
+# To downgrade to LocalService:
+#   1. Pre-create .venv as Administrator with `uv sync --frozen` in backend/
+#   2. Grant LocalService RX on E:\www\wellnessBuddy + .venv tree
+#   3. Move uv.exe to a path readable by LocalService (avoid User profile)
+#   4. Override here:  ObjectName 'NT AUTHORITY\LocalService'
+& $nssmExe set $serviceName ObjectName LocalSystem | Out-Null
 
 # ─── Start ───────────────────────────────────────────────────────
 Write-Host 'Starting service...' -ForegroundColor Cyan
