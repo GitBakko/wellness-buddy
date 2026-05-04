@@ -42,6 +42,20 @@ SECTION_STEMS: dict[str, str] = {
     "regole fondamentali": "rules",
 }
 
+# Plan 02-04 gap-closure — recognized-but-ignored advisory sections.
+# Real plans (PIANO_NUTRIZIONALE_STEFANO + MARTA) carry these informational
+# sections that are NOT part of the canonical schema. Match by stem prefix and
+# silently skip — do NOT emit a `unrecognized_headings` warning.
+SECTION_STEMS_IGNORED: tuple[str, ...] = (
+    "idratazione",
+    "avvertenze tecniche",
+    "avvertenza",  # tolerate singular form too
+    "app allenamento",  # MARTA: "APP ALLENAMENTO CONSIGLIATA (iOS)"
+    "note",  # generic "## NOTE" advisory headings
+    "appunti",
+    "consigli",  # generic "## CONSIGLI" sections
+)
+
 _HEADING_RE = re.compile(r"^(#{1,6})\s*(.+?)\s*$", re.MULTILINE)
 # Strip a leading run of non-word non-Italian-letter characters (emoji + punctuation).
 # `re.UNICODE` ensures `\W` excludes accented Italian letters.
@@ -101,6 +115,17 @@ def _match_target(stem: str) -> str | None:
     return None
 
 
+def _is_ignored_advisory(stem: str) -> bool:
+    """Plan 02-04 gap-closure — advisory sections recognized but not parsed.
+
+    Returns True for headings like IDRATAZIONE, AVVERTENZE TECNICHE, APP
+    ALLENAMENTO CONSIGLIATA, NOTE, CONSIGLI — they are intentional content in
+    real plans but outside the canonical schema. Caller should skip them
+    without adding to ParseReport.unrecognized_headings.
+    """
+    return any(stem.startswith(prefix) for prefix in SECTION_STEMS_IGNORED)
+
+
 def parse_and_validate(raw_bytes: bytes) -> tuple[PlanParsedSchema, ParseReport]:
     """Parse + validate. Tolerant input → strict Pydantic v2 schema.
 
@@ -116,6 +141,10 @@ def parse_and_validate(raw_bytes: bytes) -> tuple[PlanParsedSchema, ParseReport]
         stem = _heading_stem(heading)
         target = _match_target(stem)
         if target is None:
+            # Plan 02-04 gap-closure — silently skip recognized-but-ignored
+            # advisory sections (IDRATAZIONE, AVVERTENZE TECNICHE, etc.)
+            if _is_ignored_advisory(stem):
+                continue
             report.unrecognized_headings.append(heading)
             continue
         # Snacks merge: real plans have multiple `## SPUNTINO ...` sections
