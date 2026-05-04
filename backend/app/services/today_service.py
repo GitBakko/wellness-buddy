@@ -118,6 +118,35 @@ def _coerce_ingredients(raw: object) -> list[MealIngredient]:
     return out
 
 
+def _snack_base_section_key(snack: dict) -> str:
+    """Plan 02-05 gap-closure — derive the base SECTION key from a snack option's key.
+
+    The parser emits `<base_slug>__opzione_<x>` for alternatives (e.g.
+    `spuntino_pomeriggio__opzione_a`); the section key is the part BEFORE
+    `__opzione`. Legacy single-option snacks have no `__opzione` suffix so
+    the full key IS the section.
+    """
+    raw = str(snack.get("key") or "default")
+    # Split off the alternative suffix; preserve the section prefix as-is.
+    section, _sep, _rest = raw.partition("__opzione_")
+    return section or raw
+
+
+def _count_snack_sections(snacks: list) -> int:
+    """Plan 02-05 gap-closure — number of distinct base snack sections.
+
+    Used to share the snack-pool macro fraction across sections (POMERIGGIO +
+    SERALE = 2) instead of raw entry count (4 + 1 = 5). The user picks ONE
+    alternative per section, so totals must split by section, not by entry.
+    """
+    seen: set[str] = set()
+    for sn in snacks:
+        if not isinstance(sn, dict):
+            continue
+        seen.add(_snack_base_section_key(sn))
+    return len(seen)
+
+
 def _apply_proportional_macros(
     meal_type: str,
     current: MealMacro,
@@ -235,25 +264,32 @@ def _meals_from_parsed(
 
     snacks = parsed.get("snacks") or []
     if isinstance(snacks, list):
-        # When the plan has multiple snack sections (POMERIGGIO + SERALE), share
-        # the snack 10% slice across them so totals don't blow past target.
-        snack_count = sum(1 for sn in snacks if isinstance(sn, dict))
+        # Plan 02-05 gap-closure — split the 10% snack pool by BASE SECTION,
+        # not by raw count of options. Real Stefano plans emit 4 alternative
+        # `Opzione A..D` MealOptions for SPUNTINO POMERIGGIO + 1 for SERALE
+        # (5 entries total) — but the user only EATS one alternative per
+        # section. So:
+        #   * group by base section key (`spuntino_pomeriggio` from
+        #     `spuntino_pomeriggio__opzione_a`)
+        #   * each section gets `snack_pool / section_count` of daily kcal
+        #   * every option WITHIN a section carries the FULL section share
         share_fraction = MEAL_MACRO_FRACTIONS["snack"]
-        per_snack_target = (
+        section_count = _count_snack_sections(snacks)
+        per_section_target = (
             MealMacro(
-                kcal=int(round(daily_target.kcal * share_fraction / max(snack_count, 1))),
-                protein_g=round(daily_target.protein_g * share_fraction / max(snack_count, 1), 1),
-                carbs_g=round(daily_target.carbs_g * share_fraction / max(snack_count, 1), 1),
-                fat_g=round(daily_target.fat_g * share_fraction / max(snack_count, 1), 1),
+                kcal=int(round(daily_target.kcal * share_fraction / max(section_count, 1))),
+                protein_g=round(daily_target.protein_g * share_fraction / max(section_count, 1), 1),
+                carbs_g=round(daily_target.carbs_g * share_fraction / max(section_count, 1), 1),
+                fat_g=round(daily_target.fat_g * share_fraction / max(section_count, 1), 1),
             )
-            if daily_target.kcal > 0 and snack_count > 0
+            if daily_target.kcal > 0 and section_count > 0
             else MealMacro()
         )
         for sn in snacks:
             if not isinstance(sn, dict):
                 continue
             raw_macros = _coerce_macros(sn.get("macros"))
-            macros = raw_macros if raw_macros.kcal > 0 else per_snack_target
+            macros = raw_macros if raw_macros.kcal > 0 else per_section_target
             snack_meals.append(
                 MealEntry(
                     meal_type="snack",
