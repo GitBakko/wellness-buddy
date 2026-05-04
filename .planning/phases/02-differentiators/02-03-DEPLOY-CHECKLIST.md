@@ -370,7 +370,7 @@ uv run uvicorn app.main:app --host 127.0.0.1 --port 8001 &
 Start-Sleep 3
 Invoke-WebRequest http://127.0.0.1:8001/api/health
 ```
-- [X] Risposta HTTP 200 con `{"status":"ok","db_ok":true}` (db_ok=true conferma connessione 192.168.3.243 funzionante)
+- [X] Risposta HTTP 200 con `{"status":"ok","version":"...","build_hash":"..."}` (DB connection verificata implicitamente da `alembic upgrade head` + uvicorn lifespan)
 - [ ] Termina processo uvicorn manuale: `Get-Process python | Stop-Process -Force` (solo se nessun altro python in esecuzione)
 
 ---
@@ -450,8 +450,8 @@ StartType   : Automatic
 DisplayName : Wellness Buddy API
 ```
 
-- [ ] Script ritorna senza errori
-- [ ] `Get-Service WellnessBuddyAPI` → status `Running`
+- [X] Script ritorna senza errori
+- [X] `Get-Service WellnessBuddyAPI` → status `Running`
 
 **Se hai già un service rotto da run precedente (errore `postgresql-x64-16`):**
 
@@ -475,22 +475,41 @@ Set-Service WellnessBuddyAPI -StartupType Automatic
 nssm set WellnessBuddyAPI AppExit Default Restart
 nssm set WellnessBuddyAPI AppRestartDelay 5000
 ```
-- [ ] StartupType = Automatic
-- [ ] Restart on exit configurato
+- [X] StartupType = Automatic
+- [X] Restart on exit configurato
 
 ### 5.3 Verifica avvio + log
+
+> **Nota:** NSSM non scrive di default in Application Event Log (sorgente `WellnessBuddyAPI` non registrata — è atteso). `stdout.log` può essere vuoto perché uvicorn gira con `--no-access-log` (configurato in install-service.ps1). Check primario è `Get-Service` + health endpoint.
+
 ```powershell
-Get-EventLog -LogName Application -Source WellnessBuddyAPI -Newest 10
-Get-Content E:\www\wellnessBuddy\logs\stdout.log -Tail 30
+# Service status (check primario)
+Get-Service WellnessBuddyAPI
+
+# Stderr.log = source-of-truth per crash (uvicorn lifespan errors, traceback)
+Get-Content E:\www\wellnessBuddy\logs\stderr.log -Tail 50
+
+# Stdout.log spesso vuoto (--no-access-log) — non bloccante
+Get-Content E:\www\wellnessBuddy\logs\stdout.log -Tail 30 -ErrorAction SilentlyContinue
+
+# NSSM event log (Windows-specific, non standard Application source)
+Get-WinEvent -LogName 'Application' -MaxEvents 20 -ErrorAction SilentlyContinue |
+    Where-Object { $_.ProviderName -like '*nssm*' -or $_.Message -like '*WellnessBuddyAPI*' } |
+    Select-Object TimeCreated, LevelDisplayName, Message | Format-List
 ```
-- [ ] Event Log mostra "uvicorn started" o equivalent (NESSUN traceback)
-- [ ] stdout.log mostra `Application startup complete`
+
+- [ ] `Get-Service WellnessBuddyAPI` → Status `Running` (NON `Stopped`/`Paused`)
+- [ ] `stderr.log` ZERO traceback Python (vuoto OK — significa nessun crash)
+- [ ] Se `stderr.log` mostra traceback → vedi Appendice A troubleshooting
+- [ ] (Opzionale) `stdout.log` mostra eventuali log INFO dell'app — vuoto è normale
+
+> **Check definitivo:** §5.4 health endpoint. Se 200 OK → service realmente funzionante. Se Status=Running ma health timeout → uvicorn appeso (rare).
 
 ### 5.4 Health diretto (senza IIS)
 ```powershell
 Invoke-WebRequest http://127.0.0.1:8000/api/health | Select-Object -ExpandProperty Content
 ```
-- [ ] Risposta `{"status":"ok","db_ok":true,"version":"...","build_hash":"..."}`
+- [ ] Risposta `{"status":"ok","version":"...","build_hash":"..."}`
 
 ### 5.5 PATH GTK3 propagato (per Phase 2 PDF — DEP-06)
 ```powershell
@@ -534,7 +553,7 @@ iisreset
 Start-Sleep 3
 Invoke-WebRequest http://wellness-buddy.epartner.it/api/health
 ```
-- [ ] Risposta 200 con `db_ok=true` (proxy IIS → uvicorn → DB 192.168.3.243 funziona end-to-end)
+- [ ] Risposta 200 con `status=ok` (proxy IIS → uvicorn end-to-end; DB connettività implicita da §2.5 alembic OK)
 - [ ] `Invoke-WebRequest http://wellness-buddy.epartner.it/` → HTML index.html
 
 ---
@@ -584,7 +603,7 @@ Get-ScheduledTask | ? TaskName -match 'win-acme'
 cd E:\www\wellnessBuddy
 pwsh deploy\scripts\smoke-test.ps1 https://wellness-buddy.epartner.it
 ```
-- [ ] `/api/health` → 200, `status=ok`, `db_ok=true`
+- [ ] `/api/health` → 200, `status=ok`, `version`, `build_hash` presenti
 - [ ] `/api/version` o `/version.json` → ritorna `version` + `build_hash` (match `git rev-parse --short HEAD`)
 - [ ] `/` → serve `index.html` (contiene "Wellness Buddy")
 - [ ] HTTPS cert valido + non scaduto

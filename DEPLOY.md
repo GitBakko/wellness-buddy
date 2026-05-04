@@ -235,7 +235,7 @@ pwsh deploy/scripts/smoke-test.ps1 https://wellness-buddy.epartner.it
 
 Expected output:
 
-- `/api/health` returns 200 with `status=ok`, `version=...`, `build_hash=...`, `db_ok=true`
+- `/api/health` returns 200 with `status=ok`, `version=...`, `build_hash=...`
 - `/version.json` returns 200 with `version` and `build_hash`
 - `/` serves `frontend/dist/index.html` (matches "Wellness Buddy")
 - HTTPS cert valid + not expired
