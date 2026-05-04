@@ -8,6 +8,7 @@ import {
   CalendarDots,
   ClockCounterClockwise,
   House,
+  ShoppingCart,
   UserIcon,
 } from '@/components/icons';
 import { copy } from '@/i18n/copy.it';
@@ -27,6 +28,7 @@ interface RailItem {
 const ITEMS: RailItem[] = [
   { to: '/today', label: copy.appBar.today, Icon: House as IconC },
   { to: '/settimana', label: copy.appBar.week, Icon: CalendarDots as IconC },
+  { to: '/spesa', label: copy.appBar.shopping, Icon: ShoppingCart as IconC },
   { to: '/storico', label: copy.appBar.history, Icon: ClockCounterClockwise as IconC },
   { to: '/piano', label: copy.appBar.plan, Icon: CalendarBlank as IconC },
   { to: '/impostazioni', label: copy.appBar.settings, Icon: UserIcon as IconC },
