@@ -779,16 +779,18 @@ asyncio.run(bootstrap())
 Remove-Item Env:ADMIN_BOOTSTRAP_PASSWORD
 ```
 
-- [ ] Output stampa `Admin creato: s.brunelli@epartner.it (id=...)`
+- [X] Output stampa `Admin creato: s.brunelli@epartner.it (id=...)`
 - [ ] Se `Admin gia esistente` → skip (idempotente)
 
 ### 8.3 Login Stefano
 
-- [ ] Apri `https://wellness-buddy.epartner.it/login` su browser
-- [ ] Email: `s.brunelli@epartner.it` · Password: `CambiaSubito2026!` (o quella settata in §8.2)
-- [ ] Login OK → reindirizzato a `/today`
-- [ ] Settings → Profilo → cambia password (UI/endpoint disponibile post-Phase 1)
-- [ ] Logout + re-login con nuova password per conferma
+> **Nota:** UI cambio password / profilo NON ancora implementata Phase 1-2 (deferred a Phase 4 admin panel + RBAC). Password bootstrap §8.2 rimane attiva fino a Phase 4. Mitigazione: in §8.2 scegli password robusta (≥12 char, mix simboli/numeri/case) — NON usare il default `CambiaSubito2026!`.
+
+- [X] Apri `https://wellness-buddy.epartner.it/login` su browser
+- [X] Email: `s.brunelli@epartner.it` · Password: quella settata in §8.2
+- [X] Login OK → reindirizzato a `/today`
+- [ ] **Skip cambio password** — funzionalità deferred Phase 4
+- [ ] **TODO Phase 4 backlog:** endpoint `PUT /api/users/me/password` + UI Settings → Profilo + form cambio password con verifica current
 
 ### 8.4 Endpoint Plan 02-02 live (settimana)
 
