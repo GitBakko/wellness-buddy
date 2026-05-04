@@ -27,6 +27,7 @@ export {
   Scales,
   House,
   CalendarBlank,
+  CalendarDots,
   ShoppingCart,
   ClockCounterClockwise,
   User as UserIcon,

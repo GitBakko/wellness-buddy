@@ -14,6 +14,7 @@ export const copy = {
   // ───── Top app bar (UI-SPEC §7.2) ─────
   appBar: {
     today: 'Oggi',
+    week: 'Settimana',
     history: 'Storico',
     plan: 'Piano',
     settings: 'Impostazioni',
@@ -106,7 +107,7 @@ export const copy = {
   // ───── Workout form ─────
   workout: {
     heading: 'Allenamento di oggi',
-    toggleLabel: 'Hai allenato oggi?',
+    toggleLabel: 'Ti sei allenato oggi?',
     durationLabel: 'Durata (minuti)',
     typeLabel: 'Tipo',
     typePlaceholder: 'es. corsa, yoga, palestra',

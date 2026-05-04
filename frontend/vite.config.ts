@@ -1,25 +1,56 @@
 // Vite 7 + React 19 + Tailwind 4 (@theme) + vite-plugin-pwa Workbox SW.
 // Source: 01-RESEARCH.md Pattern 3 (vite-plugin-pwa) + 01-UI-SPEC.md §10.4 (manifest).
 // PITFALLS #2 mitigation: NetworkFirst index.html with 3s timeout.
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import path from 'node:path';
+import fs from 'node:fs';
 import { execSync } from 'node:child_process';
 
+const appVersion = process.env.VITE_APP_VERSION ?? '0.2.0';
 const buildHash = (() => {
+  // Prefer explicit env var (set by deploy/scripts/package-release.ps1) so
+  // the dist/version.json + JS bundle agree on the canonical SHA. Fallback
+  // to live `git rev-parse` for `pnpm dev` and ad-hoc local builds.
+  if (process.env.VITE_BUILD_HASH) return process.env.VITE_BUILD_HASH;
   try {
     return execSync('git rev-parse --short HEAD').toString().trim();
   } catch {
-    return process.env.VITE_BUILD_HASH ?? 'dev';
+    return 'dev';
   }
 })();
+
+// Plan 02-03 (gap closure) — emit dist/version.json at build time so it
+// agrees with the JS bundle's __BUILD_HASH__ baked-in value. Without this,
+// public/version.json shipped a literal "dev" string and was copied verbatim
+// to dist/, leaving the in-app update detector with mismatched hashes ⇒
+// permanent "Nuova versione disponibile" toast on every visit. The backend
+// /version.json proxy (web.config) still wins in prod when present, this
+// emitted file is the dev/static fallback.
+function versionJsonEmitter(): Plugin {
+  return {
+    name: 'wellness-buddy:version-json-emitter',
+    apply: 'build',
+    closeBundle() {
+      const outFile = path.resolve(__dirname, 'dist/version.json');
+      const payload = {
+        version: appVersion,
+        build_hash: buildHash,
+      };
+      fs.writeFileSync(outFile, JSON.stringify(payload, null, 2) + '\n', 'utf8');
+      // eslint-disable-next-line no-console
+      console.log(`[version-json] dist/version.json -> ${JSON.stringify(payload)}`);
+    },
+  };
+}
 
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    versionJsonEmitter(),
     VitePWA({
       registerType: 'prompt',
       strategies: 'generateSW',

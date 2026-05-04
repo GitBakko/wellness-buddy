@@ -5,6 +5,7 @@
 import { NavLink } from 'react-router';
 import {
   CalendarBlank,
+  CalendarDots,
   ClockCounterClockwise,
   House,
   UserIcon,
@@ -25,6 +26,7 @@ interface RailItem {
 
 const ITEMS: RailItem[] = [
   { to: '/today', label: copy.appBar.today, Icon: House as IconC },
+  { to: '/settimana', label: copy.appBar.week, Icon: CalendarDots as IconC },
   { to: '/storico', label: copy.appBar.history, Icon: ClockCounterClockwise as IconC },
   { to: '/piano', label: copy.appBar.plan, Icon: CalendarBlank as IconC },
   { to: '/impostazioni', label: copy.appBar.settings, Icon: UserIcon as IconC },
