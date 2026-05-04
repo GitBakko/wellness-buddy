@@ -589,32 +589,58 @@ def _parse_meal_options(
 
 
 _SNACK_OPTION_RE = re.compile(
-    r"^\s*[-*]\s*(?:opzione\s+[a-d]|opzione\s+\d+|alt\.\s*[a-d])\s*:\s*(.+?)\s*$",
+    r"^\s*[-*]\s*(?:opzione\s+([a-d]|\d+)|alt\.\s*([a-d]))\s*:\s*(.+?)\s*$",
     flags=re.IGNORECASE,
 )
 
 
-def _extract_snack_bullet_ingredients(body: str) -> list[dict]:
-    """Plan 02-04 gap-closure — extract `- Opzione A: <text>` snack bullets.
+def _extract_snack_alternatives(body: str) -> list[tuple[str, str]]:
+    """Plan 02-05 gap-closure — extract `- Opzione X: <text>` snack alternatives.
 
     Real Stefano/Marta SPUNTINO POMERIGGIO sections are bullet lists like:
       - Opzione A: 200 g yogurt di soia + 10 g noci
       - Opzione B: 30 g mandorle o noci miste
       - Opzione C: 1 frutto + 20 g noci
 
-    Each becomes one Ingredient row so MealCard can render the user's choices.
-    Returns `[]` when the body has no `Opzione X:` bullets.
+    Each `Opzione X:` bullet is an ALTERNATIVE the user picks ONE of — they
+    are NOT to be eaten together. This helper returns `[(letter, text), ...]`
+    so the caller can emit one MealOption per alternative.
+
+    Returns `[]` when the body has no `Opzione X:` / `Opzione N:` / `Alt. X:`
+    bullets so the caller falls back to the legacy single-option behaviour.
     """
-    out: list[dict] = []
+    out: list[tuple[str, str]] = []
     for raw_line in body.splitlines():
         m = _SNACK_OPTION_RE.match(raw_line)
         if not m:
             continue
-        text = m.group(1).strip()
+        letter = (m.group(1) or m.group(2) or "").strip().lower()
+        text = m.group(3).strip()
         # Drop trailing parenthetical macro hint "(~180 kcal / ~14 g proteine)".
         text = re.split(r"\s*\(~?\s*\d", text, maxsplit=1)[0].strip().rstrip(".,;")
-        if text:
-            out.append({"name": text[:200]})
+        if not text or not letter:
+            continue
+        out.append((letter, text[:400]))
+    return out
+
+
+def _split_snack_text_into_ingredients(text: str) -> list[dict]:
+    """Split a snack alternative's text on `+` into Ingredient-shaped dicts.
+
+    Mirrors :func:`_split_cell_into_ingredients` (Plan 02-04 grid cells) so
+    MealCard renders consistent composition rows whether the source was a
+    weekly grid cell OR a snack `Opzione X:` bullet. Returns `[]` for empty
+    input; otherwise one row per `+`-separated chunk.
+    """
+    if not text or not text.strip():
+        return []
+    parts = [p.strip() for p in text.split("+") if p.strip()]
+    out: list[dict] = []
+    for part in parts:
+        clean = part.strip().rstrip(".,;")
+        if not clean:
+            continue
+        out.append({"name": clean[:200]})
     return out
 
 
@@ -626,14 +652,30 @@ def _parse_snacks(body: str, heading: str = "") -> tuple[list[dict], list[str]]:
     `###` subheadings, emit a single option keyed by the cleaned heading. When
     it does, each subheading becomes a snack entry.
 
-    Plan 02-04 gap-closure: when the section body has `- Opzione X: <text>`
-    bullets (real plan format), surface those as `ingredients` so MealCard
-    can render the user's choices instead of showing a blank composition.
+    Plan 02-05 gap-closure: when the section body has `- Opzione X: <text>`
+    bullets (real plan format), each bullet is an ALTERNATIVE the user picks
+    one of — emit ONE MealOption PER bullet. Title becomes `<Section> -
+    Opzione X` so the user clearly sees they're alternatives. Ingredients are
+    split on `+` matching the grid-cell convention.
     """
+    base_title = _clean_meal_title(heading, "Spuntino") if heading else "Spuntino"
+    base_slug = _slug(base_title) or "spuntino"
+
+    # Plan 02-05 gap-closure: detect `Opzione X:` bullets at the section level
+    # BEFORE splitting into subheading segments. When present, emit one option
+    # per alternative and skip the legacy single-option path entirely.
+    alternatives = _extract_snack_alternatives(body)
+    if alternatives:
+        return _build_snack_alternatives(
+            alternatives,
+            base_title=base_title,
+            base_slug=base_slug,
+            full_body=body,
+        ), []
+
+    # Legacy / backward-compat path: snack body has no `Opzione X:` bullets.
     snacks: list[dict] = []
     segments = _split_into_segments(body)
-    base_title = _clean_meal_title(heading, "Spuntino") if heading else "Spuntino"
-    bullet_ingredients = _extract_snack_bullet_ingredients(body)
     for idx, (title, segment_body) in enumerate(segments):
         if title:
             key = _slug(title) or f"spuntino_{idx + 1}"
@@ -641,7 +683,7 @@ def _parse_snacks(body: str, heading: str = "") -> tuple[list[dict], list[str]]:
         else:
             # No subheadings → treat the whole body as one snack option titled
             # from the parent section heading.
-            key = _slug(base_title) or "default"
+            key = base_slug or "default"
             title_fallback = base_title
         opt = _parse_meal_segment(
             title=title or base_title,
@@ -649,13 +691,45 @@ def _parse_snacks(body: str, heading: str = "") -> tuple[list[dict], list[str]]:
             key=key,
             title_fallback=title_fallback,
         )
-        # When parser-built ingredients list is empty (no ingredient table)
-        # but we found `- Opzione X:` bullets at the section level, surface
-        # them on the single non-subheading option.
-        if not opt.get("ingredients") and bullet_ingredients and not title:
-            opt["ingredients"] = list(bullet_ingredients)
         snacks.append(opt)
     return snacks, []
+
+
+def _build_snack_alternatives(
+    alternatives: list[tuple[str, str]],
+    *,
+    base_title: str,
+    base_slug: str,
+    full_body: str,
+) -> list[dict]:
+    """Plan 02-05 gap-closure — emit one MealOption per `Opzione X:` bullet.
+
+    Each alternative becomes a fully-formed MealOption-shaped dict with:
+      * `key = "<base_slug>__opzione_<letter>"` (stable for variant lookup)
+      * `title = "<Base title> - Opzione <LETTER-UPPER>"`
+      * `ingredients` split on `+` (matches grid-cell convention)
+      * `macros = {}` — proportional allocation done in today_service /
+        weekly_service so each option carries its full section share.
+      * `notes`, `photo_url`, `category` — extracted from the SECTION body so
+        a `**Foto:** <url>` line attaches to all alternatives uniformly.
+    """
+    photo_url = _extract_photo_url(full_body)
+    category = _extract_category(full_body)
+    out: list[dict] = []
+    for letter, text in alternatives:
+        ingredients = _split_snack_text_into_ingredients(text)
+        out.append(
+            {
+                "key": f"{base_slug}__opzione_{letter}",
+                "title": f"{base_title} - Opzione {letter.upper()}"[:200],
+                "ingredients": ingredients,
+                "macros": {"kcal": 0, "protein_g": 0, "carbs_g": 0, "fat_g": 0},
+                "notes": None,
+                "photo_url": photo_url,
+                "category": category,
+            }
+        )
+    return out
 
 
 _SLUG_RE = re.compile(r"[^a-z0-9]+")
