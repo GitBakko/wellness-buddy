@@ -3,18 +3,18 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-last_updated: "2026-05-04T12:30:00.000Z"
+last_updated: "2026-05-04T11:35:30Z"
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 18
-  completed_plans: 13
-  percent: 72
+  completed_plans: 14
+  percent: 78
 ---
 
 # State: Wellness Buddy
 
-**Last updated:** 2026-05-04 (Phase 2 in progress — Plans 02-01..02-03 complete; new 02-04 gap-closure plan written; 02-05..08 renumbered downstream)
+**Last updated:** 2026-05-04 (Phase 2 in progress — Plans 02-01..02-04 complete; 02-05 shopping is next)
 
 ## Project Reference
 
@@ -30,14 +30,14 @@ progress:
 ## Current Position
 
 - **Phase:** 2 — Differentiators
-- **Plan:** 02-04 written (gap-closure for weekly grid parser + per-day weekly variants). Plans 02-01..02-03 complete; previously planned 02-04..07 renumbered downstream to 02-05..08 to make room for the gap-closure insertion.
-- **Status:** **Phase 1 COMPLETE code-side; Phase 2 in progress.** Plans 02-01 (GTK3 spike + PdfExporter ABC), 02-02 (/settimana + variant selector), 02-03 (production deploy) merged. First-prod-deploy on 2026-05-04 surfaced parser format mismatch — real Stefano + Marta plans use weekly grid `| Giorno | Opzione A | Opzione B |`, not `### Opzione X` subheadings. Plan 02-04 inserted as gap-closure: dual-mode parser + dict-of-list lunches/dinners + per-day WeeklyPlanVariant composite key + frontend per-day variant selector. Plans 02-05 (shopping), 02-06 (PDF), 02-07 (family sync), 02-08 (closure) shifted down. Ready for `/gsd:execute-phase` at Plan 02-04.
-- **Progress:** Phase 1/5 done code-side · Phase 2: Plans 3/8 complete · 5 plans remaining (02-04..08)
+- **Plan:** 02-04 complete (gap-closure for weekly grid parser + per-day weekly variants shipped). Plans 02-01..02-04 complete; 02-05 (shopping) next in queue.
+- **Status:** **Phase 1 COMPLETE code-side; Phase 2 in progress.** Plans 02-01 (GTK3 spike + PdfExporter ABC), 02-02 (/settimana + variant selector), 02-03 (production deploy), 02-04 (grid parser + per-day variants) merged. Real Stefano + Marta plans now parse end-to-end with day-specific lunches/dinners. /api/today returns the actual recipe title from the day's grid cell (Mon=salmone, Wed=lenticchie, Fri=frittata). Plans 02-05 (shopping), 02-06 (PDF), 02-07 (family sync), 02-08 (closure) ready to execute.
+- **Progress:** Phase 1/5 done code-side · Phase 2: Plans 4/8 complete · 4 plans remaining (02-05..08)
 - **Phase progress bar:**
 
   ```text
   [##########] 100% — Phase 1: Foundation (10/10 plans, code-side closure)
-  [###.......]  37% — Phase 2: Differentiators (3/8 plans complete; 02-04 written)
+  [#####.....]  50% — Phase 2: Differentiators (4/8 plans complete)
   ```
 
 ## Performance Metrics
@@ -62,6 +62,7 @@ progress:
 | 01-07 today      | ~75 min  | 3/3   | 20 created + 10 modified | 4       |
 | 01-08 mockups+dep| ~50 min  | 2/2   | 15 created (T3 deferred) | 4       |
 | 01-09 lifesum-px | ~28 min  | 3/3   | 4 created + 22 modified  | 3       |
+| 02-04 grid-parser| ~25 min  | 3/3   | 7 created + 10 modified  | 3       |
 
 ## Accumulated Context
 
@@ -102,6 +103,12 @@ progress:
 - (Plan 07) WeightChart asserts CSS variables at the source level (read .tsx + grep) instead of jsdom SVG inspection — Recharts ResponsiveContainer collapses to 0×0 in headless DOM. Source-level check is the tighter PITFALLS#8 contract.
 - (Plan 07) ResizeObserver polyfill in `frontend/src/test/setup.ts` (Rule 3 — Radix primitives reference it via @radix-ui/react-use-size; jsdom doesn't ship it; without polyfill any test mounting Switch/Checkbox/Tabs throws ReferenceError)
 - (Plan 07) `--text-display-serif` Instrument Serif token usage verified by grep: theme.css (definition) + pages/Today.tsx (single consumer) — UI-SPEC §3.2 escape hatch honored
+- (Plan 02-04) Dual-mode parser pattern: try grid format `| Giorno | Opzione A | Opzione B |` first, fall back to `### Opzione X` subheading on empty result. Reusable for any future MD section format the project encounters.
+- (Plan 02-04) `lunches` and `dinners` parsed_json shape is `dict[str, list[MealOption]]` keyed by Italian day_slug (`lun`..`dom`) for grid format, `default` for subheading format. Backward compat preserved.
+- (Plan 02-04) WeeklyPlanVariant composite UNIQUE constraint `(user_id, week_start, day_of_week, meal_type)` replaces week-level uniqueness; alembic 8137b2e24001.
+- (Plan 02-04) today_service threads `variant_by_meal: dict[str, WeeklyPlanVariant]` into `_meals_from_parsed` so user's stored selection overrides first-option default — recipe title shown matches chosen variant.
+- (Plan 02-04) /api/weekly response includes `options: list[MealOptionPayload]` per (day, slot) so frontend variant selector can map UI A/B/special to actual backend grid keys (`opzione_a`/`opzione_b`/`piatto`/...).
+- (Plan 02-04) Italian-keyed `dayLabels` (`lun`..`dom`) added to `copy.it.ts` alongside legacy `mon`..`sun` aliases — both work; canonical is Italian short form matching grid parser.
 
 ### Open Questions to Resolve in Plans
 
@@ -158,20 +165,20 @@ progress:
 
 ### Next Action
 
-**`/gsd:execute-phase 02-differentiators`** — Phase 2 in progress. Plans 02-01..02-03 complete. New gap-closure plan 02-04 written (weekly grid parser + per-day variants). Renumbered: 02-05 (shopping), 02-06 (PDF), 02-07 (family), 02-08 (closure). Wave 4 = 02-04 ready to execute first.
+**`/gsd:execute-phase 02-differentiators`** — Phase 2 in progress. Plans 02-01..02-04 complete (grid parser + per-day variants gap-closure done). Wave 5 = 02-05 (shopping list) ready to execute next.
 
-### Phase 2 Plan Index (post 2026-05-04 renumber)
+### Phase 2 Plan Index
 
 | Plan | Title | Wave | Status |
 |------|-------|------|--------|
 | 02-01 | WeasyPrint GTK3 spike + PdfExporter ABC | 1 | done |
 | 02-02 | /settimana + variant selector + LWW 409 | 2 | done |
 | 02-03 | Production deploy CHECKPOINT | 3 | done |
-| 02-04 | **NEW** Gap-closure: weekly grid parser + per-day variants | 4 | plan-written |
-| 02-05 | Shopping list (renumbered from 02-04) | 5 | not started |
-| 02-06 | Shopping PDF (renumbered from 02-05) | 6 | not started |
-| 02-07 | Family sync (renumbered from 02-06) | 7 | not started |
-| 02-08 | Phase 2 closure CHECKPOINT (renumbered from 02-07) | 8 | not started |
+| 02-04 | Gap-closure: weekly grid parser + per-day variants | 4 | done (commits 745fd96, b97cbc1, c6f1241) |
+| 02-05 | Shopping list | 5 | ready |
+| 02-06 | Shopping PDF | 6 | not started |
+| 02-07 | Family sync | 7 | not started |
+| 02-08 | Phase 2 closure CHECKPOINT | 8 | not started |
 
 ---
 *State initialized: 2026-05-01 — Phase 1 (Foundation) is the current focus.*
