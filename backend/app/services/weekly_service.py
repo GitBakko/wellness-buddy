@@ -68,6 +68,7 @@ async def build_weekly_payload(
                 v.variant_key if v else "default",
                 day_of_week=d,
             )
+            options = _options_for_slot(plan.parsed_json, slot, day_of_week=d)
             meals.append(
                 {
                     "slot": slot,
@@ -80,6 +81,7 @@ async def build_weekly_payload(
                     "owner_user_id": str(user.id),
                     "macros": dict(meal_block.get("macros") or {}),
                     "ingredients": list(meal_block.get("ingredients") or []),
+                    "options": options,
                 }
             )
         days.append({"date": day_date.isoformat(), "day_of_week": d, "meals": meals})
@@ -134,6 +136,46 @@ _SLOT_KEYS = {
     "dinner": "dinners",
     "snack": "snacks",
 }
+
+
+def _options_for_slot(
+    parsed: dict[str, Any] | None,
+    slot: str,
+    *,
+    day_of_week: int = 0,
+) -> list[dict[str, Any]]:
+    """Plan 02-04 — list of MealOptionPayload-shaped dicts for the given (day, slot).
+
+    Surfaces the alternatives the frontend variant selector needs. Empty when
+    the slot has no alternatives (breakfast = single dict, snack = flat list
+    where each entry is its own card).
+    """
+    if not isinstance(parsed, dict) or not parsed:
+        return []
+    if slot in ("lunch", "dinner"):
+        plural = _SLOT_KEYS[slot]
+        section = parsed.get(plural) or {}
+        if not isinstance(section, dict):
+            return []
+        day_slug = _INT_TO_DAY_SLUG[day_of_week] if 0 <= day_of_week <= 6 else None
+        opts = (
+            (section.get(day_slug) if day_slug else None)
+            or section.get("default")
+            or next((v for v in section.values() if isinstance(v, list) and v), [])
+        )
+        if not isinstance(opts, list):
+            return []
+        return [
+            {
+                "key": str(o.get("key") or ""),
+                "title": str(o.get("title") or ""),
+                "macros": dict(o.get("macros") or {}),
+            }
+            for o in opts
+            if isinstance(o, dict)
+        ]
+    # breakfast / snack — no alternatives at the variant-selector level
+    return []
 
 
 def _resolve_meal(

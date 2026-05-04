@@ -283,6 +283,31 @@ async def test_patch_variant_invalid_day_of_week_too_large_rejected(
     assert r.json()["code"] == "validation_error"
 
 
+async def test_get_weekly_includes_options_per_meal(
+    async_client: AsyncClient,
+    grid_user: User,
+    grid_active_plan: NutritionPlan,
+) -> None:
+    """Plan 02-04: each lunch/dinner meal entry includes the list of variants for that day."""
+    access = await _login(async_client, "grid-user@test.example.com", "Password123!")
+    r = await async_client.get(
+        f"/api/weekly/{WEEK_START}",
+        headers={"Authorization": f"Bearer {access}"},
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    monday = body["days"][0]
+    monday_lunch = next(m for m in monday["meals"] if m["slot"] == "lunch")
+    # Monday lunch has 2 options in fixture (opzione_a, opzione_b).
+    assert "options" in monday_lunch
+    assert len(monday_lunch["options"]) == 2
+    titles = {o["title"] for o in monday_lunch["options"]}
+    assert titles == {"Pasta al pomodoro", "Bresaola + pane integrale"}
+    # Breakfast has no alternatives → empty options list
+    monday_breakfast = next(m for m in monday["meals"] if m["slot"] == "breakfast")
+    assert monday_breakfast.get("options", []) == []
+
+
 async def test_get_weekly_after_variant_change_reflects_selection(
     async_client: AsyncClient,
     grid_user: User,

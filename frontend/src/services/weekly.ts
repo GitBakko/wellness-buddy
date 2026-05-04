@@ -30,6 +30,13 @@ export interface WeeklyMacros {
   fat_g: number;
 }
 
+export interface WeeklyMealOption {
+  /** Backend variant key — e.g. 'opzione_a', 'opzione_b', 'piatto'. */
+  key: string;
+  title: string;
+  macros: Partial<WeeklyMacros>;
+}
+
 export interface WeeklyMealEntry {
   slot: 'breakfast' | 'lunch' | 'dinner' | 'snack';
   title: string;
@@ -41,6 +48,9 @@ export interface WeeklyMealEntry {
   owner_user_id: string;
   macros: WeeklyMacros;
   ingredients: unknown[];
+  /** Plan 02-04: per-day variant options the user can pick between. Empty for
+   *  breakfast/snack slots; lunch + dinner usually have 1-3 options per day. */
+  options: WeeklyMealOption[];
 }
 
 export interface WeeklyDay {

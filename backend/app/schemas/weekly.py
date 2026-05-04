@@ -11,6 +11,21 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field
 
 
+class MealOptionPayload(BaseModel):
+    """Plan 02-04 — single variant option offered for a (day, meal_type) cell.
+
+    Surfaces the title + key + macro preview the frontend needs to render the
+    per-day variant selector. Grid-format plans usually have 1-3 options per
+    cell; subheading-format plans surface week-level options once per day.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    key: str
+    title: str
+    macros: dict[str, Any] = Field(default_factory=dict)
+
+
 class MealEntry(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -24,6 +39,10 @@ class MealEntry(BaseModel):
     owner_user_id: str
     macros: dict[str, Any] = Field(default_factory=dict)
     ingredients: list[Any] = Field(default_factory=list)
+    # Plan 02-04 — per-day variant options the user can pick between for this
+    # (day_of_week, slot). Empty list when the slot has no alternatives (e.g.
+    # breakfast — single dict in parsed_json).
+    options: list[MealOptionPayload] = Field(default_factory=list)
 
 
 class WeeklyDay(BaseModel):

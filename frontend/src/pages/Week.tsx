@@ -83,11 +83,45 @@ function aggregateMacros(data: WeeklyResponse): WeeklyAggregate {
   };
 }
 
-/** Coerces backend variant_key (e.g. 'A'/'B'/'special'/'default'/'pasta') → UI VariantKey. */
+/** Coerces backend variant_key (Plan 02-02 'A'/'B'/'special'/'pasta'/'default'
+ *  OR Plan 02-04 grid keys 'opzione_a'/'opzione_b'/'piatto'/...) → UI VariantKey.
+ *
+ *  Grid keys are normalized: 'opzione_a' → 'A', 'opzione_b' → 'B', anything
+ *  else → 'special'. Subheading-format keys keep their existing mapping.
+ */
 function toVariantKey(raw: string): VariantKey {
-  if (raw === 'B') return 'B';
-  if (raw === 'special' || raw === 'pasta') return 'special';
+  const low = raw.toLowerCase();
+  if (low === 'b' || low === 'opzione_b') return 'B';
+  if (
+    low === 'special' ||
+    low === 'pasta' ||
+    low === 'opzione_c' ||
+    low === 'opzione_d'
+  ) {
+    return 'special';
+  }
+  // Default falls into 'A' bucket — covers 'A', 'opzione_a', 'piatto', 'default',
+  // and any unrecognized grid header so the selector lights up the leftmost chip.
   return 'A';
+}
+
+/** Inverse of `toVariantKey` — maps a UI VariantKey to the actual backend key
+ *  for the given meal's available options. Falls back to the UI key letter when
+ *  no option matches (e.g. legacy subheading-format plans where the key is
+ *  literally 'A'/'B'/'special').
+ */
+function fromVariantKey(
+  ui: VariantKey,
+  options: WeeklyMealEntry['options'],
+): string {
+  if (!options || options.length === 0) {
+    // Subheading-format / legacy — pass UI key through.
+    return ui === 'A' ? 'A' : ui === 'B' ? 'B' : 'special';
+  }
+  // Index-based mapping: A=0, B=1, special=2 (clamped to options.length-1).
+  const idx = ui === 'A' ? 0 : ui === 'B' ? 1 : 2;
+  const target = options[Math.min(idx, options.length - 1)];
+  return target.key;
 }
 
 /**
@@ -183,13 +217,17 @@ export default function Week(): React.ReactElement {
     mealType: string,
     nextKey: VariantKey,
     currentUpdatedAt: string | null,
+    options: WeeklyMealEntry['options'],
   ) => {
     if (!planId) return;
+    // Plan 02-04: translate UI A/B/special back to the actual backend variant_key
+    // (grid plans use 'opzione_a'/'opzione_b'/'piatto'; subheading plans use literal 'A'/'B').
+    const backendKey = fromVariantKey(nextKey, options);
     setVariant.mutate({
       plan_id: planId,
       day_of_week: dayOfWeek,
       meal_type: mealType,
-      variant_key: nextKey,
+      variant_key: backendKey,
       ifUnmodifiedSince: currentUpdatedAt,
     });
   };
@@ -267,6 +305,7 @@ export default function Week(): React.ReactElement {
                           m.slot,
                           next,
                           m.updated_at,
+                          m.options,
                         )
                       }
                       mealLabel={mealLabel}

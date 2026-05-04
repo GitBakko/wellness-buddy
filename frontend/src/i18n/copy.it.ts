@@ -223,7 +223,18 @@ export const copy = {
     weekPickerJumpAria: "Scegli un'altra settimana",
     weekPickerCurrentLabel: 'Settimana corrente',
     weekPickerChipFormat: '{startDate}',
+    // Plan 02-04 — Italian short-form keys (lun..dom) match backend day_slug enum
+    // emitted by the grid parser. Keep mon..sun aliases for legacy callsites.
     dayLabels: {
+      // Italian-keyed (canonical — matches plan_sections grid parser day_slug)
+      lun: 'Lunedì',
+      mar: 'Martedì',
+      mer: 'Mercoledì',
+      gio: 'Giovedì',
+      ven: 'Venerdì',
+      sab: 'Sabato',
+      dom: 'Domenica',
+      // English-keyed aliases (legacy WeekPicker.tsx — Plan 02-02)
       mon: 'Lunedì',
       tue: 'Martedì',
       wed: 'Mercoledì',
@@ -250,6 +261,9 @@ export const copy = {
     variantSelectorMacroFormat: '{kcal} kcal · P {protein} · C {carbs} · F {fat}',
     variantUpdateSuccess: 'Variante aggiornata',
     variantUpdateError: 'Aggiornamento variante non riuscito. Riprova.',
+    // Plan 02-04 — per-day variant selector helper + conflict toast.
+    variantHelp: "Scegli l'opzione del giorno",
+    variantConflict: 'Variante aggiornata da un altro tab. Ricarica.',
     emptyHeading: 'Nessuna settimana pianificata',
     emptyBody: 'Carica un piano per vedere i pasti della settimana.',
     emptyCta: 'Carica piano',
