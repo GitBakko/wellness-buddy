@@ -77,6 +77,11 @@ class MealOption(BaseModel):
     # Plan 02-04 — list of day_of_week ints this option applies to (0=Mon..6=Sun);
     # `None` for week-level / subheading-format options.
     day_of_week: list[int] | None = None
+    # Plan 02-05 — optional `**Categoria:** <name>` annotation that overrides
+    # the keyword-based mapping in shopping_service.aggregate_for_week. Bounded
+    # by parser regex to ≤50 chars; shopping_service additionally validates
+    # against the 5 locked categories before applying (T-02-05-01 mitigation).
+    category: str | None = Field(default=None, max_length=50)
 
 
 class PlanParsedSchema(BaseModel):

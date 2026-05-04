@@ -45,6 +45,15 @@ _PHOTO_RE = re.compile(
     r"^\s*\*\*\s*foto\s*:\s*\*\*\s+(\S{1,500})\s*$",
     flags=re.IGNORECASE | re.MULTILINE,
 )
+# Plan 02-05 — optional category annotation line "**Categoria:** <name>"
+# (case-insensitive, allows leading whitespace, capture capped at 50 chars to
+# bound user-supplied content). Plan author can override the default category
+# resolution; downstream aggregation in shopping_service still validates the
+# name against the 5-fixed-category list (T-02-05-01 STRIDE mitigation).
+_CATEGORY_RE = re.compile(
+    r"^\s*\*\*\s*categoria\s*:\s*\*\*\s+(.{1,50}?)\s*$",
+    flags=re.IGNORECASE | re.MULTILINE,
+)
 # Calorie summary line that follows the breakfast/meal ingredient table:
 #   "Calorie totali stimate: ~500 kcal"
 _CAL_TOTALI_RE = re.compile(
@@ -60,6 +69,22 @@ def _extract_photo_url(body: str) -> str | None:
         return None
     url = m.group(1).strip()
     return url or None
+
+
+def _extract_category(body: str) -> str | None:
+    """Plan 02-05 — sniff `**Categoria:** <name>` line. Returns None when absent.
+
+    Twin of :func:`_extract_photo_url`. The captured value is bounded by the
+    regex (≤50 chars) so a malicious plan author can't blow up downstream
+    rendering; shopping_service.aggregate_for_week additionally validates the
+    value against the 5 locked categories and falls back to ``"Dispensa"``
+    on mismatch.
+    """
+    m = _CATEGORY_RE.search(body)
+    if not m:
+        return None
+    cat = m.group(1).strip()
+    return cat or None
 
 
 def _strip_it_thousands(s: str) -> str:
@@ -450,6 +475,7 @@ def _parse_meal_segment(
         "macros": macros,
         "notes": notes,
         "photo_url": _extract_photo_url(segment_body),
+        "category": _extract_category(segment_body),
     }
 
 
@@ -791,6 +817,7 @@ def _build_grid_option(
         "notes": None,
         "photo_url": None,
         "day_of_week": day_of_week,
+        "category": None,
     }
 
 
