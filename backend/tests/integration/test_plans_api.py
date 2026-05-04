@@ -197,9 +197,7 @@ async def test_upload_unauthenticated_401(async_client: AsyncClient) -> None:
     assert "code" in body and "detail" in body
 
 
-async def test_upload_rejects_non_md_file(
-    async_client: AsyncClient, test_user: User
-) -> None:
+async def test_upload_rejects_non_md_file(async_client: AsyncClient, test_user: User) -> None:
     access = await _login(async_client, "plans-user@test.example.com", "Password123!")
     r = await async_client.post(
         "/api/plans/upload",
@@ -211,9 +209,7 @@ async def test_upload_rejects_non_md_file(
     assert r.json()["code"] == "bad_file_type"
 
 
-async def test_upload_rejects_oversized_file(
-    async_client: AsyncClient, test_user: User
-) -> None:
+async def test_upload_rejects_oversized_file(async_client: AsyncClient, test_user: User) -> None:
     access = await _login(async_client, "plans-user@test.example.com", "Password123!")
     big_blob = b"# Big\n" + b"a" * (1 * 1024 * 1024 + 100)
     r = await async_client.post(
@@ -226,9 +222,7 @@ async def test_upload_rejects_oversized_file(
     assert r.json()["code"] == "too_large"
 
 
-async def test_upload_rejects_unparseable(
-    async_client: AsyncClient, test_user: User
-) -> None:
+async def test_upload_rejects_unparseable(async_client: AsyncClient, test_user: User) -> None:
     """Tolerant parser: missing canonical sections still returns 201, but unrecognized
     headings are surfaced in the response."""
     access = await _login(async_client, "plans-user@test.example.com", "Password123!")
@@ -264,9 +258,7 @@ async def test_list_plans_returns_user_plans_desc(
         )
         assert r.status_code == 201
 
-    r = await async_client.get(
-        "/api/plans", headers={"Authorization": f"Bearer {access}"}
-    )
+    r = await async_client.get("/api/plans", headers={"Authorization": f"Bearer {access}"})
     assert r.status_code == 200
     body = r.json()
     assert isinstance(body, list)
@@ -302,9 +294,7 @@ async def test_list_plans_excludes_other_users(
     assert r.status_code == 201
 
     # User B's GET /api/plans returns only B's plan
-    r = await async_client.get(
-        "/api/plans", headers={"Authorization": f"Bearer {b_access}"}
-    )
+    r = await async_client.get("/api/plans", headers={"Authorization": f"Bearer {b_access}"})
     assert r.status_code == 200
     body = r.json()
     assert len(body) == 1
@@ -359,10 +349,7 @@ async def test_activate_sets_active_true_and_deactivates_previous(
 
     # Direct DB check — only one active plan per user (partial unique index respected)
     count_q = await db_session.execute(
-        text(
-            "SELECT count(*) FROM nutrition_plans "
-            "WHERE user_id = :uid AND is_active = TRUE"
-        ),
+        text("SELECT count(*) FROM nutrition_plans WHERE user_id = :uid AND is_active = TRUE"),
         {"uid": str(test_user.id)},
     )
     active_count = count_q.scalar_one()
@@ -370,9 +357,7 @@ async def test_activate_sets_active_true_and_deactivates_previous(
 
     # Plan A row must now be inactive
     plan_a_row = (
-        await db_session.scalars(
-            select(NutritionPlan).where(NutritionPlan.id == plan_a_id)
-        )
+        await db_session.scalars(select(NutritionPlan).where(NutritionPlan.id == plan_a_id))
     ).first()
     await db_session.refresh(plan_a_row) if plan_a_row else None
     assert plan_a_row is not None
@@ -475,9 +460,7 @@ async def test_admin_assign_plan_to_user(
     test_user: User,
     admin_user: User,
 ) -> None:
-    admin_access = await _login(
-        async_client, "plans-admin@test.example.com", "Admin1234!"
-    )
+    admin_access = await _login(async_client, "plans-admin@test.example.com", "Admin1234!")
 
     # Admin uploads a plan (it goes to admin's user_id initially)
     upload_r = await async_client.post(
@@ -501,9 +484,7 @@ async def test_admin_assign_plan_to_user(
 
     # DB check — plan.user_id reassigned
     plan_row = (
-        await db_session.scalars(
-            select(NutritionPlan).where(NutritionPlan.id == plan_id)
-        )
+        await db_session.scalars(select(NutritionPlan).where(NutritionPlan.id == plan_id))
     ).first()
     assert plan_row is not None
     await db_session.refresh(plan_row)
@@ -514,9 +495,7 @@ async def test_admin_assign_plan_non_admin_403(
     async_client: AsyncClient, test_user: User, admin_user: User
 ) -> None:
     """Non-admin tries assign-plan → 403 forbidden."""
-    user_access = await _login(
-        async_client, "plans-user@test.example.com", "Password123!"
-    )
+    user_access = await _login(async_client, "plans-user@test.example.com", "Password123!")
 
     # Use a fake plan id (route guard runs first — 403 before any plan lookup)
     fake_plan_id = uuid4()

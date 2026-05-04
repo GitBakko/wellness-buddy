@@ -47,9 +47,7 @@ async def get_current_user(
     if payload.get("type") != "access":
         raise AppException(401, "Token non valido", "invalid_token")
     user_id = UUID(payload["sub"])
-    user = (
-        await session.scalars(select(User).where(User.id == user_id))
-    ).first()
+    user = (await session.scalars(select(User).where(User.id == user_id))).first()
     if not user:
         raise AppException(401, "Utente non trovato", "user_not_found")
     return user

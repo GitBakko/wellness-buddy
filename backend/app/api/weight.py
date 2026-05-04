@@ -44,10 +44,7 @@ async def list_weights(
     session: AsyncSession = Depends(get_session),
 ) -> list[WeightLogOut]:
     rows = await weight_service.list_weights(session, user_id=user.id)
-    return [
-        WeightLogOut(id=str(r.id), date=r.date, weight_kg=r.weight_kg)
-        for r in rows
-    ]
+    return [WeightLogOut(id=str(r.id), date=r.date, weight_kg=r.weight_kg) for r in rows]
 
 
 @router.patch("/{weight_id}", response_model=WeightLogOut)
@@ -74,6 +71,4 @@ async def delete_weight(
     user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> None:
-    await weight_service.delete_weight(
-        session, user_id=user.id, weight_id=weight_id
-    )
+    await weight_service.delete_weight(session, user_id=user.id, weight_id=weight_id)

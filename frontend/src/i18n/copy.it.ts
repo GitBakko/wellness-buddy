@@ -133,6 +133,7 @@ export const copy = {
     parseWarningsBody:
       'Il piano è stato letto, ma queste sezioni non sono state riconosciute: {list}. Puoi attivarlo comunque o annullare.',
     diffHeading: 'Differenze rispetto al piano attivo',
+    firstPlanHeading: 'Sezioni del piano caricato',
     diffAddedHeading: 'Aggiunte',
     diffRemovedHeading: 'Rimosse',
     diffChangedHeading: 'Modificate',
@@ -141,6 +142,8 @@ export const copy = {
     cancelCta: 'Annulla',
     activateConfirm:
       'Sostituire il piano attivo con quello caricato? Il piano precedente verrà archiviato.',
+    activateConfirmFirst:
+      'Attivare il piano caricato? Diventerà il piano in uso da subito.',
     activateSuccess: 'Piano attivato.',
     activateFailed: 'Attivazione non riuscita. Riprova.',
     errorBadFileType: 'Solo file .md sono supportati.',

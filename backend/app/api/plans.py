@@ -90,9 +90,7 @@ async def activate(
     session: AsyncSession = Depends(get_session),
 ) -> PlanResponse:
     """Activate a plan (PLAN-08). Service deactivates previous active plan first."""
-    plan = await plan_service.activate_plan(
-        session, user_id=user.id, plan_id=plan_id
-    )
+    plan = await plan_service.activate_plan(session, user_id=user.id, plan_id=plan_id)
     return PlanResponse(id=str(plan.id), name=plan.name, is_active=plan.is_active)
 
 

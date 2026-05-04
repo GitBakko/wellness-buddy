@@ -185,9 +185,7 @@ async def test_refresh_reuse_outside_grace_revokes_family(
     # Backdate the original token's replaced_at to push it OUTSIDE the 10s grace window
     # Find the row corresponding to the original refresh (revoked=true after rotation)
     rows = (
-        await db_session.scalars(
-            select(RefreshToken).where(RefreshToken.user_id == test_user.id)
-        )
+        await db_session.scalars(select(RefreshToken).where(RefreshToken.user_id == test_user.id))
     ).all()
     revoked_row = next((row for row in rows if row.revoked), None)
     assert revoked_row is not None
@@ -224,9 +222,7 @@ async def test_refresh_no_cookie_returns_envelope(async_client: AsyncClient) -> 
 # ──────────────────────────────────────────────────────────────────────────────
 
 
-async def test_logout_revokes_family(
-    async_client: AsyncClient, test_user: User
-) -> None:
+async def test_logout_revokes_family(async_client: AsyncClient, test_user: User) -> None:
     login_r = await async_client.post(
         "/api/auth/login",
         json={"email": "user@test.example.com", "password": "Password123!"},
@@ -246,18 +242,14 @@ async def test_logout_revokes_family(
 # ──────────────────────────────────────────────────────────────────────────────
 
 
-async def test_me_returns_profile(
-    async_client: AsyncClient, test_user: User
-) -> None:
+async def test_me_returns_profile(async_client: AsyncClient, test_user: User) -> None:
     login_r = await async_client.post(
         "/api/auth/login",
         json={"email": "user@test.example.com", "password": "Password123!"},
     )
     access = login_r.json()["access_token"]
 
-    r = await async_client.get(
-        "/api/auth/me", headers={"Authorization": f"Bearer {access}"}
-    )
+    r = await async_client.get("/api/auth/me", headers={"Authorization": f"Bearer {access}"})
     assert r.status_code == 200
     body = r.json()
     assert body["email"] == "user@test.example.com"
@@ -276,8 +268,6 @@ async def test_me_without_token_returns_envelope(async_client: AsyncClient) -> N
 
 
 async def test_me_with_garbage_token_returns_envelope(async_client: AsyncClient) -> None:
-    r = await async_client.get(
-        "/api/auth/me", headers={"Authorization": "Bearer not-a-jwt"}
-    )
+    r = await async_client.get("/api/auth/me", headers={"Authorization": "Bearer not-a-jwt"})
     assert r.status_code == 401
     assert r.json()["code"] in {"expired", "invalid_token", "no_token"}

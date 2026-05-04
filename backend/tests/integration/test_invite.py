@@ -74,24 +74,18 @@ async def test_invite_create_admin_only_403_for_non_admin(
         json={"email": "user2@test.example.com", "password": "Password123!"},
     )
     access = login_r.json()["access_token"]
-    r = await async_client.post(
-        "/api/auth/invite", headers={"Authorization": f"Bearer {access}"}
-    )
+    r = await async_client.post("/api/auth/invite", headers={"Authorization": f"Bearer {access}"})
     assert r.status_code == 403
     assert r.json()["code"] == "forbidden"
 
 
-async def test_invite_create_admin_succeeds(
-    async_client: AsyncClient, admin_user: User
-) -> None:
+async def test_invite_create_admin_succeeds(async_client: AsyncClient, admin_user: User) -> None:
     login_r = await async_client.post(
         "/api/auth/login",
         json={"email": "admin2@test.example.com", "password": "Admin1234!"},
     )
     access = login_r.json()["access_token"]
-    r = await async_client.post(
-        "/api/auth/invite", headers={"Authorization": f"Bearer {access}"}
-    )
+    r = await async_client.post("/api/auth/invite", headers={"Authorization": f"Bearer {access}"})
     assert r.status_code == 200, r.text
     body = r.json()
     assert "token" in body and len(body["token"]) >= 32

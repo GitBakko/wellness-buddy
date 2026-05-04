@@ -32,9 +32,16 @@ export async function requestPersistentStorage(): Promise<boolean> {
     if (alreadyPersisted) return true;
     const granted = await navigator.storage.persist();
     if (!granted) {
-      toast.warning(copy.pwa.persistDeniedHeading, {
-        description: copy.pwa.persistDeniedBody,
-      });
+      // Plan 02-03 (gap closure): browsers deny persist() on dev origins
+      // (low engagement score on localhost / 127.0.0.1) — the "Storage
+      // offline non abilitato" toast just adds noise during local testing.
+      // Production install via Add-to-Home-Screen reaches the engagement
+      // bar and the toast then carries real signal.
+      if (!import.meta.env.DEV) {
+        toast.warning(copy.pwa.persistDeniedHeading, {
+          description: copy.pwa.persistDeniedBody,
+        });
+      }
     }
     return granted;
   } catch {

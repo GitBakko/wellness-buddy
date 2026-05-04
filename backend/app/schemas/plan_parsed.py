@@ -35,14 +35,21 @@ class Macros(BaseModel):
 
 
 class Ingredient(BaseModel):
-    """Phase 1 unused — placeholder for Phase 2 deeper meal parsing."""
+    """Per-row entry parsed from a meal ingredient table.
+
+    `quantity` is kept as a free-form string ("270 ml", "8-10 g", "1 tazzina")
+    because real plans use ranges, units, and human-friendly quantities that
+    don't fit a single float. Per-ingredient macros are optional — only present
+    when the source table has dedicated macro columns.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
     name: str
-    quantity: float | None = None
-    unit: str | None = None
-    category: str | None = None
+    quantity: str | None = None
+    protein_g: float | None = None
+    carbs_g: float | None = None
+    fat_g: float | None = None
 
 
 class MealOption(BaseModel):
@@ -54,6 +61,7 @@ class MealOption(BaseModel):
     title: str
     ingredients: list[Ingredient] = Field(default_factory=list)
     macros: Macros = Field(default_factory=Macros)
+    notes: str | None = None
     # Plan 01-09 — optional photo URL for Lifesum-style meal cards.
     # Phase 1: parser leaves None unless the .md contains a literal `**Foto:** <url>`
     # line in the meal section (extraction is opt-in; existing fixtures parse green).

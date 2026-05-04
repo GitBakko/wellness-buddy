@@ -50,28 +50,28 @@ def test_normalize_nfc() -> None:
 
 def test_normalize_nbsp_to_space() -> None:
     # U+00A0 NBSP → ASCII space
-    text = normalize_md("a b".encode("utf-8"))
+    text = normalize_md("a b".encode())
     assert text == "a b"
 
 
 def test_normalize_smart_quotes() -> None:
     """Curly single + double quotes → straight ASCII."""
-    text = normalize_md("“hello” ‘world’".encode("utf-8"))
-    assert text == '"hello" \'world\''
+    text = normalize_md("“hello” ‘world’".encode())
+    assert text == "\"hello\" 'world'"
 
 
 def test_normalize_em_dash() -> None:
-    text = normalize_md("foo—bar".encode("utf-8"))
+    text = normalize_md("foo—bar".encode())
     assert text == "foo-bar"
 
 
 def test_normalize_en_dash() -> None:
-    text = normalize_md("foo–bar".encode("utf-8"))
+    text = normalize_md("foo–bar".encode())
     assert text == "foo-bar"
 
 
 def test_normalize_ellipsis() -> None:
-    text = normalize_md("loading…".encode("utf-8"))
+    text = normalize_md("loading…".encode())
     assert text == "loading..."
 
 

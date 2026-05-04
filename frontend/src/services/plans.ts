@@ -26,6 +26,7 @@ export interface PlanUploadResponse extends PlanListItem {
 }
 
 export interface PlanDiffResponse {
+  has_active_plan: boolean;
   added: string[];
   removed: string[];
   changed: string[];

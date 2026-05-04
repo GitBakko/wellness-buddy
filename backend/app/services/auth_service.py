@@ -62,17 +62,13 @@ async def authenticate(session: AsyncSession, email: str, password: str) -> User
 
     V13: identical envelope returned for unknown email and wrong password — no enumeration.
     """
-    user = (
-        await session.scalars(select(User).where(User.email == email.lower()))
-    ).first()
+    user = (await session.scalars(select(User).where(User.email == email.lower()))).first()
     if not user or not verify_password(password, user.hashed_password):
         raise AppException(401, _MSG_INVALID_CREDS, "invalid_credentials")
     return user
 
 
-async def issue_token_pair(
-    session: AsyncSession, user: User
-) -> tuple[str, str, datetime]:
+async def issue_token_pair(session: AsyncSession, user: User) -> tuple[str, str, datetime]:
     """Issue a fresh access+refresh pair anchored to a brand-new family_id.
 
     Returns (access, refresh, refresh_expires_at). Caller is responsible for shaping
@@ -102,9 +98,7 @@ async def issue_token_pair(
 # ──────────────────────────────────────────────────────────────────────────────
 
 
-async def rotate_refresh(
-    session: AsyncSession, refresh_jwt: str
-) -> tuple[str, str, datetime]:
+async def rotate_refresh(session: AsyncSession, refresh_jwt: str) -> tuple[str, str, datetime]:
     """Rotate a refresh token.
 
     Outcomes:
@@ -125,9 +119,7 @@ async def rotate_refresh(
     family_id = UUID(payload["family"])
     jti = UUID(payload["jti"])
 
-    row = (
-        await session.scalars(select(RefreshToken).where(RefreshToken.jti == jti))
-    ).first()
+    row = (await session.scalars(select(RefreshToken).where(RefreshToken.jti == jti))).first()
     if not row:
         raise AppException(401, _MSG_SESSION_EXPIRED, "expired")
 
@@ -144,9 +136,7 @@ async def rotate_refresh(
             return row.cached_access, row.cached_refresh, row.expires_at
         # Real reuse → revoke entire family (defense in depth)
         await session.execute(
-            update(RefreshToken)
-            .where(RefreshToken.family_id == family_id)
-            .values(revoked=True)
+            update(RefreshToken).where(RefreshToken.family_id == family_id).values(revoked=True)
         )
         await session.commit()
         raise AppException(401, _MSG_FAMILY_REVOKED, "family_revoked")
@@ -187,9 +177,7 @@ async def revoke_family(session: AsyncSession, refresh_jwt: str) -> None:
     except Exception:
         return
     await session.execute(
-        update(RefreshToken)
-        .where(RefreshToken.family_id == family_id)
-        .values(revoked=True)
+        update(RefreshToken).where(RefreshToken.family_id == family_id).values(revoked=True)
     )
     await session.commit()
 
@@ -204,9 +192,7 @@ def _generate_invite_token() -> str:
     return secrets.token_urlsafe(32)
 
 
-async def create_invite(
-    session: AsyncSession, *, created_by: UUID
-) -> InviteToken:
+async def create_invite(session: AsyncSession, *, created_by: UUID) -> InviteToken:
     """Admin-only — generate a single-use 24h invite token. Audit-logged."""
     token = _generate_invite_token()
     expires_at = datetime.now(UTC) + INVITE_EXPIRY
@@ -235,9 +221,7 @@ async def consume_invite_and_register(
     password: str,
 ) -> User:
     """Validate an invite token, create the new user, mark invite consumed."""
-    invite = (
-        await session.scalars(select(InviteToken).where(InviteToken.token == token))
-    ).first()
+    invite = (await session.scalars(select(InviteToken).where(InviteToken.token == token))).first()
     if not invite:
         raise AppException(400, _MSG_TOKEN_INVALID, "token_invalid")
     if invite.revoked or invite.used_by is not None:
@@ -246,9 +230,7 @@ async def consume_invite_and_register(
         raise AppException(400, _MSG_TOKEN_EXPIRED, "token_expired")
 
     # Email/username uniqueness (DB constraint will catch races, but pre-check for nicer error)
-    existing = (
-        await session.scalars(select(User).where(User.email == email.lower()))
-    ).first()
+    existing = (await session.scalars(select(User).where(User.email == email.lower()))).first()
     if existing:
         raise AppException(400, _MSG_EMAIL_TAKEN, "email_taken")
 

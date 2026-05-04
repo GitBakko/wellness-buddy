@@ -31,6 +31,4 @@ class ShoppingListState(Base):
     created_at: Mapped[TimestampTZ]
     updated_at: Mapped[TimestampTZ]
 
-    __table_args__ = (
-        UniqueConstraint("user_id", "week_start", name="uq_shopping_user_week"),
-    )
+    __table_args__ = (UniqueConstraint("user_id", "week_start", name="uq_shopping_user_week"),)

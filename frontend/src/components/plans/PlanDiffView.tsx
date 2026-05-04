@@ -32,6 +32,10 @@ interface PlanDiffViewProps {
 
 export function PlanDiffView({ diff }: PlanDiffViewProps): React.ReactElement {
   const total = diff.added.length + diff.removed.length + diff.changed.length;
+  // First plan upload: backend has_active_plan=false. Use neutral heading
+  // and skip the added/removed/changed bucket layout (everything is "added"
+  // by definition — labelling that as "Differenze" is misleading).
+  const isFirstPlan = !diff.has_active_plan;
 
   return (
     <Card
@@ -39,7 +43,7 @@ export function PlanDiffView({ diff }: PlanDiffViewProps): React.ReactElement {
       variant="flat"
     >
       <h2 className="text-[length:var(--text-heading)] font-semibold leading-[var(--leading-heading)] text-[var(--color-text)]">
-        {copy.plans.diffHeading}
+        {isFirstPlan ? copy.plans.firstPlanHeading : copy.plans.diffHeading}
       </h2>
 
       {total === 0 && (
@@ -48,7 +52,15 @@ export function PlanDiffView({ diff }: PlanDiffViewProps): React.ReactElement {
         </p>
       )}
 
-      {diff.added.length > 0 && (
+      {isFirstPlan && diff.added.length > 0 && (
+        <ul className="flex flex-col gap-[var(--spacing-1)] pl-[var(--spacing-5)] list-disc text-[length:var(--text-base)] text-[var(--color-text)]">
+          {diff.added.map((k) => (
+            <li key={`section-${k}`}>{labelize(k)}</li>
+          ))}
+        </ul>
+      )}
+
+      {!isFirstPlan && diff.added.length > 0 && (
         <section className="flex flex-col gap-[var(--spacing-2)]">
           <h3 className="text-[length:var(--text-base)] font-semibold text-[var(--color-success)]">
             {copy.plans.diffAddedHeading}
@@ -61,7 +73,7 @@ export function PlanDiffView({ diff }: PlanDiffViewProps): React.ReactElement {
         </section>
       )}
 
-      {diff.removed.length > 0 && (
+      {!isFirstPlan && diff.removed.length > 0 && (
         <section className="flex flex-col gap-[var(--spacing-2)]">
           <h3 className="text-[length:var(--text-base)] font-semibold text-[var(--color-destructive)]">
             {copy.plans.diffRemovedHeading}
@@ -74,7 +86,7 @@ export function PlanDiffView({ diff }: PlanDiffViewProps): React.ReactElement {
         </section>
       )}
 
-      {diff.changed.length > 0 && (
+      {!isFirstPlan && diff.changed.length > 0 && (
         <section className="flex flex-col gap-[var(--spacing-2)]">
           <h3 className="text-[length:var(--text-base)] font-semibold text-[var(--color-coral-700)]">
             {copy.plans.diffChangedHeading}

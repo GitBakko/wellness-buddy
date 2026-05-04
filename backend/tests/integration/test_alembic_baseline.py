@@ -36,7 +36,7 @@ async def test_users_created_at_is_timestamptz(test_engine: AsyncEngine) -> None
     async with test_engine.begin() as conn:
         cols = await conn.run_sync(lambda c: inspect(c).get_columns("users"))
     created_at = next(c for c in cols if c["name"] == "created_at")
-    # Postgres reports TIMESTAMPTZ either via type.timezone=True or 'TIMESTAMP WITH TIME ZONE' in repr
+    # Postgres reports TIMESTAMPTZ either via type.timezone=True or 'TIMESTAMP WITH TIME ZONE' in repr  # noqa: E501
     is_tz = (
         getattr(created_at["type"], "timezone", False)
         or "TIME ZONE" in str(created_at["type"]).upper()

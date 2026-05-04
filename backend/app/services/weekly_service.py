@@ -59,9 +59,7 @@ async def build_weekly_payload(
         meals: list[dict[str, Any]] = []
         for slot in MEAL_SLOTS:
             v = variant_map.get((d, slot))
-            meal_block = _resolve_meal(
-                plan.parsed_json, slot, v.variant_key if v else "default"
-            )
+            meal_block = _resolve_meal(plan.parsed_json, slot, v.variant_key if v else "default")
             meals.append(
                 {
                     "slot": slot,
@@ -76,9 +74,7 @@ async def build_weekly_payload(
                     "ingredients": list(meal_block.get("ingredients") or []),
                 }
             )
-        days.append(
-            {"date": day_date.isoformat(), "day_of_week": d, "meals": meals}
-        )
+        days.append({"date": day_date.isoformat(), "day_of_week": d, "meals": meals})
 
     totals = _aggregate_totals(days)
     return {
@@ -132,9 +128,7 @@ _SLOT_KEYS = {
 }
 
 
-def _resolve_meal(
-    parsed: dict[str, Any] | None, slot: str, variant_key: str
-) -> dict[str, Any]:
+def _resolve_meal(parsed: dict[str, Any] | None, slot: str, variant_key: str) -> dict[str, Any]:
     """Look up the meal block in parsed_json by slot + variant.
 
     parsed_json layout (from MD parser, Plan 04):

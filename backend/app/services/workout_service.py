@@ -21,7 +21,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions import AppException
 from app.models.workout import WorkoutLog
 
-
 _MSG_NOT_FOUND = "Allenamento non trovato."
 
 
@@ -40,9 +39,7 @@ async def upsert_workout(
     do a manual lookup; if another row exists for the same date, update it."""
     existing = (
         await session.scalars(
-            select(WorkoutLog).where(
-                WorkoutLog.user_id == user_id, WorkoutLog.date == on_date
-            )
+            select(WorkoutLog).where(WorkoutLog.user_id == user_id, WorkoutLog.date == on_date)
         )
     ).first()
     if existing:
@@ -82,11 +79,7 @@ async def list_workouts(
     end: date_t | None = None,
 ) -> list[WorkoutLog]:
     """User-scoped list, optional [start, end] inclusive range. Newest first."""
-    stmt = (
-        select(WorkoutLog)
-        .where(WorkoutLog.user_id == user_id)
-        .order_by(WorkoutLog.date.desc())
-    )
+    stmt = select(WorkoutLog).where(WorkoutLog.user_id == user_id).order_by(WorkoutLog.date.desc())
     if start is not None:
         stmt = stmt.where(WorkoutLog.date >= start)
     if end is not None:
@@ -105,9 +98,7 @@ async def update_workout(
     """Patch only provided fields. Cross-user → 404 (V13)."""
     row = (
         await session.scalars(
-            select(WorkoutLog).where(
-                WorkoutLog.id == workout_id, WorkoutLog.user_id == user_id
-            )
+            select(WorkoutLog).where(WorkoutLog.id == workout_id, WorkoutLog.user_id == user_id)
         )
     ).first()
     if not row:
@@ -130,14 +121,10 @@ async def update_workout(
     return row
 
 
-async def delete_workout(
-    session: AsyncSession, *, user_id: UUID, workout_id: UUID
-) -> None:
+async def delete_workout(session: AsyncSession, *, user_id: UUID, workout_id: UUID) -> None:
     row = (
         await session.scalars(
-            select(WorkoutLog).where(
-                WorkoutLog.id == workout_id, WorkoutLog.user_id == user_id
-            )
+            select(WorkoutLog).where(WorkoutLog.id == workout_id, WorkoutLog.user_id == user_id)
         )
     ).first()
     if not row:

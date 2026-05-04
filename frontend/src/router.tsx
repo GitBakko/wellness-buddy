@@ -83,6 +83,7 @@ export const router = createBrowserRouter([
   {
     path: '/',
     Component: AppShell,
+    loader: appShellLoader,
     children: [
       { index: true, loader: () => redirect('/today') },
       {

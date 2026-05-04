@@ -1,8 +1,8 @@
 """Today router — Plan 07 implementation (replaces 02b's 501 stub).
 
 Endpoints:
-  * GET  /api/today                                — aggregator (greeting + meals + weight + workout)
-  * POST /api/today/meal/{meal_type}/complete      — mark today's meal as completed
+  * GET  /api/today                              — aggregator (greeting + meals + weight + workout)
+  * POST /api/today/meal/{meal_type}/complete    — mark today's meal as completed
 
 All endpoints scope to the authenticated user (T-API-02 — User B never sees User A's data).
 
@@ -39,9 +39,7 @@ async def complete_meal(
     session: AsyncSession = Depends(get_session),
 ) -> MealCompleteResponse:
     """Mark today's meal_type as completed. Persists via WeeklyPlanVariant."""
-    variant = await today_service.complete_meal(
-        session, user=user, meal_type=meal_type
-    )
+    variant = await today_service.complete_meal(session, user=user, meal_type=meal_type)
     return MealCompleteResponse(
         meal_type=variant.meal_type,
         completed=variant.completed,

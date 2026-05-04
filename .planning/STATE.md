@@ -2,19 +2,19 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-last_updated: "2026-05-02T10:19:55.582Z"
+status: in_progress
+last_updated: "2026-05-04T12:30:00.000Z"
 progress:
   total_phases: 5
   completed_phases: 0
-  total_plans: 11
-  completed_plans: 8
-  percent: 73
+  total_plans: 18
+  completed_plans: 13
+  percent: 72
 ---
 
 # State: Wellness Buddy
 
-**Last updated:** 2026-05-02 (Plans 01-08 + 01-09 complete — Phase 1 closure, Lifesum Pure theme propagated)
+**Last updated:** 2026-05-04 (Phase 2 in progress — Plans 02-01..02-03 complete; new 02-04 gap-closure plan written; 02-05..08 renumbered downstream)
 
 ## Project Reference
 
@@ -29,14 +29,15 @@ progress:
 
 ## Current Position
 
-- **Phase:** 1 — Foundation
-- **Plan:** 01-09 complete — Lifesum Pure theme propagated (Plus Jakarta Sans + Phosphor icons + MacroRing + warmer cream/sage palette + blueberry/amber macro families). Phase 1 code-side closure done.
-- **Status:** **Phase 1 COMPLETE code-side.** All 10 plans merged to master (HEAD `43a8551`). Tests 134 backend + 62 frontend GREEN. Tone calibration locked = Variante A (Lifesum Pure, mockup `mockups/tone-calibration-v2/A-lifesum-pure.html`). Plan 08 Task 3 production-bound items (iPhone install + win-acme + Lighthouse PWA 100/100 + Stefano+Marta in-person sign-off) **DEFERRED to Phase 2 pause gate** per project owner decision 2026-05-02. Ready for `/gsd:transition` → Phase 2 (Differentiators: weekly variants + shopping list + family sync).
-- **Progress:** Phase 0/5 phases complete · Plans 10/10 in Phase 1
+- **Phase:** 2 — Differentiators
+- **Plan:** 02-04 written (gap-closure for weekly grid parser + per-day weekly variants). Plans 02-01..02-03 complete; previously planned 02-04..07 renumbered downstream to 02-05..08 to make room for the gap-closure insertion.
+- **Status:** **Phase 1 COMPLETE code-side; Phase 2 in progress.** Plans 02-01 (GTK3 spike + PdfExporter ABC), 02-02 (/settimana + variant selector), 02-03 (production deploy) merged. First-prod-deploy on 2026-05-04 surfaced parser format mismatch — real Stefano + Marta plans use weekly grid `| Giorno | Opzione A | Opzione B |`, not `### Opzione X` subheadings. Plan 02-04 inserted as gap-closure: dual-mode parser + dict-of-list lunches/dinners + per-day WeeklyPlanVariant composite key + frontend per-day variant selector. Plans 02-05 (shopping), 02-06 (PDF), 02-07 (family sync), 02-08 (closure) shifted down. Ready for `/gsd:execute-phase` at Plan 02-04.
+- **Progress:** Phase 1/5 done code-side · Phase 2: Plans 3/8 complete · 5 plans remaining (02-04..08)
 - **Phase progress bar:**
 
   ```text
   [##########] 100% — Phase 1: Foundation (10/10 plans, code-side closure)
+  [###.......]  37% — Phase 2: Differentiators (3/8 plans complete; 02-04 written)
   ```
 
 ## Performance Metrics
@@ -157,7 +158,20 @@ progress:
 
 ### Next Action
 
-**`/gsd:transition`** — Phase 1 code-side closed. Tone calibration locked = Variante A · Lifesum Pure (`mockups/tone-calibration-v2/A-lifesum-pure.html`). Plan 08 T3 production-bound items deferred to Phase 2 pause gate. Ready to plan Phase 2 (Differentiators: weekly meal variants + shopping list aggregation + family sync via Group entity). Roadmap §Phase 2 spelled out at `.planning/ROADMAP.md`.
+**`/gsd:execute-phase 02-differentiators`** — Phase 2 in progress. Plans 02-01..02-03 complete. New gap-closure plan 02-04 written (weekly grid parser + per-day variants). Renumbered: 02-05 (shopping), 02-06 (PDF), 02-07 (family), 02-08 (closure). Wave 4 = 02-04 ready to execute first.
+
+### Phase 2 Plan Index (post 2026-05-04 renumber)
+
+| Plan | Title | Wave | Status |
+|------|-------|------|--------|
+| 02-01 | WeasyPrint GTK3 spike + PdfExporter ABC | 1 | done |
+| 02-02 | /settimana + variant selector + LWW 409 | 2 | done |
+| 02-03 | Production deploy CHECKPOINT | 3 | done |
+| 02-04 | **NEW** Gap-closure: weekly grid parser + per-day variants | 4 | plan-written |
+| 02-05 | Shopping list (renumbered from 02-04) | 5 | not started |
+| 02-06 | Shopping PDF (renumbered from 02-05) | 6 | not started |
+| 02-07 | Family sync (renumbered from 02-06) | 7 | not started |
+| 02-08 | Phase 2 closure CHECKPOINT (renumbered from 02-07) | 8 | not started |
 
 ---
 *State initialized: 2026-05-01 — Phase 1 (Foundation) is the current focus.*

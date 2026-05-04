@@ -1,4 +1,4 @@
-"""SQLAlchemy metadata assertions: all 10 tables, MOD-09 TIMESTAMPTZ, MOD-10 indexes, IANA tz default."""
+"""SQLAlchemy metadata assertions: all 10 tables, MOD-09 TIMESTAMPTZ, MOD-10 indexes, IANA tz default."""  # noqa: E501
 
 from __future__ import annotations
 
@@ -83,7 +83,11 @@ def test_visibility_enum_values() -> None:
 def test_nutrition_plan_partial_unique_active() -> None:
     # V11: at most one active plan per user — partial unique index `WHERE is_active = true`
     idx = next(
-        (i for i in NutritionPlan.__table__.indexes if i.name == "ix_nutrition_plans_active_per_user"),
+        (
+            i
+            for i in NutritionPlan.__table__.indexes
+            if i.name == "ix_nutrition_plans_active_per_user"
+        ),  # noqa: E501
         None,
     )
     assert idx is not None

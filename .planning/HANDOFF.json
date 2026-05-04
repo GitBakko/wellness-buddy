@@ -1,71 +1,56 @@
 {
   "version": "1.0",
-  "timestamp": "2026-05-04T07:54:12.664Z",
+  "timestamp": "2026-05-04T10:42:44.056Z",
   "source": "auto-postool",
   "partial": false,
-  "phase": "1",
-  "phase_name": "Foundation",
-  "phase_dir": ".planning/phases/01-foundation",
-  "plan": "01",
+  "phase": "2",
+  "phase_name": "Differentiators",
+  "phase_dir": ".planning/phases/02-differentiators",
+  "plan": "02",
   "task": null,
-  "total_tasks": 11,
+  "total_tasks": 8,
   "status": "auto-checkpoint",
   "completed_tasks": [
     {
       "id": "01",
-      "name": "Task 1: Monorepo root + workspace + Docker Compose dev postgres + plans/ scaffold",
+      "name": "Task 1: Install WeasyPrint stack on Windows Server staging + run --info verification",
       "status": "done"
     },
     {
-      "id": "02a",
-      "name": "Task 1: Core scaffolding (config + database + security + deps stubs + exceptions + logging + middleware) + main.py with lifespan stub + health/version/errors endpoints + conftest",
-      "status": "done"
-    },
-    {
-      "id": "02b",
-      "name": "Task 1: AI ABC + NullProvider + factory + schemas + lifespan extension in main.py + stub routers + AI endpoints",
-      "status": "done"
-    },
-    {
-      "id": "03",
-      "name": "Task 1: Backend auth — security.py rotation logic + auth_service + /api/auth/* real endpoints + invite flow + integration tests",
-      "status": "done"
-    },
-    {
-      "id": "05a",
-      "name": "Task 1: Frontend deps install + Vite + TypeScript + Tailwind 4 @theme + shadcn/ui CLI init + 17 primitives + ESLint 9 flat + Prettier",
-      "status": "done"
-    },
-    {
-      "id": "05b",
-      "name": "Task 1: Italian copy.it.ts + lib/format.ts + hooks + Zustand stores (theme/ui/sync)",
-      "status": "done"
-    },
-    {
-      "id": "06",
-      "name": "Task 1: vite-plugin-pwa Workbox config + manifest + version polling + update toast hook + Dexie schema v1 + mutation queue + persistQueryClient",
-      "status": "done"
-    },
-    {
-      "id": "07",
-      "name": "Task 1: Backend /api/today aggregator + /api/weight + /api/workout CRUD + cross-user authz tests",
+      "id": "02",
+      "name": "Task 1: Regenerate visual baselines (D-31) — first action before any new component dev",
       "status": "done"
     }
   ],
   "remaining_tasks": [
     {
+      "id": "03",
+      "name": "Task 1: Create 02-03-DEPLOY-CHECKLIST.md artifact + extend copy.it.ts pwa.* with install follow-up keys",
+      "status": "not_started"
+    },
+    {
       "id": "04",
-      "name": "Task 1: MD parser pipeline (normalizer + plan_parser + plan_sections + Pydantic v2 strict schema) + evil-corpus fixtures + unit tests",
+      "name": "Task 1: Backend parser + schema + migration (TDD RED→GREEN)",
+      "status": "not_started"
+    },
+    {
+      "id": "05",
+      "name": "Task 1: Backend ingredient_parser + category_mapper + plan parser **Categoria:** extension + comprehensive evil-corpus tests",
+      "status": "not_started"
+    },
+    {
+      "id": "06",
+      "name": "Task 1: Acquire woff2 fonts + create _build_inline_fonts.py helper + emit base64 strings into template",
+      "status": "not_started"
+    },
+    {
+      "id": "07",
+      "name": "Task 1: Alembic 0001_activate_groups data migration + auth_service Pitfall #16 fix + group_service.ensure_personal_group + idempotence test",
       "status": "not_started"
     },
     {
       "id": "08",
-      "name": "Task 1: Three /today tone calibration HTML mockups (A 75/25 elegant, B 50/50 balanced, C 25/75 playful) consuming production @theme tokens + index page + sign-off checklist",
-      "status": "not_started"
-    },
-    {
-      "id": "09",
-      "name": "Task 1: Tokens + fonts + dependencies — theme.css migration to Lifesum Pure palette",
+      "name": "Task 1: Run Phase 2 integration sweep (backend + frontend + axe + visual + Lighthouse) + draft VERIFICATION.md goal-backward",
       "status": "not_started"
     }
   ],
@@ -74,10 +59,118 @@
   "decisions": [],
   "uncommitted_files": [
     {
+      "status": "M",
+      "path": ".claude/worktrees/agent-a32df8fe35cb33e41"
+    },
+    {
+      "status": "M",
+      "path": ".claude/worktrees/agent-a42d61b0768ffbad5"
+    },
+    {
+      "status": "M",
+      "path": ".claude/worktrees/agent-ae9002924481d0930"
+    },
+    {
+      "status": "M",
+      "path": ".claude/worktrees/agent-aecfa2e25edd7e75d"
+    },
+    {
+      "status": "M",
+      "path": ".claude/worktrees/agent-afb85e72e91a166f4"
+    },
+    {
+      "status": "M",
+      "path": ".claude/worktrees/agent-afde3495816ecdf18"
+    },
+    {
+      "status": "M",
+      "path": ".planning/HANDOFF.json"
+    },
+    {
+      "status": "M",
+      "path": ".planning/STATE.md"
+    },
+    {
+      "status": "M",
+      "path": ".planning/phases/02-differentiators/02-04-PLAN.md"
+    },
+    {
+      "status": "M",
+      "path": ".planning/phases/02-differentiators/02-05-PLAN.md"
+    },
+    {
+      "status": "M",
+      "path": ".planning/phases/02-differentiators/02-06-PLAN.md"
+    },
+    {
+      "status": "M",
+      "path": ".planning/phases/02-differentiators/02-07-PLAN.md"
+    },
+    {
+      "status": "A",
+      "path": ".planning/phases/02-differentiators/02-08-PLAN.md"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/parsers/plan_parser.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/parsers/plan_sections.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/schemas/plan.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/schemas/plan_parsed.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/services/plan_service.py"
+    },
+    {
+      "status": "M",
+      "path": "backend/app/services/today_service.py"
+    },
+    {
+      "status": "M",
+      "path": "frontend/src/components/plans/PlanDiffView.tsx"
+    },
+    {
+      "status": "M",
+      "path": "frontend/src/i18n/copy.it.ts"
+    },
+    {
+      "status": "M",
+      "path": "frontend/src/lib/persistStorage.ts"
+    },
+    {
+      "status": "M",
+      "path": "frontend/src/pages/Plans.tsx"
+    },
+    {
+      "status": "M",
+      "path": "frontend/src/router.tsx"
+    },
+    {
+      "status": "M",
+      "path": "frontend/src/services/plans.ts"
+    },
+    {
+      "status": "M",
+      "path": "frontend/src/services/version.ts"
+    },
+    {
+      "status": "M",
+      "path": "frontend/vite.config.ts"
+    },
+    {
       "status": "??",
-      "path": ".claude/"
+      "path": "dist-package/"
     }
   ],
-  "next_action": "**Phase 1 COMPLETE code-side.** All 10 plans merged to master (HEAD `43a8551`). Tests 134 backend + 62 frontend GREEN. Tone calibration locked = Variante A (Lifesum Pure, mockup `mockups/tone-calibration-v2/A-lifesum-pure.html`). Plan 08 Task 3 production-bound items (iPhone install + win-acme + Lighthouse PWA 100/100 + Stefano+Marta in-person sign-off) **DEFERRED to Phase 2 pause gate** per project owner decision 2026-05-02. Ready for `/gsd:transition` → Phase 2 (Differentiators: weekly variants + shopping list + family sync).",
-  "context_notes": "Status: **Phase 1 COMPLETE code-side.** All 10 plans merged to master (HEAD `43a8551`). Tests 134 backend + 62 frontend GREEN. Tone calibration locked = Variante A (Lifesum Pure, mockup `mockups/tone-calibration-v2/A-lifesum-pure.html`). Plan 08 Task 3 production-bound items (iPhone install + win-acme + Lighthouse PWA 100/100 + Stefano+Marta in-person sign-off) **DEFERRED to Phase 2 pause gate** per project owner decision 2026-05-02. Ready for `/gsd:transition` → Phase 2 (Differentiators: weekly variants + shopping list + family sync).\n\nRecent commits:\n7bca119 docs(02-03): production deploy package script + remote DB checklist\n573cf69 merge(02-03-01): deploy checklist artifact + pwa install follow-up copy keys (Wave 3 Task 1)\n49b1bca docs(02-03-01): deploy checklist artifact + pwa install follow-up copy keys (D-26)\nc38e26d merge(02-02): /settimana + variant LWW + WeeklyMacroRing + visual baselines (Wave 2)\n180c4ba docs(02-02): complete /settimana route + variant LWW plan summary"
+  "next_action": "**Phase 1 COMPLETE code-side; Phase 2 in progress.** Plans 02-01 (GTK3 spike + PdfExporter ABC), 02-02 (/settimana + variant selector), 02-03 (production deploy) merged. First-prod-deploy on 2026-05-04 surfaced parser format mismatch — real Stefano + Marta plans use weekly grid `| Giorno | Opzione A | Opzione B |`, not `### Opzione X` subheadings. Plan 02-04 inserted as gap-closure: dual-mode parser + dict-of-list lunches/dinners + per-day WeeklyPlanVariant composite key + frontend per-day variant selector. Plans 02-05 (shopping), 02-06 (PDF), 02-07 (family sync), 02-08 (closure) shifted down. Ready for `/gsd:execute-phase` at Plan 02-04.",
+  "context_notes": "Status: **Phase 1 COMPLETE code-side; Phase 2 in progress.** Plans 02-01 (GTK3 spike + PdfExporter ABC), 02-02 (/settimana + variant selector), 02-03 (production deploy) merged. First-prod-deploy on 2026-05-04 surfaced parser format mismatch — real Stefano + Marta plans use weekly grid `| Giorno | Opzione A | Opzione B |`, not `### Opzione X` subheadings. Plan 02-04 inserted as gap-closure: dual-mode parser + dict-of-list lunches/dinners + per-day WeeklyPlanVariant composite key + frontend per-day variant selector. Plans 02-05 (shopping), 02-06 (PDF), 02-07 (family sync), 02-08 (closure) shifted down. Ready for `/gsd:execute-phase` at Plan 02-04.\n\nRecent commits:\ndda5b9e fix(02-03): gap-closure — auth bootstrap + version.json emit + nav /settimana\nd51ef91 docs(02-03): §8.3 skip password change (Phase 4 feature, not Phase 1-2)\n41f5876 fix(02-03): correct §8.2 admin bootstrap + §8.5 Marta invite\nf40b835 fix(02-03): smoke-test SSL check uses TcpClient+SslStream (PS 7+ compat)\n2fb31f6 fix(02-03): force HTTPS redirect rule in web.config + checklist setup steps"
 }

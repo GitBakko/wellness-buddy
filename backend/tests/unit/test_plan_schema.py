@@ -35,9 +35,7 @@ def test_strict_rejects_extra_field_root() -> None:
 
 def test_strict_rejects_extra_field_nested() -> None:
     with pytest.raises(ValidationError):
-        PlanParsedSchema.model_validate(
-            {"personal_data": {"name": "X", "junk_field": 1}}
-        )
+        PlanParsedSchema.model_validate({"personal_data": {"name": "X", "junk_field": 1}})
 
 
 def test_macros_strict() -> None:

@@ -172,7 +172,11 @@ export default function Plans(): React.ReactElement {
       >
         <DialogContent>
           <DialogTitle>{copy.plans.activateCta}</DialogTitle>
-          <DialogDescription>{copy.plans.activateConfirm}</DialogDescription>
+          <DialogDescription>
+            {diff && !diff.has_active_plan
+              ? copy.plans.activateConfirmFirst
+              : copy.plans.activateConfirm}
+          </DialogDescription>
           <DialogFooter className="mt-[var(--spacing-4)] flex flex-row gap-[var(--spacing-3)]">
             <Button
               type="button"

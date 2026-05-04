@@ -30,8 +30,14 @@ class PlanUploadResponse(PlanListItem):
 
 
 class PlanDiffResponse(StrictModel):
-    """Section-level diff (PLAN-09)."""
+    """Section-level diff (PLAN-09).
 
+    `has_active_plan` is False when the user has no currently-active plan
+    (i.e., this is their first upload). The frontend uses this to switch
+    UX from "diff vs active" to "first plan summary".
+    """
+
+    has_active_plan: bool = False
     added: list[str] = Field(default_factory=list)
     removed: list[str] = Field(default_factory=list)
     changed: list[str] = Field(default_factory=list)

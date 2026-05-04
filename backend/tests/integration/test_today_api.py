@@ -13,7 +13,7 @@ Source: TODAY-01..TODAY-08, T-API-02 (information disclosure), T-API-03 (authz),
 
 from __future__ import annotations
 
-from datetime import UTC, date, datetime, timedelta
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 from uuid import uuid4
 from zoneinfo import ZoneInfo
@@ -153,9 +153,7 @@ async def test_today_returns_active_plan_meals_for_today(
     async_client: AsyncClient, test_user: User, active_plan: NutritionPlan
 ) -> None:
     access = await _login(async_client, "today-user@test.example.com", "Password123!")
-    r = await async_client.get(
-        "/api/today", headers={"Authorization": f"Bearer {access}"}
-    )
+    r = await async_client.get("/api/today", headers={"Authorization": f"Bearer {access}"})
     assert r.status_code == 200, r.text
     body = r.json()
     assert "date" in body
@@ -184,9 +182,7 @@ async def test_today_no_active_plan_returns_empty_meals(
     async_client: AsyncClient, test_user: User
 ) -> None:
     access = await _login(async_client, "today-user@test.example.com", "Password123!")
-    r = await async_client.get(
-        "/api/today", headers={"Authorization": f"Bearer {access}"}
-    )
+    r = await async_client.get("/api/today", headers={"Authorization": f"Bearer {access}"})
     assert r.status_code == 200
     body = r.json()
     assert body["meals"] == []
@@ -210,9 +206,7 @@ async def test_today_includes_meal_completions(
     assert r.json()["completed"] is True
 
     # GET /api/today reflects the completion
-    r = await async_client.get(
-        "/api/today", headers={"Authorization": f"Bearer {access}"}
-    )
+    r = await async_client.get("/api/today", headers={"Authorization": f"Bearer {access}"})
     assert r.status_code == 200
     meals_by_type = {m["meal_type"]: m for m in r.json()["meals"]}
     assert meals_by_type["lunch"]["completed"] is True
@@ -263,9 +257,7 @@ async def test_complete_meal_invalid_type_400(
     assert r.json()["code"] == "invalid_meal_type"
 
 
-async def test_complete_meal_no_active_plan_400(
-    async_client: AsyncClient, test_user: User
-) -> None:
+async def test_complete_meal_no_active_plan_400(async_client: AsyncClient, test_user: User) -> None:
     access = await _login(async_client, "today-user@test.example.com", "Password123!")
     r = await async_client.post(
         "/api/today/meal/breakfast/complete",
@@ -293,12 +285,8 @@ async def test_today_other_user_isolation(
     await db_session.commit()
 
     # User B GET /today — must NOT show User A's weight
-    b_access = await _login(
-        async_client, "today-other@test.example.com", "Password123!"
-    )
-    r = await async_client.get(
-        "/api/today", headers={"Authorization": f"Bearer {b_access}"}
-    )
+    b_access = await _login(async_client, "today-other@test.example.com", "Password123!")
+    r = await async_client.get("/api/today", headers={"Authorization": f"Bearer {b_access}"})
     assert r.status_code == 200
     body = r.json()
     # User B has no plan + no weight
@@ -335,9 +323,7 @@ async def test_today_includes_today_weight_and_workout(
     await db_session.commit()
 
     access = await _login(async_client, "today-user@test.example.com", "Password123!")
-    r = await async_client.get(
-        "/api/today", headers={"Authorization": f"Bearer {access}"}
-    )
+    r = await async_client.get("/api/today", headers={"Authorization": f"Bearer {access}"})
     assert r.status_code == 200
     body = r.json()
     assert body["weight_today"] is not None
@@ -353,9 +339,7 @@ async def test_today_greeting_period_is_one_of_known_buckets(
 ) -> None:
     """UI-SPEC §7.2 — server computes greeting_period from user.timezone IANA."""
     access = await _login(async_client, "today-user@test.example.com", "Password123!")
-    r = await async_client.get(
-        "/api/today", headers={"Authorization": f"Bearer {access}"}
-    )
+    r = await async_client.get("/api/today", headers={"Authorization": f"Bearer {access}"})
     assert r.status_code == 200
     period = r.json()["greeting_period"]
     assert period in {"morning", "afternoon", "evening", "night"}

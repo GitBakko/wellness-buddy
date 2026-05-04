@@ -27,6 +27,13 @@ const CURRENT_BUILD: string =
 
 const POLL_INTERVAL_MS = 5 * 60 * 1000;
 
+// Plan 02-03 (gap closure): when CURRENT_BUILD === 'dev', the frontend was
+// built without a real git SHA injection (no env var, no .git access — e.g.
+// inside a sandboxed CI step or first-run dev environment). In that case
+// every `/version.json` response will mismatch and produce a permanent
+// "Nuova versione disponibile" toast loop. Skip polling entirely.
+const SKIP_VERSION_POLLING = CURRENT_BUILD === 'dev' || import.meta.env.DEV;
+
 interface VersionPayload {
   version?: string;
   build_hash: string;
@@ -51,6 +58,7 @@ export function useVersionPolling(): void {
   });
 
   useEffect(() => {
+    if (SKIP_VERSION_POLLING) return;
     let cancelled = false;
     let toastShown = false;
 

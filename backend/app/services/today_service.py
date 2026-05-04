@@ -75,26 +75,31 @@ def _coerce_photo_url(raw: object) -> str | None:
 
 def _meals_from_parsed(parsed: dict) -> list[MealEntry]:
     """Emit Phase 1 meal list from parsed_json. Variant selection (Phase 2) defaults
-    to first option per slot. Plan 01-09: passes optional photo_url through."""
-    meals: list[MealEntry] = []
+    to first option per slot. Plan 01-09: passes optional photo_url through.
+
+    Display order (Plan 02-03 gap closure): breakfast → lunch → snack → dinner.
+    Spuntino sits between lunch and dinner because Stefano/Marta consume it
+    mid-afternoon (15:30-16:00), not after dinner.
+    """
+    breakfast_meal: MealEntry | None = None
+    lunch_meal: MealEntry | None = None
+    dinner_meal: MealEntry | None = None
+    snack_meals: list[MealEntry] = []
 
     breakfast = parsed.get("breakfast")
     if isinstance(breakfast, dict) and breakfast:
-        meals.append(
-            MealEntry(
-                meal_type="breakfast",
-                variant_key=str(breakfast.get("key") or "default"),
-                title=str(breakfast.get("title") or "Colazione"),
-                macros=_coerce_macros(breakfast.get("macros")),
-                photo_url=_coerce_photo_url(breakfast.get("photo_url")),
-            )
+        breakfast_meal = MealEntry(
+            meal_type="breakfast",
+            variant_key=str(breakfast.get("key") or "default"),
+            title=str(breakfast.get("title") or "Colazione"),
+            macros=_coerce_macros(breakfast.get("macros")),
+            photo_url=_coerce_photo_url(breakfast.get("photo_url")),
         )
 
     for slot, parsed_key in (("lunch", "lunches"), ("dinner", "dinners")):
         slot_dict = parsed.get(parsed_key)
         if not isinstance(slot_dict, dict) or not slot_dict:
             continue
-        # Default variant: try 'default', then first key.
         options = slot_dict.get("default")
         if not options:
             options = next(iter(slot_dict.values()), [])
@@ -103,22 +108,24 @@ def _meals_from_parsed(parsed: dict) -> list[MealEntry]:
         opt = options[0] if isinstance(options, list) else None
         if not isinstance(opt, dict):
             continue
-        meals.append(
-            MealEntry(
-                meal_type=slot,
-                variant_key=str(opt.get("key") or "default"),
-                title=str(opt.get("title") or slot.capitalize()),
-                macros=_coerce_macros(opt.get("macros")),
-                photo_url=_coerce_photo_url(opt.get("photo_url")),
-            )
+        entry = MealEntry(
+            meal_type=slot,
+            variant_key=str(opt.get("key") or "default"),
+            title=str(opt.get("title") or slot.capitalize()),
+            macros=_coerce_macros(opt.get("macros")),
+            photo_url=_coerce_photo_url(opt.get("photo_url")),
         )
+        if slot == "lunch":
+            lunch_meal = entry
+        else:
+            dinner_meal = entry
 
     snacks = parsed.get("snacks") or []
     if isinstance(snacks, list):
         for sn in snacks:
             if not isinstance(sn, dict):
                 continue
-            meals.append(
+            snack_meals.append(
                 MealEntry(
                     meal_type="snack",
                     variant_key=str(sn.get("key") or "default"),
@@ -128,7 +135,15 @@ def _meals_from_parsed(parsed: dict) -> list[MealEntry]:
                 )
             )
 
-    return meals
+    ordered: list[MealEntry] = []
+    if breakfast_meal:
+        ordered.append(breakfast_meal)
+    if lunch_meal:
+        ordered.append(lunch_meal)
+    ordered.extend(snack_meals)  # snack sits between lunch and dinner
+    if dinner_meal:
+        ordered.append(dinner_meal)
+    return ordered
 
 
 async def _user_today(user: User) -> tuple[date_t, int, datetime]:
@@ -138,9 +153,7 @@ async def _user_today(user: User) -> tuple[date_t, int, datetime]:
     return now.date(), now.weekday(), now
 
 
-async def build_today_payload(
-    session: AsyncSession, user: User
-) -> TodayResponse:
+async def build_today_payload(session: AsyncSession, user: User) -> TodayResponse:
     """Aggregate today's view scoped to `user.id` only (T-API-02)."""
     today, day_of_week, now = await _user_today(user)
     week_start = today - timedelta(days=day_of_week)
@@ -179,23 +192,17 @@ async def build_today_payload(
     # Today's weight (user-scoped)
     weight_row = (
         await session.scalars(
-            select(WeightLog).where(
-                WeightLog.user_id == user.id, WeightLog.date == today
-            )
+            select(WeightLog).where(WeightLog.user_id == user.id, WeightLog.date == today)
         )
     ).first()
     weight_today = (
-        TodayWeight(id=str(weight_row.id), weight_kg=weight_row.weight_kg)
-        if weight_row
-        else None
+        TodayWeight(id=str(weight_row.id), weight_kg=weight_row.weight_kg) if weight_row else None
     )
 
     # Today's workout (user-scoped)
     workout_row = (
         await session.scalars(
-            select(WorkoutLog).where(
-                WorkoutLog.user_id == user.id, WorkoutLog.date == today
-            )
+            select(WorkoutLog).where(WorkoutLog.user_id == user.id, WorkoutLog.date == today)
         )
     ).first()
     workout_today = (
@@ -221,9 +228,7 @@ async def build_today_payload(
     )
 
 
-async def complete_meal(
-    session: AsyncSession, *, user: User, meal_type: str
-) -> WeeklyPlanVariant:
+async def complete_meal(session: AsyncSession, *, user: User, meal_type: str) -> WeeklyPlanVariant:
     """Mark `meal_type` completed for today's variant row (creates if absent).
 
     Visibility default: `group_shared` for lunch/dinner, `private` otherwise (CONV-14).
@@ -265,9 +270,7 @@ async def complete_meal(
             meal_type=meal_type,
             variant_key="default",
             visibility=(
-                Visibility.GROUP_SHARED
-                if meal_type in ("lunch", "dinner")
-                else Visibility.PRIVATE
+                Visibility.GROUP_SHARED if meal_type in ("lunch", "dinner") else Visibility.PRIVATE
             ),
             completed=True,
         )

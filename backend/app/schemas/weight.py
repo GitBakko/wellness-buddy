@@ -41,9 +41,7 @@ class WeightLogPatch(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    weight_kg: Decimal | None = Field(
-        None, gt=0, lt=Decimal("999.99")
-    )
+    weight_kg: Decimal | None = Field(None, gt=0, lt=Decimal("999.99"))
     # Allow `date` echo from the frontend so PATCH stays symmetrical with POST shape;
     # backend ignores it.
     date: date_t | None = None

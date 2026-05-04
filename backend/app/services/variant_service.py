@@ -25,11 +25,7 @@ _MSG_CONFLICT = "Aggiornato da {nome}. Ricarica per vedere l'ultima versione."
 
 def default_visibility_for(meal_type: str) -> Visibility:
     """FAM-02: cene + pranzi default group_shared; colazione + spuntini default private."""
-    return (
-        Visibility.GROUP_SHARED
-        if meal_type in ("lunch", "dinner")
-        else Visibility.PRIVATE
-    )
+    return Visibility.GROUP_SHARED if meal_type in ("lunch", "dinner") else Visibility.PRIVATE
 
 
 async def upsert_variant(
@@ -63,9 +59,7 @@ async def upsert_variant(
     # LWW conflict detection — only when row exists AND client sent a precondition.
     if row is not None and if_unmodified_since is not None:
         if row.updated_at > if_unmodified_since:
-            partner = await _conflict_partner_name(
-                session, row=row, current_user=user
-            )
+            partner = await _conflict_partner_name(session, row=row, current_user=user)
             raise AppException(
                 409,
                 _MSG_CONFLICT.format(nome=partner or "un familiare"),
@@ -108,7 +102,5 @@ async def _conflict_partner_name(
     """
     if row.user_id == current_user.id:
         return None
-    other = (
-        await session.scalars(select(User).where(User.id == row.user_id))
-    ).first()
+    other = (await session.scalars(select(User).where(User.id == row.user_id))).first()
     return other.username if other else None

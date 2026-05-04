@@ -118,11 +118,20 @@ def parse_and_validate(raw_bytes: bytes) -> tuple[PlanParsedSchema, ParseReport]
         if target is None:
             report.unrecognized_headings.append(heading)
             continue
-        # Skip duplicate sections (Phase 1: first occurrence wins)
+        # Snacks merge: real plans have multiple `## SPUNTINO ...` sections
+        # (POMERIGGIO + SERALE), so accumulate snack options across occurrences.
+        if target == "snacks" and target in raw_dict:
+            parsed_value, sub_warnings = parse_section(target, body, heading)
+            existing = raw_dict[target]
+            if isinstance(existing, list) and isinstance(parsed_value, list):
+                existing.extend(parsed_value)
+            report.warnings.extend(sub_warnings)
+            continue
+        # Skip duplicate non-snack sections (first occurrence wins)
         if target in raw_dict:
             report.warnings.append(f"duplicate_section:{target}")
             continue
-        parsed_value, sub_warnings = parse_section(target, body)
+        parsed_value, sub_warnings = parse_section(target, body, heading)
         raw_dict[target] = parsed_value
         report.warnings.extend(sub_warnings)
     schema = PlanParsedSchema.model_validate(raw_dict)

@@ -60,9 +60,7 @@ async def list_workouts(
     start: date_t | None = Query(default=None),
     end: date_t | None = Query(default=None),
 ) -> list[WorkoutLogOut]:
-    rows = await workout_service.list_workouts(
-        session, user_id=user.id, start=start, end=end
-    )
+    rows = await workout_service.list_workouts(session, user_id=user.id, start=start, end=end)
     return [
         WorkoutLogOut(
             id=str(r.id),
@@ -108,6 +106,4 @@ async def delete_workout(
     user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> None:
-    await workout_service.delete_workout(
-        session, user_id=user.id, workout_id=workout_id
-    )
+    await workout_service.delete_workout(session, user_id=user.id, workout_id=workout_id)

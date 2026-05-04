@@ -35,9 +35,9 @@ class PdfExporter(ABC):
     async def render_shopping_list(
         self,
         *,
-        week_start: str,           # YYYY-MM-DD
-        week_start_long_it: str,   # "5 maggio 2026"
-        domain: str,               # "wellness-buddy.epartner.it" — footer
+        week_start: str,  # YYYY-MM-DD
+        week_start_long_it: str,  # "5 maggio 2026"
+        domain: str,  # "wellness-buddy.epartner.it" — footer
         categories: list[dict[str, Any]],  # [{name, items: [{name, quantity_it}]}]
     ) -> bytes:
         """Return PDF bytes. Caller streams to client via Response(media_type='application/pdf')."""

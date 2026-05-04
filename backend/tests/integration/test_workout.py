@@ -75,9 +75,7 @@ async def _login(client: AsyncClient, email: str, password: str) -> str:
 async def test_post_workout_full_payload_persists(
     async_client: AsyncClient, db_session: AsyncSession, test_user: User
 ) -> None:
-    access = await _login(
-        async_client, "workout-user@test.example.com", "Password123!"
-    )
+    access = await _login(async_client, "workout-user@test.example.com", "Password123!")
     today = date.today().isoformat()
     r = await async_client.post(
         "/api/workout",
@@ -102,9 +100,7 @@ async def test_post_workout_trained_false_no_other_fields_required(
     async_client: AsyncClient, db_session: AsyncSession, test_user: User
 ) -> None:
     """User toggles 'no — non ho allenato': minimal payload accepted."""
-    access = await _login(
-        async_client, "workout-user@test.example.com", "Password123!"
-    )
+    access = await _login(async_client, "workout-user@test.example.com", "Password123!")
     r = await async_client.post(
         "/api/workout",
         json={"date": date.today().isoformat(), "trained": False},
@@ -157,9 +153,7 @@ async def test_workout_filter_by_date_range(
         ]
     )
     await db_session.commit()
-    access = await _login(
-        async_client, "workout-user@test.example.com", "Password123!"
-    )
+    access = await _login(async_client, "workout-user@test.example.com", "Password123!")
     start = (today - timedelta(days=5)).isoformat()
     end = today.isoformat()
     r = await async_client.get(
@@ -195,12 +189,8 @@ async def test_workout_list_excludes_other_users(
         ]
     )
     await db_session.commit()
-    b_access = await _login(
-        async_client, "workout-other@test.example.com", "Password123!"
-    )
-    r = await async_client.get(
-        "/api/workout", headers={"Authorization": f"Bearer {b_access}"}
-    )
+    b_access = await _login(async_client, "workout-other@test.example.com", "Password123!")
+    r = await async_client.get("/api/workout", headers={"Authorization": f"Bearer {b_access}"})
     assert r.status_code == 200
     body = r.json()
     assert len(body) == 1
@@ -226,9 +216,7 @@ async def test_patch_workout_partial_update(
     await db_session.commit()
     await db_session.refresh(w)
 
-    access = await _login(
-        async_client, "workout-user@test.example.com", "Password123!"
-    )
+    access = await _login(async_client, "workout-user@test.example.com", "Password123!")
     r = await async_client.patch(
         f"/api/workout/{w.id}",
         json={"duration_min": 60, "notes": "ho aggiunto 30 minuti"},
@@ -257,9 +245,7 @@ async def test_workout_patch_other_user_returns_404(
     await db_session.commit()
     await db_session.refresh(w)
 
-    b_access = await _login(
-        async_client, "workout-other@test.example.com", "Password123!"
-    )
+    b_access = await _login(async_client, "workout-other@test.example.com", "Password123!")
     r = await async_client.patch(
         f"/api/workout/{w.id}",
         json={"duration_min": 999},
@@ -277,28 +263,20 @@ async def test_workout_patch_other_user_returns_404(
 async def test_delete_workout_removes_row(
     async_client: AsyncClient, db_session: AsyncSession, test_user: User
 ) -> None:
-    w = WorkoutLog(
-        user_id=test_user.id, date=date.today(), trained=True, duration_min=30
-    )
+    w = WorkoutLog(user_id=test_user.id, date=date.today(), trained=True, duration_min=30)
     db_session.add(w)
     await db_session.commit()
     await db_session.refresh(w)
     workout_id = w.id
 
-    access = await _login(
-        async_client, "workout-user@test.example.com", "Password123!"
-    )
+    access = await _login(async_client, "workout-user@test.example.com", "Password123!")
     r = await async_client.delete(
         f"/api/workout/{workout_id}",
         headers={"Authorization": f"Bearer {access}"},
     )
     assert r.status_code == 204
 
-    rows = (
-        await db_session.scalars(
-            select(WorkoutLog).where(WorkoutLog.id == workout_id)
-        )
-    ).all()
+    rows = (await db_session.scalars(select(WorkoutLog).where(WorkoutLog.id == workout_id))).all()
     assert len(rows) == 0
 
 
@@ -308,16 +286,12 @@ async def test_workout_delete_other_user_returns_404(
     test_user: User,
     other_user: User,
 ) -> None:
-    w = WorkoutLog(
-        user_id=test_user.id, date=date.today(), trained=True
-    )
+    w = WorkoutLog(user_id=test_user.id, date=date.today(), trained=True)
     db_session.add(w)
     await db_session.commit()
     await db_session.refresh(w)
 
-    b_access = await _login(
-        async_client, "workout-other@test.example.com", "Password123!"
-    )
+    b_access = await _login(async_client, "workout-other@test.example.com", "Password123!")
     r = await async_client.delete(
         f"/api/workout/{w.id}",
         headers={"Authorization": f"Bearer {b_access}"},

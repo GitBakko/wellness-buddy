@@ -53,8 +53,8 @@ def test_parser_extracts_canonical_sections() -> None:
 
 def test_parser_case_insensitive() -> None:
     """Lowercase + uppercase headings both match canonical stems."""
-    src_lower = "## dati personali\n- Nome: Mario\n- Età: 30\n".encode("utf-8")
-    src_upper = "## DATI PERSONALI\n- Nome: Mario\n- Età: 30\n".encode("utf-8")
+    src_lower = "## dati personali\n- Nome: Mario\n- Età: 30\n".encode()
+    src_upper = "## DATI PERSONALI\n- Nome: Mario\n- Età: 30\n".encode()
     s_lower, _ = parse_and_validate(src_lower)
     s_upper, _ = parse_and_validate(src_upper)
     assert s_lower.personal_data is not None
@@ -63,7 +63,7 @@ def test_parser_case_insensitive() -> None:
 
 
 def test_parser_emoji_prefix_stripped() -> None:
-    src = "## \U0001F373 COLAZIONE\nYogurt\n".encode("utf-8")
+    src = "## \U0001f373 COLAZIONE\nYogurt\n".encode("utf-8")
     schema, report = parse_and_validate(src)
     assert schema.breakfast is not None
     assert report.unrecognized_headings == []
@@ -78,7 +78,7 @@ def test_parser_unrecognized_section_warning() -> None:
 
 
 def test_heading_stem_strips_emoji_and_lowercases() -> None:
-    assert _heading_stem("\U0001F373 COLAZIONE") == "colazione"
+    assert _heading_stem("\U0001f373 COLAZIONE") == "colazione"
     assert _heading_stem("DATI PERSONALI") == "dati personali"
     assert _heading_stem("  PRANZI  ") == "pranzi"
 
@@ -116,7 +116,7 @@ def test_evil_corpus_parses_without_crash(path: Path) -> None:
     # Core invariants on each evil fixture (10 sections crafted in fixtures):
     assert schema.personal_data is not None, f"{path.name}: personal_data not extracted"
     assert schema.macro_target.kcal > 0, f"{path.name}: macro kcal not extracted"
-    # All canonical sections matched (no unrecognized headings — every fixture follows the contract).
+    # All canonical sections matched (no unrecognized headings — every fixture follows the contract).  # noqa: E501
     assert report.unrecognized_headings == [], (
         f"{path.name}: unexpected unrecognized headings: {report.unrecognized_headings}"
     )

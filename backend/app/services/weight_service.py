@@ -23,7 +23,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions import AppException
 from app.models.weight import WeightLog
 
-
 _MSG_NOT_FOUND = "Pesata non trovata."
 
 
@@ -37,9 +36,7 @@ async def upsert_weight(
     """Insert-or-update by (user_id, date)."""
     existing = (
         await session.scalars(
-            select(WeightLog).where(
-                WeightLog.user_id == user_id, WeightLog.date == on_date
-            )
+            select(WeightLog).where(WeightLog.user_id == user_id, WeightLog.date == on_date)
         )
     ).first()
     if existing:
@@ -59,9 +56,7 @@ async def upsert_weight(
         await session.rollback()
         existing = (
             await session.scalars(
-                select(WeightLog).where(
-                    WeightLog.user_id == user_id, WeightLog.date == on_date
-                )
+                select(WeightLog).where(WeightLog.user_id == user_id, WeightLog.date == on_date)
             )
         ).first()
         if not existing:
@@ -72,15 +67,11 @@ async def upsert_weight(
         return existing
 
 
-async def list_weights(
-    session: AsyncSession, *, user_id: UUID
-) -> list[WeightLog]:
+async def list_weights(session: AsyncSession, *, user_id: UUID) -> list[WeightLog]:
     """User-scoped list, newest first."""
     rows = (
         await session.scalars(
-            select(WeightLog)
-            .where(WeightLog.user_id == user_id)
-            .order_by(WeightLog.date.desc())
+            select(WeightLog).where(WeightLog.user_id == user_id).order_by(WeightLog.date.desc())
         )
     ).all()
     return list(rows)
@@ -95,9 +86,7 @@ async def update_weight(
 ) -> WeightLog:
     row = (
         await session.scalars(
-            select(WeightLog).where(
-                WeightLog.id == weight_id, WeightLog.user_id == user_id
-            )
+            select(WeightLog).where(WeightLog.id == weight_id, WeightLog.user_id == user_id)
         )
     ).first()
     if not row:
@@ -109,14 +98,10 @@ async def update_weight(
     return row
 
 
-async def delete_weight(
-    session: AsyncSession, *, user_id: UUID, weight_id: UUID
-) -> None:
+async def delete_weight(session: AsyncSession, *, user_id: UUID, weight_id: UUID) -> None:
     row = (
         await session.scalars(
-            select(WeightLog).where(
-                WeightLog.id == weight_id, WeightLog.user_id == user_id
-            )
+            select(WeightLog).where(WeightLog.id == weight_id, WeightLog.user_id == user_id)
         )
     ).first()
     if not row:

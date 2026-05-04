@@ -59,9 +59,7 @@ def _clear_refresh_cookie(response: Response) -> None:
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(
-    body: LoginRequest, session: AsyncSession = Depends(get_session)
-) -> JSONResponse:
+async def login(body: LoginRequest, session: AsyncSession = Depends(get_session)) -> JSONResponse:
     user = await auth_service.authenticate(session, body.email, body.password)
     access, refresh, expires_at = await auth_service.issue_token_pair(session, user)
     response = JSONResponse(content=TokenResponse(access_token=access).model_dump())
@@ -70,9 +68,7 @@ async def login(
 
 
 @router.post("/refresh", response_model=TokenResponse)
-async def refresh(
-    request: Request, session: AsyncSession = Depends(get_session)
-) -> JSONResponse:
+async def refresh(request: Request, session: AsyncSession = Depends(get_session)) -> JSONResponse:
     cookie = request.cookies.get(REFRESH_COOKIE_NAME)
     if not cookie:
         raise AppException(401, _MSG_SESSION_EXPIRED, "no_refresh_cookie")
@@ -83,9 +79,7 @@ async def refresh(
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
-async def logout(
-    request: Request, session: AsyncSession = Depends(get_session)
-) -> Response:
+async def logout(request: Request, session: AsyncSession = Depends(get_session)) -> Response:
     cookie = request.cookies.get(REFRESH_COOKIE_NAME)
     if cookie:
         await auth_service.revoke_family(session, cookie)
@@ -112,9 +106,7 @@ async def create_invite(
     session: AsyncSession = Depends(get_session),
 ) -> InviteCreateResponse:
     invite = await auth_service.create_invite(session, created_by=admin.id)
-    return InviteCreateResponse(
-        token=invite.token, expires_at=invite.expires_at.isoformat()
-    )
+    return InviteCreateResponse(token=invite.token, expires_at=invite.expires_at.isoformat())
 
 
 @router.post("/register", status_code=201, response_model=TokenResponse)

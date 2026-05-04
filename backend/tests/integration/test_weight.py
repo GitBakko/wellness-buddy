@@ -76,9 +76,7 @@ async def _login(client: AsyncClient, email: str, password: str) -> str:
 async def test_post_weight_persists_with_2decimal_precision(
     async_client: AsyncClient, db_session: AsyncSession, test_user: User
 ) -> None:
-    access = await _login(
-        async_client, "weight-user@test.example.com", "Password123!"
-    )
+    access = await _login(async_client, "weight-user@test.example.com", "Password123!")
     today = date.today().isoformat()
     r = await async_client.post(
         "/api/weight",
@@ -93,9 +91,7 @@ async def test_post_weight_persists_with_2decimal_precision(
 
     # DB has exact Decimal 75.30
     rows = (
-        await db_session.scalars(
-            select(WeightLog).where(WeightLog.user_id == test_user.id)
-        )
+        await db_session.scalars(select(WeightLog).where(WeightLog.user_id == test_user.id))
     ).all()
     assert len(rows) == 1
     assert rows[0].weight_kg == Decimal("75.30")
@@ -104,9 +100,7 @@ async def test_post_weight_persists_with_2decimal_precision(
 async def test_post_weight_unique_per_day_upserts(
     async_client: AsyncClient, db_session: AsyncSession, test_user: User
 ) -> None:
-    access = await _login(
-        async_client, "weight-user@test.example.com", "Password123!"
-    )
+    access = await _login(async_client, "weight-user@test.example.com", "Password123!")
     today = date.today().isoformat()
     # First POST
     r1 = await async_client.post(
@@ -124,9 +118,7 @@ async def test_post_weight_unique_per_day_upserts(
     assert r2.status_code == 201
     # DB has single row, latest value
     rows = (
-        await db_session.scalars(
-            select(WeightLog).where(WeightLog.user_id == test_user.id)
-        )
+        await db_session.scalars(select(WeightLog).where(WeightLog.user_id == test_user.id))
     ).all()
     assert len(rows) == 1
     assert rows[0].weight_kg == Decimal("75.50")
@@ -169,12 +161,8 @@ async def test_get_weight_list_orderby_date_desc(
         ]
     )
     await db_session.commit()
-    access = await _login(
-        async_client, "weight-user@test.example.com", "Password123!"
-    )
-    r = await async_client.get(
-        "/api/weight", headers={"Authorization": f"Bearer {access}"}
-    )
+    access = await _login(async_client, "weight-user@test.example.com", "Password123!")
+    r = await async_client.get("/api/weight", headers={"Authorization": f"Bearer {access}"})
     assert r.status_code == 200
     body = r.json()
     assert len(body) == 3
@@ -206,12 +194,8 @@ async def test_get_weight_list_excludes_other_users(
         ]
     )
     await db_session.commit()
-    b_access = await _login(
-        async_client, "weight-other@test.example.com", "Password123!"
-    )
-    r = await async_client.get(
-        "/api/weight", headers={"Authorization": f"Bearer {b_access}"}
-    )
+    b_access = await _login(async_client, "weight-other@test.example.com", "Password123!")
+    r = await async_client.get("/api/weight", headers={"Authorization": f"Bearer {b_access}"})
     assert r.status_code == 200
     body = r.json()
     assert len(body) == 1
@@ -226,16 +210,12 @@ async def test_get_weight_list_excludes_other_users(
 async def test_patch_weight_updates_value(
     async_client: AsyncClient, db_session: AsyncSession, test_user: User
 ) -> None:
-    w = WeightLog(
-        user_id=test_user.id, date=date.today(), weight_kg=Decimal("75.30")
-    )
+    w = WeightLog(user_id=test_user.id, date=date.today(), weight_kg=Decimal("75.30"))
     db_session.add(w)
     await db_session.commit()
     await db_session.refresh(w)
 
-    access = await _login(
-        async_client, "weight-user@test.example.com", "Password123!"
-    )
+    access = await _login(async_client, "weight-user@test.example.com", "Password123!")
     r = await async_client.patch(
         f"/api/weight/{w.id}",
         json={"date": date.today().isoformat(), "weight_kg": 75.50},
@@ -252,16 +232,12 @@ async def test_weight_patch_other_user_returns_404(
     other_user: User,
 ) -> None:
     """V13: scrub existence — return 404 (not 403) on cross-user."""
-    w = WeightLog(
-        user_id=test_user.id, date=date.today(), weight_kg=Decimal("75.30")
-    )
+    w = WeightLog(user_id=test_user.id, date=date.today(), weight_kg=Decimal("75.30"))
     db_session.add(w)
     await db_session.commit()
     await db_session.refresh(w)
 
-    b_access = await _login(
-        async_client, "weight-other@test.example.com", "Password123!"
-    )
+    b_access = await _login(async_client, "weight-other@test.example.com", "Password123!")
     r = await async_client.patch(
         f"/api/weight/{w.id}",
         json={"date": date.today().isoformat(), "weight_kg": 99.99},
@@ -279,17 +255,13 @@ async def test_weight_patch_other_user_returns_404(
 async def test_delete_weight_removes_row(
     async_client: AsyncClient, db_session: AsyncSession, test_user: User
 ) -> None:
-    w = WeightLog(
-        user_id=test_user.id, date=date.today(), weight_kg=Decimal("75.30")
-    )
+    w = WeightLog(user_id=test_user.id, date=date.today(), weight_kg=Decimal("75.30"))
     db_session.add(w)
     await db_session.commit()
     await db_session.refresh(w)
     weight_id = w.id
 
-    access = await _login(
-        async_client, "weight-user@test.example.com", "Password123!"
-    )
+    access = await _login(async_client, "weight-user@test.example.com", "Password123!")
     r = await async_client.delete(
         f"/api/weight/{weight_id}",
         headers={"Authorization": f"Bearer {access}"},
@@ -297,11 +269,7 @@ async def test_delete_weight_removes_row(
     assert r.status_code == 204
 
     # Row gone — fresh session to avoid identity-map confusion
-    rows = (
-        await db_session.scalars(
-            select(WeightLog).where(WeightLog.id == weight_id)
-        )
-    ).all()
+    rows = (await db_session.scalars(select(WeightLog).where(WeightLog.id == weight_id))).all()
     assert len(rows) == 0
 
 
@@ -311,16 +279,12 @@ async def test_weight_delete_other_user_returns_404(
     test_user: User,
     other_user: User,
 ) -> None:
-    w = WeightLog(
-        user_id=test_user.id, date=date.today(), weight_kg=Decimal("75.30")
-    )
+    w = WeightLog(user_id=test_user.id, date=date.today(), weight_kg=Decimal("75.30"))
     db_session.add(w)
     await db_session.commit()
     await db_session.refresh(w)
 
-    b_access = await _login(
-        async_client, "weight-other@test.example.com", "Password123!"
-    )
+    b_access = await _login(async_client, "weight-other@test.example.com", "Password123!")
     r = await async_client.delete(
         f"/api/weight/{w.id}",
         headers={"Authorization": f"Bearer {b_access}"},

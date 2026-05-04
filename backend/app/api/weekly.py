@@ -32,9 +32,7 @@ def _parse_week_start(raw: str) -> date:
     try:
         return date.fromisoformat(raw)
     except ValueError as e:
-        raise AppException(
-            422, "Data settimana non valida.", "validation_error"
-        ) from e
+        raise AppException(422, "Data settimana non valida.", "validation_error") from e
 
 
 def _parse_if_unmodified_since(raw: str | None) -> datetime | None:
@@ -57,9 +55,7 @@ async def get_weekly(
     session: AsyncSession = Depends(get_session),
 ) -> dict:
     ws = _parse_week_start(week_start)
-    return await weekly_service.build_weekly_payload(
-        session, user=user, week_start=ws
-    )
+    return await weekly_service.build_weekly_payload(session, user=user, week_start=ws)
 
 
 @router.get("/{week_start}/summary", response_model=WeeklySummaryResponse)
@@ -69,18 +65,14 @@ async def get_weekly_summary(
     session: AsyncSession = Depends(get_session),
 ) -> dict:
     ws = _parse_week_start(week_start)
-    return await weekly_service.build_weekly_summary(
-        session, user=user, week_start=ws
-    )
+    return await weekly_service.build_weekly_summary(session, user=user, week_start=ws)
 
 
 @router.patch("/{week_start}/variant", response_model=VariantResponse)
 async def patch_variant(
     week_start: str,
     payload: PatchVariantPayload,
-    if_unmodified_since: str | None = Header(
-        default=None, alias="If-Unmodified-Since"
-    ),
+    if_unmodified_since: str | None = Header(default=None, alias="If-Unmodified-Since"),
     user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict:
@@ -90,18 +82,14 @@ async def patch_variant(
     try:
         plan_uuid = UUID(payload.plan_id)
     except (ValueError, AttributeError) as e:
-        raise AppException(
-            422, "plan_id non valido.", "validation_error"
-        ) from e
+        raise AppException(422, "plan_id non valido.", "validation_error") from e
 
     visibility_enum: Visibility | None = None
     if payload.visibility:
         try:
             visibility_enum = Visibility(payload.visibility)
         except ValueError as e:
-            raise AppException(
-                422, "visibility non valida.", "validation_error"
-            ) from e
+            raise AppException(422, "visibility non valida.", "validation_error") from e
 
     row = await variant_service.upsert_variant(
         session,

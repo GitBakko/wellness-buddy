@@ -33,9 +33,7 @@ MAX_FILE_BYTES = 1 * 1024 * 1024
 
 # Italian copy — surfaced to the frontend via AUTH-12 envelope (`detail`).
 _MSG_TOO_LARGE = "Il file supera il limite di 1 MB."
-_MSG_PARSE_FAILED = (
-    "Non sono riuscito a leggere il piano. Verifica che il formato sia corretto."
-)
+_MSG_PARSE_FAILED = "Non sono riuscito a leggere il piano. Verifica che il formato sia corretto."
 _MSG_NOT_FOUND = "Piano non trovato."
 
 
@@ -89,9 +87,7 @@ async def upload_plan(
 # ──────────────────────────────────────────────────────────────────────────────
 
 
-async def list_plans(
-    session: AsyncSession, *, user_id: UUID
-) -> list[NutritionPlan]:
+async def list_plans(session: AsyncSession, *, user_id: UUID) -> list[NutritionPlan]:
     """Return current user's plans, latest first."""
     rows = (
         await session.scalars(
@@ -108,9 +104,7 @@ async def list_plans(
 # ──────────────────────────────────────────────────────────────────────────────
 
 
-async def activate_plan(
-    session: AsyncSession, *, user_id: UUID, plan_id: UUID
-) -> NutritionPlan:
+async def activate_plan(session: AsyncSession, *, user_id: UUID, plan_id: UUID) -> NutritionPlan:
     """Activate `plan_id` and deactivate the previously active plan in a single tx.
 
     V11 partial unique index requires the previous active row to be set false BEFORE
@@ -197,7 +191,12 @@ async def diff_against_active(
     if not active:
         # First plan: every present section is "added".
         present = [k for k, v in c.items() if _section_present(v)]
-        return {"added": sorted(present), "removed": [], "changed": []}
+        return {
+            "has_active_plan": False,
+            "added": sorted(present),
+            "removed": [],
+            "changed": [],
+        }
 
     a = active.parsed_json or {}
     added: list[str] = []
@@ -213,6 +212,7 @@ async def diff_against_active(
         elif in_a and in_c and a.get(key) != c.get(key):
             changed.append(key)
     return {
+        "has_active_plan": True,
         "added": sorted(added),
         "removed": sorted(removed),
         "changed": sorted(changed),
@@ -237,11 +237,7 @@ async def admin_assign_plan(
     move any plan. The new owner must exist (FK on nutrition_plans.user_id will
     raise IntegrityError if the target user is missing — surface as 400).
     """
-    plan = (
-        await session.scalars(
-            select(NutritionPlan).where(NutritionPlan.id == plan_id)
-        )
-    ).first()
+    plan = (await session.scalars(select(NutritionPlan).where(NutritionPlan.id == plan_id))).first()
     if not plan:
         raise AppException(404, _MSG_NOT_FOUND, "not_found")
 

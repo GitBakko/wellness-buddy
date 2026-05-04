@@ -15,7 +15,6 @@ Source: WEEK-01..05, FAM-02, FAM-04, D-17, V13, T-API-02.
 
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta
 from uuid import uuid4
 
 import pytest
@@ -169,9 +168,7 @@ async def other_user(db_session: AsyncSession) -> User:
 
 
 @pytest_asyncio.fixture
-async def active_plan(
-    db_session: AsyncSession, test_user: User
-) -> NutritionPlan:
+async def active_plan(db_session: AsyncSession, test_user: User) -> NutritionPlan:
     plan = NutritionPlan(
         id=uuid4(),
         user_id=test_user.id,
@@ -208,9 +205,7 @@ async def test_get_weekly_returns_7_days_with_default_variants(
     test_user: User,
     active_plan: NutritionPlan,
 ) -> None:
-    access = await _login(
-        async_client, "weekly-user@test.example.com", "Password123!"
-    )
+    access = await _login(async_client, "weekly-user@test.example.com", "Password123!")
     r = await async_client.get(
         f"/api/weekly/{WEEK_START}",
         headers={"Authorization": f"Bearer {access}"},
@@ -241,9 +236,7 @@ async def test_get_weekly_returns_7_days_with_default_variants(
 async def test_get_weekly_no_active_plan_returns_400(
     async_client: AsyncClient, test_user: User
 ) -> None:
-    access = await _login(
-        async_client, "weekly-user@test.example.com", "Password123!"
-    )
+    access = await _login(async_client, "weekly-user@test.example.com", "Password123!")
     r = await async_client.get(
         f"/api/weekly/{WEEK_START}",
         headers={"Authorization": f"Bearer {access}"},
@@ -269,9 +262,7 @@ async def test_get_weekly_summary_returns_kcal_macros(
     test_user: User,
     active_plan: NutritionPlan,
 ) -> None:
-    access = await _login(
-        async_client, "weekly-user@test.example.com", "Password123!"
-    )
+    access = await _login(async_client, "weekly-user@test.example.com", "Password123!")
     r = await async_client.get(
         f"/api/weekly/{WEEK_START}/summary",
         headers={"Authorization": f"Bearer {access}"},
@@ -300,9 +291,7 @@ async def test_patch_variant_creates_with_default_visibility_for_dinner(
     active_plan: NutritionPlan,
 ) -> None:
     """FAM-02: dinner default visibility = group_shared."""
-    access = await _login(
-        async_client, "weekly-user@test.example.com", "Password123!"
-    )
+    access = await _login(async_client, "weekly-user@test.example.com", "Password123!")
     r = await async_client.patch(
         f"/api/weekly/{WEEK_START}/variant",
         json={
@@ -326,9 +315,7 @@ async def test_patch_variant_creates_with_default_visibility_for_breakfast(
     active_plan: NutritionPlan,
 ) -> None:
     """FAM-02: breakfast default visibility = private."""
-    access = await _login(
-        async_client, "weekly-user@test.example.com", "Password123!"
-    )
+    access = await _login(async_client, "weekly-user@test.example.com", "Password123!")
     r = await async_client.patch(
         f"/api/weekly/{WEEK_START}/variant",
         json={
@@ -351,9 +338,7 @@ async def test_patch_variant_increments_version(
     active_plan: NutritionPlan,
 ) -> None:
     """Two PATCHes → version 1 then 2."""
-    access = await _login(
-        async_client, "weekly-user@test.example.com", "Password123!"
-    )
+    access = await _login(async_client, "weekly-user@test.example.com", "Password123!")
     payload = {
         "plan_id": str(active_plan.id),
         "day_of_week": 2,
@@ -390,9 +375,7 @@ async def test_patch_variant_409_on_stale_if_unmodified_since(
     active_plan: NutritionPlan,
 ) -> None:
     """Stale `If-Unmodified-Since` (older than row.updated_at) → 409 + version_conflict."""
-    access = await _login(
-        async_client, "weekly-user@test.example.com", "Password123!"
-    )
+    access = await _login(async_client, "weekly-user@test.example.com", "Password123!")
     # Seed an existing variant row owned by test_user
     payload = {
         "plan_id": str(active_plan.id),
@@ -427,9 +410,7 @@ async def test_patch_variant_skips_lww_when_no_header(
     active_plan: NutritionPlan,
 ) -> None:
     """No If-Unmodified-Since → no LWW check → 200 even after stale state."""
-    access = await _login(
-        async_client, "weekly-user@test.example.com", "Password123!"
-    )
+    access = await _login(async_client, "weekly-user@test.example.com", "Password123!")
     payload = {
         "plan_id": str(active_plan.id),
         "day_of_week": 4,
@@ -460,9 +441,7 @@ async def test_patch_variant_fresh_if_unmodified_since_succeeds(
     active_plan: NutritionPlan,
 ) -> None:
     """Fresh precondition (matches row.updated_at) → 200."""
-    access = await _login(
-        async_client, "weekly-user@test.example.com", "Password123!"
-    )
+    access = await _login(async_client, "weekly-user@test.example.com", "Password123!")
     payload = {
         "plan_id": str(active_plan.id),
         "day_of_week": 5,
@@ -508,9 +487,7 @@ async def test_patch_variant_other_user_plan_id_creates_separate_row(
     """
     # other_user logs in and PATCHes; the row is keyed by (user_id, week_start, day, meal)
     # so it CANNOT collide with test_user's row.
-    access = await _login(
-        async_client, "weekly-other@test.example.com", "Password123!"
-    )
+    access = await _login(async_client, "weekly-other@test.example.com", "Password123!")
     r = await async_client.patch(
         f"/api/weekly/{WEEK_START}/variant",
         json={
@@ -530,9 +507,7 @@ async def test_patch_variant_other_user_plan_id_creates_separate_row(
     # Confirm test_user's data area was untouched
     rows = (
         await db_session.scalars(
-            select(WeeklyPlanVariant).where(
-                WeeklyPlanVariant.user_id == test_user.id
-            )
+            select(WeeklyPlanVariant).where(WeeklyPlanVariant.user_id == test_user.id)
         )
     ).all()
     assert len(rows) == 0
@@ -549,9 +524,7 @@ async def test_patch_variant_invalid_day_of_week_rejected(
     active_plan: NutritionPlan,
 ) -> None:
     """Pydantic strict: day_of_week must be in [0, 6]."""
-    access = await _login(
-        async_client, "weekly-user@test.example.com", "Password123!"
-    )
+    access = await _login(async_client, "weekly-user@test.example.com", "Password123!")
     r = await async_client.patch(
         f"/api/weekly/{WEEK_START}/variant",
         json={
