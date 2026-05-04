@@ -147,11 +147,11 @@ export default defineConfig({
       // dev only — prod uses IIS reverse proxy. Port 8001 chosen because
       // 8000 is reserved on this dev box for another service.
       '/api': {
-        target: 'http://127.0.0.1:8001',
+        target: 'http://127.0.0.1:8002',
         changeOrigin: true,
       },
       '/version.json': {
-        target: 'http://127.0.0.1:8001',
+        target: 'http://127.0.0.1:8002',
         changeOrigin: true,
       },
     },
