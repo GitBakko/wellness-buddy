@@ -152,6 +152,8 @@ function toTodayMeal(m: WeeklyMealEntry): TodayMeal {
     },
     completed: m.completed,
     photo_url: null,
+    // Plan 02-04 gap-closure — surface composition list to MealCard.
+    ingredients: m.ingredients ?? [],
   };
 }
 

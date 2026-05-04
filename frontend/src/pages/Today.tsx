@@ -38,28 +38,30 @@ interface MacroAggregate {
 }
 
 /**
- * Plan 01-09 — derive macro totals from the today payload meals.
+ * Plan 02-04 gap-closure — derive macro totals from the today payload.
  *
- * Phase 1 simplification: macro_target is derived as the sum of every meal's
- * macros (treating the plan's total daily allowance as "what's planned today").
- * Consumed is the sum across COMPLETED meals only. This is intentionally a
- * thin client-side aggregator; Phase 2 will move totals into TodayResponse
- * once the macro_target sits on `User` / `NutritionPlan` columns.
+ * Target precedence:
+ *   1. `data.macro_target` (server-resolved from active plan's MACRO TARGET section)
+ *   2. Sum of per-meal macros (legacy fallback for plans without macro_target)
+ *
+ * Consumed = sum across COMPLETED meals only. Using `macro_target` as the ring
+ * target prevents the "100% full when 0% consumed" bug that happened when
+ * consumed AND target were both 0 → 0/0 → defensive ratio of 1.0.
  */
 function aggregateMacros(data: TodayResponse): MacroAggregate {
-  let pTarget = 0;
-  let cTarget = 0;
-  let fTarget = 0;
-  let kcalTarget = 0;
+  let pSum = 0;
+  let cSum = 0;
+  let fSum = 0;
+  let kcalSum = 0;
   let pCurrent = 0;
   let cCurrent = 0;
   let fCurrent = 0;
   let kcalCurrent = 0;
   for (const meal of data.meals) {
-    pTarget += meal.macros.protein_g;
-    cTarget += meal.macros.carbs_g;
-    fTarget += meal.macros.fat_g;
-    kcalTarget += meal.macros.kcal;
+    pSum += meal.macros.protein_g;
+    cSum += meal.macros.carbs_g;
+    fSum += meal.macros.fat_g;
+    kcalSum += meal.macros.kcal;
     if (meal.completed) {
       pCurrent += meal.macros.protein_g;
       cCurrent += meal.macros.carbs_g;
@@ -67,6 +69,12 @@ function aggregateMacros(data: TodayResponse): MacroAggregate {
       kcalCurrent += meal.macros.kcal;
     }
   }
+  // Prefer server-supplied macro_target; fall back to per-meal sums when absent.
+  const target = data.macro_target;
+  const kcalTarget = target && target.kcal > 0 ? target.kcal : kcalSum;
+  const pTarget = target && target.protein_g > 0 ? target.protein_g : pSum;
+  const cTarget = target && target.carbs_g > 0 ? target.carbs_g : cSum;
+  const fTarget = target && target.fat_g > 0 ? target.fat_g : fSum;
   return {
     kcalConsumed: kcalCurrent,
     kcalTarget,

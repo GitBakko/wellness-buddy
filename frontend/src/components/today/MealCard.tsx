@@ -103,8 +103,36 @@ export function MealCard({
         <h3 className="text-[var(--text-base)] font-semibold leading-tight text-[color:var(--color-text)] m-0 line-clamp-2">
           {meal.title}
         </h3>
+        {meal.ingredients && meal.ingredients.length > 0 ? (
+          <ul
+            data-testid="meal-ingredients"
+            className="flex flex-col gap-[2px] text-[var(--text-caption)] text-[color:var(--color-text-muted)] m-0 p-0 list-none leading-[var(--leading-caption)]"
+          >
+            {meal.ingredients.slice(0, 5).map((ing, idx) => (
+              <li
+                key={`${ing.name}-${idx}`}
+                className="flex items-baseline gap-[var(--spacing-1)] line-clamp-1"
+              >
+                <span aria-hidden="true" className="text-[color:var(--color-leaf-500)] font-bold">
+                  ·
+                </span>
+                <span className="truncate">
+                  {ing.quantity ? `${ing.quantity} ${ing.name}` : ing.name}
+                </span>
+              </li>
+            ))}
+            {meal.ingredients.length > 5 ? (
+              <li className="text-[color:var(--color-text-muted)] italic">
+                +{meal.ingredients.length - 5}
+              </li>
+            ) : null}
+          </ul>
+        ) : null}
         <div className="flex flex-wrap gap-[var(--spacing-2)] text-[var(--text-caption)] tabular-nums font-medium text-[color:var(--color-text-muted)]">
-          <span className="font-semibold text-[color:var(--color-text)] whitespace-nowrap">
+          <span
+            data-testid="meal-kcal"
+            className="font-semibold text-[color:var(--color-text)] whitespace-nowrap"
+          >
             {italianNumberInt(meal.macros.kcal)} {copy.today.macroKcal}
           </span>
           <span className="whitespace-nowrap">

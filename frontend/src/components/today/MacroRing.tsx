@@ -172,6 +172,7 @@ export function MacroRing({
       {/* Center text — Plus Jakarta 800 for kcal value (NOT Instrument Serif) */}
       <div
         className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none gap-[2px]"
+        data-testid="macro-ring-text"
       >
         <div
           className="font-extrabold tabular-nums leading-none text-[color:var(--color-text)]"

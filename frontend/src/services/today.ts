@@ -14,6 +14,12 @@ export interface MealMacro {
   fat_g: number;
 }
 
+/** Plan 02-04 gap-closure — single ingredient line shown under MealCard title. */
+export interface MealIngredient {
+  name: string;
+  quantity?: string | null;
+}
+
 export interface TodayMeal {
   meal_type: 'breakfast' | 'lunch' | 'dinner' | 'snack' | string;
   variant_key: string;
@@ -24,6 +30,9 @@ export interface TodayMeal {
    * didn't find a `**Foto:** <url>` line in the section body. Frontend renders
    * a leaf-tinted gradient placeholder when null. */
   photo_url: string | null;
+  /** Plan 02-04 gap-closure — composition list rendered below title.
+   * Empty for plans whose parser couldn't extract ingredients (rare). */
+  ingredients?: MealIngredient[];
 }
 
 export interface TodayWeight {
@@ -47,6 +56,10 @@ export interface TodayResponse {
   meals: TodayMeal[];
   weight_today: TodayWeight | null;
   workout_today: TodayWorkout | null;
+  /** Plan 02-04 gap-closure — daily macro target from active plan.
+   * MacroRing uses these as the ring target so 0% consumed renders 0% fill
+   * (not 100% as it did before when target was summed from per-meal macros). */
+  macro_target?: MealMacro;
 }
 
 export const TODAY_QUERY_KEY = ['today'] as const;

@@ -37,6 +37,13 @@ export interface WeeklyMealOption {
   macros: Partial<WeeklyMacros>;
 }
 
+/** Plan 02-04 gap-closure — ingredient rows surfaced from grid-cell composition
+ *  text (split on `+`) or from legacy ingredient tables. */
+export interface WeeklyMealIngredient {
+  name: string;
+  quantity?: string | null;
+}
+
 export interface WeeklyMealEntry {
   slot: 'breakfast' | 'lunch' | 'dinner' | 'snack';
   title: string;
@@ -47,7 +54,7 @@ export interface WeeklyMealEntry {
   completed: boolean;
   owner_user_id: string;
   macros: WeeklyMacros;
-  ingredients: unknown[];
+  ingredients: WeeklyMealIngredient[];
   /** Plan 02-04: per-day variant options the user can pick between. Empty for
    *  breakfast/snack slots; lunch + dinner usually have 1-3 options per day. */
   options: WeeklyMealOption[];
