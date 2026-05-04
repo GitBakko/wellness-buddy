@@ -90,7 +90,7 @@ CORS_ORIGINS=https://wellness-buddy.epartner.it
 AI_PROVIDER=null
 
 MAX_USERS=100
-ADMIN_EMAIL=stefano@<your-domain>
+ADMIN_EMAIL=s.brunelli@epartner.it
 
 LOG_LEVEL=INFO
 SQL_ECHO=false
@@ -216,7 +216,7 @@ from app.core.db import async_session_factory
 
 async def main():
     async with async_session_factory() as s:
-        token = await create_invite(s, email='stefano@<your-domain>', role='admin')
+        token = await create_invite(s, email='s.brunelli@epartner.it', role='admin')
         print(f'Invite link: https://wellness-buddy.epartner.it/register?token={token}')
 
 asyncio.run(main())

@@ -46,7 +46,7 @@ Verifiche:
 - [X] Output finale stampa percorso zip + dimensione (~10-30 MB tipico)
 - [X] File esiste: `dist-package\wellness-buddy-<sha>-<timestamp>.zip`
 - [X] File checksum esiste: `dist-package\wellness-buddy-<sha>-<timestamp>.zip.sha256`
-- [ ] Working tree NON dirty (se warning "uncommitted changes" → committa o stash prima di rebuild per coerenza sha)
+- [X] Working tree NON dirty (se warning "uncommitted changes" → committa o stash prima di rebuild per coerenza sha)
 
 **Opzioni:**
 
@@ -67,7 +67,7 @@ Scegli UNA modalità:
 
 **A) RDP copy-paste (più semplice per 1 file):**
 
-- [ ] Apri Remote Desktop verso server
+- [X] Apri Remote Desktop verso server
 - [ ] Drag-and-drop `wellness-buddy-<sha>-<timestamp>.zip` + `.sha256` da locale a server desktop
 - [ ] Sposta su server: `Move-Item C:\Users\<you>\Desktop\wellness-buddy-*.zip* C:\Temp\`
 
@@ -104,7 +104,7 @@ Write-Host "Actual:   $actual"
 if ($expected -eq $actual) { Write-Host 'OK' -ForegroundColor Green } else { Write-Host 'CORRUPT' -ForegroundColor Red }
 ```
 
-- [ ] Output finale `OK` (hash match)
+- [X] Output finale `OK` (hash match)
 - [ ] Se `CORRUPT` → ri-trasferisci, NON estrarre
 
 ### 0.4 Estrazione su server
@@ -138,14 +138,14 @@ Get-ChildItem | Select-Object Name
 Get-Content VERSION.txt
 ```
 
-- [ ] Cartelle presenti: `backend\`, `frontend\dist\`, `deploy\`
-- [ ] File presenti: `DEPLOY.md`, `DEPLOY-CHECKLIST.md`, `VERSION.txt`
-- [ ] `VERSION.txt` mostra GIT_SHA + BUILD_DATE + APP_VERSION corretti
-- [ ] `backend\app\main.py` esiste
-- [ ] `frontend\dist\index.html` esiste
-- [ ] `deploy\nssm\install-service.ps1` esiste
-- [ ] `deploy\iis\web.config` esiste
-- [ ] `deploy\.env.production.example` esiste
+- [X] Cartelle presenti: `backend\`, `frontend\dist\`, `deploy\`
+- [X] File presenti: `DEPLOY.md`, `DEPLOY-CHECKLIST.md`, `VERSION.txt`
+- [X] `VERSION.txt` mostra GIT_SHA + BUILD_DATE + APP_VERSION corretti
+- [X] `backend\app\main.py` esiste
+- [X] `frontend\dist\index.html` esiste
+- [X] `deploy\nssm\install-service.ps1` esiste
+- [X] `deploy\iis\web.config` esiste
+- [X] `deploy\.env.production.example` esiste
 
 ### 0.5 Permessi cartella
 
@@ -160,8 +160,8 @@ icacls E:\www\wellnessBuddy /inheritance:d /grant:r 'Administrators:(OI)(CI)F' '
 icacls E:\www\wellnessBuddy\logs /grant:r 'NT AUTHORITY\LocalService:(OI)(CI)M'
 ```
 
-- [ ] `icacls E:\www\wellnessBuddy` mostra Administrators full + LocalService Read
-- [ ] `icacls E:\www\wellnessBuddy\logs` mostra LocalService Modify (write per log files)
+- [X] `icacls E:\www\wellnessBuddy` mostra Administrators full + LocalService Read
+- [X] `icacls E:\www\wellnessBuddy\logs` mostra LocalService Modify (write per log files)
 
 ### 0.6 Cleanup zip su server (opzionale)
 
@@ -170,7 +170,7 @@ Remove-Item C:\Temp\wellness-buddy-*.zip
 Remove-Item C:\Temp\wellness-buddy-*.zip.sha256
 ```
 
-- [ ] File zip rimossi (mantieni solo `dist-package\` su workstation dev come archivio)
+- [X] File zip rimossi (mantieni solo `dist-package\` su workstation dev come archivio)
 
 ---
 
@@ -198,15 +198,23 @@ Remove-Item C:\Temp\wellness-buddy-*.zip.sha256
 - [X] `postgresql.conf` su 192.168.3.243 ha `listen_addresses = '*'` (o include LAN IP) — NON solo `localhost`
 
 ### 1.4 Tool installati su app server (verifica veloce)
+
+> **Server-side runtime tools only.** Frontend già pre-built in pacchetto (§0.1) → NO `node`/`pnpm`/`git` sul server.
+
 ```powershell
-psql --version              # >= 14
-nssm version                # >= 2.24
-git --version
-node --version              # >= 22 LTS
-pnpm --version              # >= 9
-uv --version                # ultima
+psql --version              # client, >= 14 — per gestione DB remoto da app server
+nssm --version              # >= 2.24 — wrapper service uvicorn
+uv --version                # ultima — Python deps + venv runner
+python --version            # 3.12.x — base interpreter (uv usa questo)
 ```
-- [X] Tutti sopra ritornano versione (NON "comando non riconosciuto")
+
+- [X] `psql` ritorna versione (client locale per query remote DB)
+- [X] `nssm` ritorna versione
+- [X] `uv` ritorna versione (vedi §1.4 install instructions in conversazione)
+- [X] `python` 3.12.x
+
+> **NON necessari sul server:** `git`, `node`, `pnpm` — restano sulla workstation dev solo.
+> **Necessari più tardi (Plan 02-05 PDF):** GTK3 Runtime via MSYS2 (vedi `DEPLOY.md` Appendix B).
 
 ---
 
@@ -244,13 +252,21 @@ $env:PGPASSWORD = 'Wb4321@'
 
 ### 2.4 Backup pre-migration (precauzione)
 
-- [ ] DB nuovo → skip backup (nessun dato)
+- [X] DB nuovo → skip backup (nessun dato)
 
 - [ ] DB esistente con dati → `pg_dump -h 192.168.3.243 -U postgres wellness_buddy_prod > backup-pre-deploy-$(Get-Date -Format yyyyMMdd-HHmm).sql` salvato in folder sicura
 
 ### 2.5 Backend dependencies + migrations
 
-> **Prerequisito:** §0 completato — codice estratto in `E:\www\wellnessBuddy` (con `pyproject.toml` + `uv.lock` + `alembic.ini` + `alembic/`). `uv` installato (verificato §1.4).
+> ⚠️ **PREREQUISITI OBBLIGATORI prima di alembic:**
+>
+> 1. §0 completato — codice estratto in `E:\www\wellnessBuddy` (con `pyproject.toml` + `uv.lock` + `alembic.ini` + `alembic/`)
+> 2. `uv` installato Machine-wide (verificato §1.4)
+> 3. **`backend/.env` ESISTE** con almeno `DATABASE_URL`, `SECRET_KEY`, `ADMIN_EMAIL` valorizzati — **esegui §3.1 + §3.2 PRIMA di proseguire qui**
+>
+> `alembic env.py` importa `app.core.config.settings` che usa `pydantic-settings` con `env_file=".env"` — fail-fast su var mancanti.
+>
+> **Password con char speciali in `DATABASE_URL`:** URL-encode `@` come `%40`, `#` come `%23`, `/` come `%2F`. Esempio: password `Wb4321@` → `postgresql+asyncpg://wnbd:Wb4321%40@192.168.3.243:5432/...`
 
 ```powershell
 cd E:\www\wellnessBuddy\backend
@@ -263,19 +279,35 @@ uv run alembic upgrade head
 # Output: ogni migration → "Running upgrade ... -> ..., done"
 ```
 
-- [ ] `.venv\` creata in `E:\www\wellnessBuddy\backend\.venv\`
-- [ ] `uv sync --frozen` zero errori
-- [ ] `alembic upgrade head` termina con `a694bcd4d792` (Phase 1 baseline) o successivo se Plan 02-06 già migrato (`0001_activate_groups`)
-- [ ] Ri-esecuzione `alembic current` mostra ultima revision
+- [X] `.venv\` creata in `E:\www\wellnessBuddy\backend\.venv\`
+- [X] `uv sync --frozen` zero errori
+- [X] `alembic upgrade head` termina con `a694bcd4d792` (Phase 1 baseline) o successivo se Plan 02-06 già migrato (`0001_activate_groups`)
+- [X] Ri-esecuzione `alembic current` mostra ultima revision
 
 ### 2.6 Verifica schema
 ```powershell
-$env:PGPASSWORD = '<DB_PASSWORD>'
+$env:PGPASSWORD = 'Wb4321@'
 .\psql.exe -h 192.168.3.243 -U wnbd -d wellness_buddy_prod -c "\dt"
 Remove-Item Env:PGPASSWORD
 ```
-- [ ] Output lista almeno: `users, groups, refresh_tokens, invite_tokens, nutrition_plans, weekly_plan_variants, weight_logs, workout_logs, shopping_list_states, ai_event_log, audit_log, alembic_version`
-- [ ] 12+ tabelle visibili (numero esatto può crescere con Plan 02-06)
+
+Tabelle attese da `0000_baseline` (Phase 1) + `alembic_version`:
+
+- [X] `users` (auth + profilo)
+- [X] `groups` (multi-user families — schema present, sync logic in Plan 02-06)
+- [X] `refresh_tokens` (JWT refresh rotation)
+- [X] `invite_tokens` (invite-only signup)
+- [X] `nutrition_plans` (parsed MD plans)
+- [X] `weekly_plan_variants` (Plan 02-02 — variant A/B/Speciale per meal-day)
+- [X] `weight_log` (singolare — tracking peso)
+- [X] `workout_log` (singolare — tracking allenamento)
+- [X] `shopping_list_state` (singolare — checkbox state shopping list)
+- [X] `audit_log` (security events)
+- [X] `alembic_version` (auto-managed da alembic)
+- [X] **Totale: 11 tabelle** (Phase 1 baseline)
+- [X] Plan 02-06 aggiungerà tabelle group-sync (12+ dopo Wave 6)
+
+> **NOTA:** `ai_event_log` **NON esiste in Phase 2** — è Sprint 5 (AI integration). Checklist precedente la elencava per errore.
 
 ---
 
@@ -286,8 +318,8 @@ Remove-Item Env:PGPASSWORD
 cd E:\www\wellnessBuddy
 pwsh deploy\scripts\generate-secrets.ps1
 ```
-- [ ] Output stampa `SECRET_KEY` (64 hex chars) + `DB_PASSWORD` (~32 chars) + comandi pronti
-- [ ] Copia ENTRAMBI i valori in un blocco note temporaneo (NON salvare su disco condiviso)
+- [X] Output stampa `SECRET_KEY` (64 hex chars) + `DB_PASSWORD` (~32 chars) + comandi pronti
+- [X] Copia ENTRAMBI i valori in un blocco note temporaneo (NON salvare su disco condiviso)
 
 ### 3.2 Creazione `backend/.env`
 ```powershell
@@ -296,22 +328,22 @@ Copy-Item deploy\.env.production.example backend\.env
 notepad backend\.env
 ```
 Modifiche obbligatorie:
-- [ ] `DATABASE_URL=postgresql+asyncpg://wnbd:<DB_PASSWORD>@192.168.3.243:5432/wellness_buddy_prod` — **HOST = 192.168.3.243, NON localhost** (script genera `localhost` di default — sostituire manualmente)
-- [ ] `SECRET_KEY=<64 hex from §3.1>`
-- [ ] `CORS_ORIGINS=https://wellness-buddy.epartner.it` (NESSUN wildcard, validato a boot)
-- [ ] `ADMIN_EMAIL=stefano@<dominio reale>`
-- [ ] `BUILD_HASH=<git rev-parse --short HEAD>`
-- [ ] `APP_VERSION=0.2.0` (Phase 2 bump)
-- [ ] `TZ=Europe/Rome`
-- [ ] `AI_PROVIDER=null` (Sprint 5 attiverà)
-- [ ] **Aggiungi:** `PDF_BACKEND=weasyprint` (Plan 02-01 default; flippa a `reportlab` solo se spike GTK3 fallisce)
+- [X] `DATABASE_URL=postgresql+asyncpg://wnbd:<DB_PASSWORD>@192.168.3.243:5432/wellness_buddy_prod` — **HOST = 192.168.3.243, NON localhost** (script genera `localhost` di default — sostituire manualmente)
+- [X] `SECRET_KEY=<64 hex from §3.1>`
+- [X] `CORS_ORIGINS=https://wellness-buddy.epartner.it` (NESSUN wildcard, validato a boot)
+- [X] `ADMIN_EMAIL=s.brunelli@epartner.it`
+- [X] `BUILD_HASH=<git rev-parse --short HEAD>`
+- [X] `APP_VERSION=0.2.0` (Phase 2 bump)
+- [X] `TZ=Europe/Rome`
+- [X] `AI_PROVIDER=null` (Sprint 5 attiverà)
+- [X] **Aggiungi:** `PDF_BACKEND=weasyprint` (Plan 02-01 default; flippa a `reportlab` solo se spike GTK3 fallisce)
 
 ### 3.3 ACL lockdown (dopo modifica)
 ```powershell
 icacls "E:\www\wellnessBuddy\backend\.env" /inheritance:r /grant:r "NT AUTHORITY\LocalService:R" "Administrators:F"
 icacls "E:\www\wellnessBuddy\backend\.env"
 ```
-- [ ] Output mostra solo `Administrators` + `LocalService` (NESSUN `Users` / `Authenticated Users`)
+- [X] Output mostra solo `Administrators` + `LocalService` (NESSUN `Users` / `Authenticated Users`)
 
 ### 3.4 DPAPI encryption (opzionale, raccomandato — D-25)
 ```powershell
@@ -319,15 +351,15 @@ $bytes = [System.IO.File]::ReadAllBytes("E:\www\wellnessBuddy\backend\.env")
 $protected = [System.Security.Cryptography.ProtectedData]::Protect($bytes, $null, "LocalMachine")
 [System.IO.File]::WriteAllBytes("E:\www\wellnessBuddy\backend\.env.dpapi", $protected)
 ```
-- [ ] File `.env.dpapi` creato (NON sostituisce `.env` per ora — copia di sicurezza)
+- [X] File `.env.dpapi` creato (NON sostituisce `.env` per ora — copia di sicurezza)
 
 ### 3.5 Verifica boot config
 ```powershell
 cd E:\www\wellnessBuddy\backend
 uv run python -c "from app.core.config import settings; print('DB host:', settings.DATABASE_URL.split('@')[1].split('/')[0]); print('CORS:', settings.CORS_ORIGINS)"
 ```
-- [ ] Output mostra `DB host: 192.168.3.243:5432` (NON `localhost`)
-- [ ] Output mostra `CORS: https://wellness-buddy.epartner.it`
+- [X] Output mostra `DB host: 192.168.3.243:5432` (NON `localhost`)
+- [X] Output mostra `CORS: https://wellness-buddy.epartner.it`
 
 ### 3.6 Smoke test connessione DB da app
 ```powershell
@@ -338,36 +370,104 @@ uv run uvicorn app.main:app --host 127.0.0.1 --port 8001 &
 Start-Sleep 3
 Invoke-WebRequest http://127.0.0.1:8001/api/health
 ```
-- [ ] Risposta HTTP 200 con `{"status":"ok","db_ok":true}` (db_ok=true conferma connessione 192.168.3.243 funzionante)
+- [X] Risposta HTTP 200 con `{"status":"ok","db_ok":true}` (db_ok=true conferma connessione 192.168.3.243 funzionante)
 - [ ] Termina processo uvicorn manuale: `Get-Process python | Stop-Process -Force` (solo se nessun altro python in esecuzione)
 
 ---
 
-## 4. Frontend build
+## 4. Frontend — verifica dist pre-built
+
+> **Razionale:** frontend è già compilato dentro il pacchetto (§0.1 step 3 esegue `pnpm --filter frontend build` su workstation dev). Il server **NON** ricostruisce — non servono `pnpm`, `node`, `git` sul Windows Server. Solo verifica che `frontend\dist\` sia presente e completo.
+
+### 4.1 Verifica struttura dist
 
 ```powershell
-cd E:\www\wellnessBuddy
-pnpm install --frozen-lockfile
-$env:VITE_BUILD_HASH = (git rev-parse --short HEAD)
-pnpm --filter frontend build
+cd E:\www\wellnessBuddy\frontend\dist
+Get-ChildItem | Select-Object Name
 ```
-- [ ] `pnpm install` zero errori
-- [ ] `pnpm build` termina senza warning critici
-- [ ] `E:\www\wellnessBuddy\frontend\dist\index.html` esiste
-- [ ] `E:\www\wellnessBuddy\frontend\dist\sw.js` esiste (Workbox PWA)
-- [ ] `E:\www\wellnessBuddy\frontend\dist\manifest.webmanifest` contiene `theme_color` + icone 192/512
+
+- [X] `index.html` presente
+- [X] `sw.js` presente (Workbox service worker)
+- [X] `manifest.webmanifest` presente
+- [X] Cartella `assets\` presente (JS+CSS hashati)
+- [X] Almeno 1 icona PNG (`icon-192.png` o simile)
+
+### 4.2 Verifica BUILD_HASH coerente con package
+
+```powershell
+Get-Content E:\www\wellnessBuddy\VERSION.txt
+Get-Content E:\www\wellnessBuddy\frontend\dist\index.html | Select-String 'data-build-hash|VITE_BUILD_HASH' | Select-Object -First 3
+```
+
+- [X] `VERSION.txt` GIT_SHA matcha quello stampato dal server `/api/version` dopo §5 (es. `7bca119`)
+
+### 4.3 Verifica manifest PWA
+
+```powershell
+Get-Content E:\www\wellnessBuddy\frontend\dist\manifest.webmanifest | ConvertFrom-Json |
+    Select-Object name, short_name, theme_color, background_color, display, start_url, icons
+```
+
+- [X] `name` = `Wellness Buddy` (o equivalente)
+- [X] `theme_color` valorizzato (NON vuoto)
+- [X] `display` = `standalone`
+- [X] `icons` array contiene almeno una entry con `sizes: "192x192"` e una con `sizes: "512x512"`
+
+### 4.4 (Opzionale) Re-build sul server
+
+Solo se serve correggere qualcosa al volo SENZA tornare in dev. Richiede installazione manuale di Node 22+, pnpm, git, poi `git clone` del repo. **Non raccomandato** — ricostruisci su dev, ri-pacchettizza, ri-deploya con §0.
+
+- [X] Skip — frontend pre-built nel pacchetto è source-of-truth
 
 ---
 
 ## 5. NSSM service install
 
 ### 5.1 Installazione
+
+> **DB remoto su 192.168.3.243** → script omette `DependOnService` (nessun PG locale). Per DB locale (raro), passa `-PostgresService postgresql-x64-16`.
+
 ```powershell
 cd E:\www\wellnessBuddy
 pwsh deploy\nssm\install-service.ps1
 ```
+
+Output atteso:
+
+```text
+=== Wellness Buddy — NSSM service installer ===
+App root: E:\www\wellnessBuddy
+Backend:  E:\www\wellnessBuddy\backend
+Logs:     E:\www\wellnessBuddy\logs
+nssm:     ...
+uv:       ...
+Installing service 'WellnessBuddyAPI'...
+Remote DB scenario — no local PG service dependency.
+Starting service...
+Name        : WellnessBuddyAPI
+Status      : Running
+StartType   : Automatic
+DisplayName : Wellness Buddy API
+```
+
 - [ ] Script ritorna senza errori
 - [ ] `Get-Service WellnessBuddyAPI` → status `Running`
+
+**Se hai già un service rotto da run precedente (errore `postgresql-x64-16`):**
+
+```powershell
+# Rimuovi service corrotto
+nssm remove WellnessBuddyAPI confirm
+
+# Verifica rimosso
+Get-Service WellnessBuddyAPI -ErrorAction SilentlyContinue   # null = OK
+
+# Re-run installer (con script aggiornato)
+pwsh deploy\nssm\install-service.ps1
+```
+
+- [ ] Service rimosso pulitamente prima di reinstall
+- [ ] Reinstall completata senza warning `postgresql-x64-*`
 
 ### 5.2 Auto-start + recovery
 ```powershell
@@ -499,7 +599,7 @@ from app.core.db import async_session_factory
 
 async def main():
     async with async_session_factory() as s:
-        token = await create_invite(s, email='stefano@<dominio>', role='admin')
+        token = await create_invite(s, email='s.brunelli@epartner.it', role='admin')
         print(f'Invite link: https://wellness-buddy.epartner.it/register?token={token}')
 
 asyncio.run(main())
@@ -531,7 +631,7 @@ from app.core.db import async_session_factory
 
 async def main():
     async with async_session_factory() as s:
-        token = await create_invite(s, email='marta@<dominio>', role='user')
+        token = await create_invite(s, email='m.capotosti@epartner.it', role='user')
         print(f'Invite link Marta: https://wellness-buddy.epartner.it/register?token={token}')
 
 asyncio.run(main())

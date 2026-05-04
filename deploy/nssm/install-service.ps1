@@ -4,6 +4,15 @@
 # Idempotent: stops + removes existing service before re-installing.
 # Requires NSSM 2.24+ on PATH and uv on PATH. Run as Administrator.
 # Service runs as NT AUTHORITY\LocalService for least privilege.
+#
+# Usage:
+#   pwsh deploy/nssm/install-service.ps1                              # remote DB (no local PG dependency)
+#   pwsh deploy/nssm/install-service.ps1 -PostgresService postgresql-x64-16  # local PG dependency
+
+[CmdletBinding()]
+param(
+    [string]$PostgresService = ''  # empty = remote DB on LAN, no local service dependency
+)
 
 $ErrorActionPreference = 'Stop'
 
@@ -76,7 +85,19 @@ $appParams = "run --directory `"$backendDir`" uvicorn app.main:app --host 127.0.
 & $nssmExe set $serviceName DisplayName 'Wellness Buddy API' | Out-Null
 & $nssmExe set $serviceName Description 'FastAPI backend per Wellness Buddy PWA. 1 Uvicorn worker, port 8000.' | Out-Null
 & $nssmExe set $serviceName Start SERVICE_AUTO_START | Out-Null
-& $nssmExe set $serviceName DependOnService 'postgresql-x64-16' | Out-Null
+
+# DependOnService only when local PostgreSQL service exists (skip for remote DB).
+if ($PostgresService -ne '') {
+    $pgService = Get-Service -Name $PostgresService -ErrorAction SilentlyContinue
+    if ($pgService) {
+        Write-Host "Adding service dependency: $PostgresService" -ForegroundColor Cyan
+        & $nssmExe set $serviceName DependOnService $PostgresService | Out-Null
+    } else {
+        Write-Host "WARN: -PostgresService '$PostgresService' not found locally — skipping DependOnService" -ForegroundColor Yellow
+    }
+} else {
+    Write-Host 'Remote DB scenario — no local PG service dependency.' -ForegroundColor DarkGray
+}
 
 # Logging: stdout + stderr -> rotated files
 & $nssmExe set $serviceName AppStdout (Join-Path $logsDir 'stdout.log') | Out-Null
