@@ -8,13 +8,13 @@ progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 18
-  completed_plans: 14
-  percent: 78
+  completed_plans: 15
+  percent: 83
 ---
 
 # State: Wellness Buddy
 
-**Last updated:** 2026-05-04 (Phase 2 in progress — Plans 02-01..02-04 complete; 02-05 shopping is next)
+**Last updated:** 2026-05-04 (Phase 2 in progress — Plans 02-01..02-05 complete; 02-06 PDF is next)
 
 ## Project Reference
 
@@ -30,14 +30,14 @@ progress:
 ## Current Position
 
 - **Phase:** 2 — Differentiators
-- **Plan:** 02-04 complete (gap-closure for weekly grid parser + per-day weekly variants shipped). Plans 02-01..02-04 complete; 02-05 (shopping) next in queue.
-- **Status:** **Phase 1 COMPLETE code-side; Phase 2 in progress.** Plans 02-01 (GTK3 spike + PdfExporter ABC), 02-02 (/settimana + variant selector), 02-03 (production deploy), 02-04 (grid parser + per-day variants) merged. Real Stefano + Marta plans now parse end-to-end with day-specific lunches/dinners. /api/today returns the actual recipe title from the day's grid cell (Mon=salmone, Wed=lenticchie, Fri=frittata). Plans 02-05 (shopping), 02-06 (PDF), 02-07 (family sync), 02-08 (closure) ready to execute.
-- **Progress:** Phase 1/5 done code-side · Phase 2: Plans 4/8 complete · 4 plans remaining (02-05..08)
+- **Plan:** 02-05 complete (shopping list aggregation + 5-category mapper + APScheduler weekly reset cron + /spesa route + BroadcastChannel multi-tab sync shipped). Plans 02-01..02-05 complete; 02-06 (PDF) next in queue.
+- **Status:** **Phase 1 COMPLETE code-side; Phase 2 in progress.** Plans 02-01 (GTK3 spike + PdfExporter ABC), 02-02 (/settimana + variant selector), 02-03 (production deploy), 02-04 (grid parser + per-day variants), 02-05 (shopping list end-to-end) merged. Real Stefano + Marta plans now parse end-to-end and the /spesa endpoint returns 43 categorized items from Stefano's plan in 5 fixed buckets. Plans 02-06 (PDF), 02-07 (family sync), 02-08 (closure) ready to execute.
+- **Progress:** Phase 1/5 done code-side · Phase 2: Plans 5/8 complete · 3 plans remaining (02-06..08)
 - **Phase progress bar:**
 
   ```text
   [##########] 100% — Phase 1: Foundation (10/10 plans, code-side closure)
-  [#####.....]  50% — Phase 2: Differentiators (4/8 plans complete)
+  [######....]  63% — Phase 2: Differentiators (5/8 plans complete)
   ```
 
 ## Performance Metrics
@@ -63,6 +63,7 @@ progress:
 | 01-08 mockups+dep| ~50 min  | 2/2   | 15 created (T3 deferred) | 4       |
 | 01-09 lifesum-px | ~28 min  | 3/3   | 4 created + 22 modified  | 3       |
 | 02-04 grid-parser| ~25 min  | 3/3   | 7 created + 10 modified  | 3       |
+| 02-05 shopping   | ~32 min  | 3/3   | 24 created + 9 modified  | 5       |
 
 ## Accumulated Context
 
@@ -109,6 +110,14 @@ progress:
 - (Plan 02-04) today_service threads `variant_by_meal: dict[str, WeeklyPlanVariant]` into `_meals_from_parsed` so user's stored selection overrides first-option default — recipe title shown matches chosen variant.
 - (Plan 02-04) /api/weekly response includes `options: list[MealOptionPayload]` per (day, slot) so frontend variant selector can map UI A/B/special to actual backend grid keys (`opzione_a`/`opzione_b`/`piatto`/...).
 - (Plan 02-04) Italian-keyed `dayLabels` (`lun`..`dom`) added to `copy.it.ts` alongside legacy `mon`..`sun` aliases — both work; canonical is Italian short form matching grid parser.
+- (Plan 02-05) Pure-aggregation core pattern — `_aggregate_ingredients(meals: list[dict])` is DB-free and unit-tested; `aggregate_for_week` orchestrates plan + variant fetches and delegates.
+- (Plan 02-05) Shopping aggregation key is `(canonical_name, unit)` tuple — same-name-different-unit splits into separate rows; q.b. (unit='qb') collapses count=1 regardless of recipe count (Pitfall #14).
+- (Plan 02-05) Meal-level `**Categoria:**` annotation wins over keyword lookup ONLY when it matches one of the 5 locked categories (Frigo & Freschi / Frutta & Verdura / Dispensa / Condimenti / Integratori); else falls back to Dispensa (T-02-05-01 STRIDE).
+- (Plan 02-05) APScheduler 3.11.2 has a documented spring-forward edge case where `day_of_week='mon', hour=0` skips one week when seeded BEFORE DST Sunday; fall-back works correctly. Documented in scheduler.py header. Real-world impact: ~once per 5 years, user can manually POST /reset.
+- (Plan 02-05) `PYTEST_CURRENT_TEST` lifespan guard — long-lived background services (scheduler) opt out during pytest so test_engine fixtures can recreate the DB without ObjectInUseError on `DROP DATABASE`.
+- (Plan 02-05) BroadcastChannel + window.focus listener fallback for iOS Safari Private mode multi-tab sync (D-25, Pitfall #15) — 3 unit tests cover delivery, unsubscribe, and fallback paths.
+- (Plan 02-05) Native `<details><summary>` for ShoppingCategorySection collapsible — zero JS state, full keyboard a11y inherited.
+- (Plan 02-05) BowlSteam icon used for Condimenti instead of Wine (kitchen-objects WIN REQUISITE) — better semantic match for sauces/oils/condiments.
 
 ### Open Questions to Resolve in Plans
 
@@ -165,7 +174,7 @@ progress:
 
 ### Next Action
 
-**`/gsd:execute-phase 02-differentiators`** — Phase 2 in progress. Plans 02-01..02-04 complete (grid parser + per-day variants gap-closure done). Wave 5 = 02-05 (shopping list) ready to execute next.
+**`/gsd:execute-phase 02-differentiators`** — Phase 2 in progress. Plans 02-01..02-05 complete (shopping list end-to-end shipped). Wave 6 = 02-06 (shopping PDF — wires WeasyPrint exporter from Plan 02-01 + `build_pdf_payload` from 02-05) ready to execute next.
 
 ### Phase 2 Plan Index
 
@@ -175,8 +184,8 @@ progress:
 | 02-02 | /settimana + variant selector + LWW 409 | 2 | done |
 | 02-03 | Production deploy CHECKPOINT | 3 | done |
 | 02-04 | Gap-closure: weekly grid parser + per-day variants | 4 | done (commits 745fd96, b97cbc1, c6f1241) |
-| 02-05 | Shopping list | 5 | ready |
-| 02-06 | Shopping PDF | 6 | not started |
+| 02-05 | Shopping list | 5 | done (commits 52e0753, 8f8748d, 8810764, 50270db, 55f94f7) |
+| 02-06 | Shopping PDF | 6 | ready |
 | 02-07 | Family sync | 7 | not started |
 | 02-08 | Phase 2 closure CHECKPOINT | 8 | not started |
 
