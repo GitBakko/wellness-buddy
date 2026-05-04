@@ -625,7 +625,7 @@ $cert | Select-Object Subject, Issuer, NotAfter, Thumbprint | Format-List
 Select-String -Path E:\www\wellnessBuddy\frontend\dist\web.config -Pattern 'Redirect to HTTPS' -Context 0,5
 ```
 
-- [ ] Output mostra rule `<rule name="Redirect to HTTPS" stopProcessing="true">` con condition `{HTTPS}` `^OFF$` → action redirect 301
+- [X] Output mostra rule `<rule name="Redirect to HTTPS" stopProcessing="true">` con condition `{HTTPS}` `^OFF$` → action redirect 301
 
 #### 7.4.2 Se rule MANCA → aggiungi manualmente
 
@@ -656,12 +656,50 @@ Start-Sleep 2
 
 #### 7.4.4 Test redirect
 
+> **Quirk PowerShell:** `Invoke-WebRequest -MaximumRedirection 0 -ErrorAction SilentlyContinue` lancia `WebException` per status 3xx, catchata silently → `$resp.StatusCode = 200` con Location vuoto (valori sbagliati). Usa metodi affidabili sotto.
+
+**Metodo A — PowerShell 7+ con `-SkipHttpErrorCheck`:**
+
 ```powershell
-$resp = Invoke-WebRequest http://wellness-buddy.epartner.it -MaximumRedirection 0 -ErrorAction SilentlyContinue
-Write-Host "Status: $($resp.StatusCode) | Location: $($resp.Headers.Location)"
+$resp = Invoke-WebRequest http://wellness-buddy.epartner.it -MaximumRedirection 0 -SkipHttpErrorCheck
+Write-Host "Status: $([int]$resp.StatusCode) | Location: $($resp.Headers.Location)"
 ```
 
-- [ ] Status `301` con Location header verso `https://wellness-buddy.epartner.it/`
+**Metodo B — try/catch esplicito (PS 5.1 compatibile):**
+
+```powershell
+try {
+    Invoke-WebRequest http://wellness-buddy.epartner.it -MaximumRedirection 0 -ErrorAction Stop | Out-Null
+} catch {
+    $r = $_.Exception.Response
+    if ($r) {
+        Write-Host "Status: $([int]$r.StatusCode) ($($r.StatusCode))"
+        $loc = $r.Headers['Location']; if (-not $loc) { $loc = $r.Headers.Location }
+        Write-Host "Location: $loc"
+    } else {
+        Write-Host "No response — connection error: $_"
+    }
+}
+```
+
+**Metodo C — curl (più diretto, output umano):**
+
+```powershell
+curl.exe -I http://wellness-buddy.epartner.it
+```
+
+Output atteso:
+
+```text
+HTTP/1.1 301 Moved Permanently
+Location: https://wellness-buddy.epartner.it/
+```
+
+Verifiche:
+
+- [ ] Status `301` (Moved Permanently)
+- [ ] Location header valorizzato: `https://wellness-buddy.epartner.it/`
+- [ ] Body response `Il documento è stato spostato` = body default IIS 301, conferma redirect attivo (non è un errore — è il payload della 301)
 - [ ] Se status 200 → rule non attiva → verifica:
   1. Posizione rule (deve essere PRIMA delle altre)
   2. URL Rewrite module installato (`Get-WebGlobalModule | ? Name -eq 'RewriteModule'`)

@@ -80,21 +80,35 @@ catch {
 }
 
 # ─── 4. SSL cert expiry (only meaningful for https URLs) ───────────
+# Uses TcpClient + SslStream — works on PS 7+/.NET 6+ where the legacy
+# WebRequest.ServicePoint.Certificate path can return null after the
+# response stream is closed.
 if ($BaseUrl.StartsWith('https://')) {
+    $tcp = $null
+    $ssl = $null
     try {
-        $req = [System.Net.WebRequest]::Create($BaseUrl)
-        $req.Timeout = 10000
-        $req.AllowAutoRedirect = $false
-        $resp = $req.GetResponse()
-        try { $resp.Close() } catch {}
-        $cert = $req.ServicePoint.Certificate
-        if ($null -eq $cert) { throw 'No SSL certificate observed on response' }
-        $expiry = [DateTime]::Parse($cert.GetExpirationDateString())
+        $uri = [Uri]$BaseUrl
+        $port = if ($uri.Port -gt 0) { $uri.Port } else { 443 }
+
+        $tcp = [System.Net.Sockets.TcpClient]::new()
+        $tcp.ReceiveTimeout = 10000
+        $tcp.SendTimeout = 10000
+        $tcp.Connect($uri.Host, $port)
+
+        $ssl = [System.Net.Security.SslStream]::new($tcp.GetStream(), $false, { $true })
+        $ssl.AuthenticateAsClient($uri.Host)
+
+        $cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($ssl.RemoteCertificate)
+        $expiry = $cert.NotAfter
         $daysLeft = [int]([math]::Floor(($expiry - (Get-Date)).TotalDays))
+        $subjectShort = ($cert.Subject -split ',')[0]
+        $issuerShort = ($cert.Issuer -split ',')[0]
+
         if ($daysLeft -gt 0) {
-            Write-Host "OK  HTTPS cert valid: expires in $daysLeft days ($expiry)" -ForegroundColor Green
+            Write-Host "OK  HTTPS cert valid: expires in $daysLeft days ($($expiry.ToString('yyyy-MM-dd')))" -ForegroundColor Green
+            Write-Host "    Subject: $subjectShort | Issuer: $issuerShort" -ForegroundColor DarkGray
             if ($daysLeft -lt 14) {
-                Write-Host "WARN Cert expires in $daysLeft days — verify win-acme renewal task." -ForegroundColor Yellow
+                Write-Host "WARN Cert expires in $daysLeft days — verify auto-renewal task." -ForegroundColor Yellow
             }
         }
         else {
@@ -104,6 +118,10 @@ if ($BaseUrl.StartsWith('https://')) {
     catch {
         Write-Host "ERR SSL check failed: $_" -ForegroundColor Red
         $failures++
+    }
+    finally {
+        if ($ssl) { try { $ssl.Dispose() } catch {} }
+        if ($tcp) { try { $tcp.Dispose() } catch {} }
     }
 }
 else {
