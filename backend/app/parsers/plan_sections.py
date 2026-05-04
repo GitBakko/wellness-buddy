@@ -1,7 +1,8 @@
 """Per-section parsers.
 
 Source: PLAN-02 sections list, RESEARCH Pattern 10 stub `_parse_section`,
-        PLAN-01-09 (optional `**Foto:** <url>` extraction for Lifesum-style cards).
+        PLAN-01-09 (optional `**Foto:** <url>` extraction for Lifesum-style cards),
+        PLAN 02-04 (weekly grid `| Giorno | Opzione A | Opzione B |` for lunches/dinners).
 
 Strategy:
   * `personal_data` + `macro_target` use both bullet-list and markdown-table
@@ -18,6 +19,10 @@ Strategy:
     the meal as a `notes` string.
   * Plan 01-09: meal-bearing sections OPT-INTO photo_url extraction via a
     literal `**Foto:** <url>` line inside the segment body.
+  * Plan 02-04: lunches/dinners DUAL-MODE — try grid format `| Giorno | Opzione A |`
+    first (real Stefano + Marta plans). When grid yields ≥1 day key, return
+    `{day_slug: [opts]}`. Otherwise fall back to `### Opzione X` subheading
+    parsing (EXAMPLE.md backward compat) and return `{'default': [opts]}`.
 
 The parser emits dicts that match `PlanParsedSchema` field types
 (post-`model_validate`).
@@ -26,6 +31,7 @@ The parser emits dicts that match `PlanParsedSchema` field types
 from __future__ import annotations
 
 import re
+import unicodedata
 
 _NUMBER_RE = re.compile(r"(\d+(?:[.,]\d+)?)")
 # Italian thousands separator: a dot between exactly 3-digit groups, e.g. "1.895"
@@ -516,12 +522,24 @@ def _parse_breakfast(body: str, heading: str = "") -> tuple[dict | None, list[st
 def _parse_meal_options(
     body: str, heading: str = "", default_title: str = "Pasto"
 ) -> tuple[dict[str, list[dict]], list[str]]:
-    """Parse `### Opzione X` / `### Variante Y` chunks under a section.
+    """Dual-mode parser for lunches/dinners (Plan 02-04).
 
-    Returns {"default": [opt1, opt2, ...]}. When no `###` subheadings exist,
-    a single 'default' option carries the whole body (so per-option photo_url
-    extraction still works).
+    Mode A (grid format — real Stefano + Marta plans):
+      `| Giorno | Opzione A | Opzione B |` → `{lun: [optA, optB], mar: [...]}`.
+      day_of_week int list captured per option; key derived from header column.
+
+    Mode B (subheading format — EXAMPLE.md backward compat):
+      `### Opzione A — Pasta` chunks → `{'default': [opt1, opt2, ...]}`.
+      `day_of_week=None` (week-level).
+
+    Tries grid first; falls back to subheading when grid yields no day keys.
     """
+    # Mode A — grid format
+    grid_options = _parse_meal_grid(body)
+    if grid_options:
+        return grid_options, []
+
+    # Mode B — subheading format (existing behavior)
     options: list[dict] = []
     segments = _split_into_segments(body)
     for idx, (title, segment_body) in enumerate(segments):
@@ -538,6 +556,8 @@ def _parse_meal_options(
             key=key,
             title_fallback=title_fallback,
         )
+        # day_of_week=None → week-level; downstream consumers fall back to 'default' key.
+        opt["day_of_week"] = None
         options.append(opt)
     return {"default": options}, []
 
@@ -579,6 +599,173 @@ def _slug(s: str) -> str:
     low = s.strip().lower()
     low = _SLUG_RE.sub("_", low).strip("_")
     return low
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Plan 02-04 — weekly grid (`| Giorno | Opzione A | Opzione B |`) parser
+# ──────────────────────────────────────────────────────────────────────────────
+
+# Italian day-of-week mapping. 0=Mon..6=Sun (matches Python date.weekday()).
+# Multiple aliases per day so `Lun`/`Lunedi`/`Lunedì`/`LUNEDÌ` all match the
+# same int. Accents stripped via NFD normalization before lookup.
+_DAY_TO_INT: dict[str, int] = {
+    "lun": 0,
+    "lunedi": 0,
+    "mar": 1,
+    "martedi": 1,
+    "mer": 2,
+    "mercoledi": 2,
+    "gio": 3,
+    "giovedi": 3,
+    "ven": 4,
+    "venerdi": 4,
+    "sab": 5,
+    "sabato": 5,
+    "dom": 6,
+    "domenica": 6,
+}
+
+_INT_TO_DAY_SLUG: dict[int, str] = {
+    0: "lun",
+    1: "mar",
+    2: "mer",
+    3: "gio",
+    4: "ven",
+    5: "sab",
+    6: "dom",
+}
+
+# Separators that may join multiple day labels in a single cell:
+#   "Lun / Gio", "Lun-Gio", "Lun, Gio", "Lun & Gio", "Lun&Gio".
+_DAY_SEP_RE = re.compile(r"[/,&\-]+")
+
+# Header detector for the weekly grid. Case-insensitive match on the first
+# column being "Giorno" / "Giorni" / "Giorno" with optional accents/whitespace.
+_GRID_HEADER_RE = re.compile(r"^\s*giorn[oi]\s*$", re.IGNORECASE)
+
+
+def _strip_accents(s: str) -> str:
+    """NFD-normalize and drop combining marks so 'Lunedì' → 'lunedi'."""
+    nfd = unicodedata.normalize("NFD", s)
+    return "".join(c for c in nfd if not unicodedata.combining(c))
+
+
+def _parse_day_label(label: str) -> list[int]:
+    """Map an Italian day-label cell to a sorted list of day_of_week ints (0..6).
+
+    Accepts short ("Lun"), full ("Lunedì"), accented or not, joined by `/`, `,`,
+    `&`, or `-`. Returns `[]` when no token matches a known day (so caller can
+    skip rows like "TOTALE" or "Note").
+    """
+    if not label or not label.strip():
+        return []
+    normalized = _strip_accents(label).lower().strip()
+    tokens = [tok.strip() for tok in _DAY_SEP_RE.split(normalized) if tok.strip()]
+    days: set[int] = set()
+    for tok in tokens:
+        if tok in _DAY_TO_INT:
+            days.add(_DAY_TO_INT[tok])
+    return sorted(days)
+
+
+def _grid_variant_key_from_header(header_label: str, idx: int) -> str:
+    """Derive a stable variant key from a grid header cell.
+
+    Examples:
+      "Opzione A"      → "opzione_a"
+      "Opzione B"      → "opzione_b"
+      "Piatto"         → "piatto" (single-column grids)
+      ""               → "opzione_{idx+1}" (defensive fallback)
+    """
+    slug = _slug(header_label)
+    return slug or f"opzione_{idx + 1}"
+
+
+def _build_grid_option(
+    *,
+    title: str,
+    key: str,
+    day_of_week: list[int],
+) -> dict:
+    """Schema-shaped MealOption dict for a single grid cell.
+
+    Cell-level macro extraction is best-effort and not done here — real grids
+    (Stefano + Marta) keep macros only on the daily-target row, not per cell.
+    Pydantic Macros default factory will fill {kcal:0, protein_g:0, ...}.
+    """
+    return {
+        "key": key,
+        "title": title.strip()[:200],
+        "ingredients": [],
+        "macros": {"kcal": 0, "protein_g": 0, "carbs_g": 0, "fat_g": 0},
+        "notes": None,
+        "photo_url": None,
+        "day_of_week": day_of_week,
+    }
+
+
+def _parse_meal_grid(body: str) -> dict[str, list[dict]]:
+    """Parse a weekly grid (`| Giorno | Opzione A | Opzione B |`) into day-keyed options.
+
+    Returns `{day_slug: [MealOption-dict, ...]}`. Empty dict when no grid header
+    is found OR no data row maps to a known day. Caller can detect "no grid" and
+    fall back to subheading parsing.
+
+    Grid contract:
+      * Header row's first cell matches `Giorno` (case-insensitive)
+      * Subsequent rows: first cell = day label (Lun/Lunedi/Lun-Gio/...);
+        remaining cells = variant cells (one MealOption per non-empty cell)
+      * Rows where the day label parses to `[]` are skipped
+      * TOTALE / TOTAL rows from ingredient tables are intentionally NOT a
+        valid day-label, so they're skipped too.
+    """
+    grid: dict[str, list[dict]] = {}
+    tables = _extract_tables(body)
+    target_table: list[list[str]] | None = None
+    header_cells: list[str] = []
+    for table in tables:
+        if not table:
+            continue
+        header = [c.strip() for c in table[0]]
+        if not header:
+            continue
+        # Match the first column as some form of "Giorno"/"Giorni"
+        if _GRID_HEADER_RE.match(header[0]):
+            target_table = table
+            header_cells = header
+            break
+    if target_table is None:
+        return {}
+
+    # Derive variant keys from header columns 1..N
+    variant_headers = header_cells[1:]
+    variant_keys = [_grid_variant_key_from_header(h, i) for i, h in enumerate(variant_headers)]
+
+    for row in target_table[1:]:
+        if not row:
+            continue
+        first = row[0].strip()
+        days = _parse_day_label(first)
+        if not days:
+            # Row whose first cell isn't a recognised day label — skip.
+            continue
+        cells = row[1:]
+        for col_idx, cell in enumerate(cells):
+            if col_idx >= len(variant_keys):
+                break
+            cell_text = cell.strip()
+            if not cell_text:
+                continue
+            variant_key = variant_keys[col_idx]
+            option = _build_grid_option(
+                title=cell_text,
+                key=variant_key,
+                day_of_week=list(days),
+            )
+            for d in days:
+                slug = _INT_TO_DAY_SLUG[d]
+                grid.setdefault(slug, []).append(option)
+    return grid
 
 
 # ──────────────────────────────────────────────────────────────────────────────

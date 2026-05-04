@@ -10,7 +10,7 @@ from datetime import date
 from enum import Enum as PyEnum
 from uuid import UUID, uuid4
 
-from sqlalchemy import Date, ForeignKey, Index, Integer, String
+from sqlalchemy import Date, ForeignKey, Index, Integer, String, UniqueConstraint
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID as PgUUID
 from sqlalchemy.orm import Mapped, mapped_column
@@ -57,4 +57,12 @@ class WeeklyPlanVariant(Base):
         Index("ix_weekly_user_week", "user_id", "week_start"),
         # Phase 2 family sync helper: list shared variants for a given week
         Index("ix_weekly_group_share", "week_start", "visibility"),
+        # Plan 02-04: per-day variant uniqueness — one row per (user, week, day, meal)
+        UniqueConstraint(
+            "user_id",
+            "week_start",
+            "day_of_week",
+            "meal_type",
+            name="uq_weekly_variant_per_day",
+        ),
     )

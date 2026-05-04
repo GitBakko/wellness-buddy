@@ -53,7 +53,12 @@ class Ingredient(BaseModel):
 
 
 class MealOption(BaseModel):
-    """A single meal alternative (e.g. `### Opzione A`)."""
+    """A single meal alternative (e.g. `### Opzione A` OR a grid-cell).
+
+    Plan 02-04 — `day_of_week` is the list of day-of-week ints (0=Mon..6=Sun)
+    this option applies to when extracted from a weekly grid. `None` for
+    subheading-format (week-level) options.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
@@ -69,6 +74,9 @@ class MealOption(BaseModel):
     # `str | None` rather than HttpUrl so internal URLs / future blob refs stay valid;
     # length capped at 500 chars (Plan 01-09 STRIDE — spoofing mitigation).
     photo_url: str | None = Field(default=None, max_length=500)
+    # Plan 02-04 — list of day_of_week ints this option applies to (0=Mon..6=Sun);
+    # `None` for week-level / subheading-format options.
+    day_of_week: list[int] | None = None
 
 
 class PlanParsedSchema(BaseModel):
