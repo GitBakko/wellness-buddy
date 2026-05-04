@@ -161,10 +161,14 @@ Logs land in `C:\path\to\WellnessBuddy\logs\stdout.log` and `stderr.log`, rotate
    - Binding: HTTP, port 80, host header `wellness-buddy.epartner.it`
 3. Copy `deploy/iis/web.config` into the site root (overrides any existing).
 4. Verify ARR proxy is enabled at the **server level**: IIS Manager → server node → Application Request Routing Cache → Server Proxy Settings → tick **Enable proxy**.
-5. Restart IIS:
+5. Restart only the wellness-buddy site + app pool (do NOT use `iisreset` on shared IIS — impacts other sites):
 
    ```powershell
-   iisreset
+   Import-Module WebAdministration
+   $pool = (Get-Website -Name 'wellness-buddy').applicationPool
+   Restart-WebAppPool -Name $pool
+   Stop-Website -Name 'wellness-buddy' -ErrorAction SilentlyContinue
+   Start-Website -Name 'wellness-buddy'
    ```
 
 6. Verify proxy:
@@ -284,9 +288,13 @@ uv sync --frozen
 # Roll back DB migration if a new one was applied
 uv run alembic downgrade -1
 
-# Restart
+# Restart (site + app pool only — never iisreset on shared IIS)
 Start-Service WellnessBuddyAPI
-iisreset
+Import-Module WebAdministration
+$pool = (Get-Website -Name 'wellness-buddy').applicationPool
+Restart-WebAppPool -Name $pool
+Stop-Website -Name 'wellness-buddy' -ErrorAction SilentlyContinue
+Start-Website -Name 'wellness-buddy'
 
 # Verify
 pwsh deploy/scripts/smoke-test.ps1 https://wellness-buddy.epartner.it
@@ -328,14 +336,25 @@ Existing NXTLink monitoring polls `/api/health` every 5 min. Alert thresholds in
 
 ## 15. Future deploys (incremental)
 
-After the first cutover, day-to-day deploys are:
+After the first cutover, day-to-day deploys use the package-based flow
+(server has no git/pnpm/node — frontend pre-built on dev workstation):
 
-1. `git pull` on server
-2. `cd backend && uv sync --frozen && uv run alembic upgrade head`
-3. `pnpm install --frozen-lockfile && pnpm --filter frontend build`
-4. `Restart-Service WellnessBuddyAPI`
-5. `iisreset` (only if `web.config` changed)
-6. `pwsh deploy/scripts/smoke-test.ps1 https://wellness-buddy.epartner.it`
+1. **On dev workstation:** `pwsh deploy/scripts/package-release.ps1`
+2. **Transfer zip + `.sha256`** to server (RDP / share / SCP)
+3. **On server:** verify SHA256 + extract to `E:\www\wellnessBuddy` (backup previous)
+4. `cd E:\www\wellnessBuddy\backend && uv sync --frozen && uv run alembic upgrade head`
+5. `Restart-Service WellnessBuddyAPI`
+6. **Only if `web.config` changed** — restart site + app pool (NOT `iisreset`):
+
+   ```powershell
+   Import-Module WebAdministration
+   $pool = (Get-Website -Name 'wellness-buddy').applicationPool
+   Restart-WebAppPool -Name $pool
+   Stop-Website -Name 'wellness-buddy' -ErrorAction SilentlyContinue
+   Start-Website -Name 'wellness-buddy'
+   ```
+
+7. `pwsh deploy/scripts/smoke-test.ps1 https://wellness-buddy.epartner.it`
 
 ---
 

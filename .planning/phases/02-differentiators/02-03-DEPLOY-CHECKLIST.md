@@ -527,34 +527,58 @@ nssm get WellnessBuddyAPI AppEnvironmentExtra
 Get-WindowsFeature Web-Server, Web-Http-Redirect, Web-Static-Content, Web-Default-Doc | ? InstallState -eq Installed
 Get-IISAppPool   # verifica IIS attivo
 ```
-- [ ] IIS installato + URL Rewrite + ARR (vedi DEPLOY.md §1)
+- [X] IIS installato + URL Rewrite + ARR (vedi DEPLOY.md §1)
 
 ### 6.2 Crea sito
 
-- [ ] IIS Manager → Add Website
+- [X] IIS Manager → Add Website
   - Site name: `wellness-buddy`
   - Physical path: `E:\www\wellnessBuddy\frontend\dist`
   - Binding: `http`, port `80`, host header `wellness-buddy.epartner.it`
-- [ ] Sito appare in IIS Manager → Sites
+- [X] Sito appare in IIS Manager → Sites
 
 ### 6.3 Deploy web.config
 ```powershell
 Copy-Item E:\www\wellnessBuddy\deploy\iis\web.config E:\www\wellnessBuddy\frontend\dist\web.config -Force
 ```
-- [ ] File presente in `dist\web.config`
+- [X] File presente in `dist\web.config`
 
 ### 6.4 ARR proxy abilitato (server-level, una volta sola)
 
-- [ ] IIS Manager → server node → "Application Request Routing Cache" → "Server Proxy Settings" → tick `Enable proxy` → Apply
+- [X] IIS Manager → server node → "Application Request Routing Cache" → "Server Proxy Settings" → tick `Enable proxy` → Apply
 
 ### 6.5 Restart + smoke
+
+> **NON usare `iisreset`** — impatta tutti gli altri siti `epartner.it` sullo stesso IIS. Riavvia solo il sito + app pool `wellness-buddy`.
+
 ```powershell
-iisreset
+Import-Module WebAdministration
+
+# Identifica app pool del sito (di solito stesso nome del sito)
+$site = Get-Website -Name 'wellness-buddy'
+$poolName = $site.applicationPool
+Write-Host "Site: $($site.Name) | App Pool: $poolName"
+
+# Recycle app pool (necessario dopo modifiche web.config)
+Restart-WebAppPool -Name $poolName
+
+# Restart sito (assicura ri-lettura bindings + web.config)
+Stop-Website -Name 'wellness-buddy' -ErrorAction SilentlyContinue
+Start-Website -Name 'wellness-buddy'
+
 Start-Sleep 3
+
+# Smoke test
 Invoke-WebRequest http://wellness-buddy.epartner.it/api/health
+Invoke-WebRequest http://wellness-buddy.epartner.it/
 ```
-- [ ] Risposta 200 con `status=ok` (proxy IIS → uvicorn end-to-end; DB connettività implicita da §2.5 alembic OK)
-- [ ] `Invoke-WebRequest http://wellness-buddy.epartner.it/` → HTML index.html
+
+- [ ] App pool name identificato correttamente
+- [ ] `Restart-WebAppPool` zero errori
+- [ ] `Stop-Website` + `Start-Website` zero errori
+- [ ] Risposta 200 su `/api/health` con `status=ok` (proxy IIS → uvicorn end-to-end)
+- [ ] Risposta 200 su `/` con HTML `index.html` (frontend dist served)
+- [ ] Altri siti `epartner.it` rimasti UP durante restart (verifica visitando uno: `Invoke-WebRequest https://<altro-sito>.epartner.it`)
 
 ---
 
@@ -828,7 +852,7 @@ asyncio.run(main())
 1. Service WellnessBuddyAPI Running? `Get-Service WellnessBuddyAPI`
 2. Backend risponde diretto? `Invoke-WebRequest http://127.0.0.1:8000/api/health`
 3. ARR proxy abilitato? IIS Manager → server → ARR Cache → tick "Enable proxy"
-4. `iisreset` dopo qualunque modifica web.config
+4. `Restart-WebAppPool -Name <pool>` + `Stop-Website` + `Start-Website` (NON `iisreset` — impatta altri siti epartner.it)
 
 ### Lighthouse PWA score <95
 1. Service worker registrato? Chrome DevTools → Application → Service Workers
