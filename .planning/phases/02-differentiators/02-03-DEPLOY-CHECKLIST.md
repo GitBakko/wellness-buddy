@@ -573,50 +573,66 @@ Invoke-WebRequest http://wellness-buddy.epartner.it/api/health
 Invoke-WebRequest http://wellness-buddy.epartner.it/
 ```
 
-- [ ] App pool name identificato correttamente
-- [ ] `Restart-WebAppPool` zero errori
-- [ ] `Stop-Website` + `Start-Website` zero errori
-- [ ] Risposta 200 su `/api/health` con `status=ok` (proxy IIS → uvicorn end-to-end)
-- [ ] Risposta 200 su `/` con HTML `index.html` (frontend dist served)
-- [ ] Altri siti `epartner.it` rimasti UP durante restart (verifica visitando uno: `Invoke-WebRequest https://<altro-sito>.epartner.it`)
+- [X] App pool name identificato correttamente
+- [X] `Restart-WebAppPool` zero errori
+- [X] `Stop-Website` + `Start-Website` zero errori
+- [X] Risposta 200 su `/api/health` con `status=ok` (proxy IIS → uvicorn end-to-end)
+- [X] Risposta 200 su `/` con HTML `index.html` (frontend dist served)
+- [X] Altri siti `epartner.it` rimasti UP durante restart (verifica visitando uno: `Invoke-WebRequest https://<altro-sito>.epartner.it`)
 
 ---
 
-## 7. SSL via win-acme
+## 7. SSL — wildcard cert già applicato
 
-### 7.1 Esecuzione interattiva
-```powershell
-cd C:\Tools\win-acme
-.\wacs.exe
-```
-Sequenza interattiva:
-- [ ] `M` → Create renewal with advanced options
-- [ ] `1` → Read bindings from IIS
-- [ ] Seleziona `wellness-buddy`
-- [ ] `5` → SAN cert per `wellness-buddy.epartner.it`
-- [ ] `1` → HTTP-01 ACME validation via IIS file
-- [ ] `2` → RSA key
-- [ ] `3` → PFX archive in IIS Cert Store
-- [ ] `1` → IIS Web (auto-binding 443)
-- [ ] Email contatto: `<admin email>`
-- [ ] Accetta TOS
+> **Scenario:** wildcard cert `*.epartner.it` già installato su IIS e legato al binding HTTPS del sito `wellness-buddy`. Skip flow win-acme interattivo. Verifica solo che cert funzioni + redirect HTTP→HTTPS attivo.
 
-### 7.2 Verifica scheduled task
+### 7.1 Verifica binding HTTPS sul sito
+
 ```powershell
-Get-ScheduledTask | ? TaskName -match 'win-acme'
+Import-Module WebAdministration
+Get-WebBinding -Name 'wellness-buddy' | Select-Object protocol, bindingInformation, sslFlags
 ```
-- [ ] Almeno 1 task abilitato (rinnovo automatico)
+
+- [ ] Output include riga `protocol: https`, `bindingInformation: *:443:wellness-buddy.epartner.it`
+- [ ] Se manca binding HTTPS → IIS Manager → site bindings → Add → https + cert wildcard + host header `wellness-buddy.epartner.it` + tick "Require Server Name Indication"
+
+### 7.2 Verifica certificato bound
+
+```powershell
+$binding = Get-WebBinding -Name 'wellness-buddy' -Protocol https
+$cert = Get-ChildItem Cert:\LocalMachine\My | Where-Object { $_.Thumbprint -eq $binding.certificateHash }
+$cert | Select-Object Subject, Issuer, NotAfter, Thumbprint | Format-List
+```
+
+- [ ] `Subject` contiene `*.epartner.it` (wildcard)
+- [ ] `NotAfter` data scadenza futura (verifica che ci siano almeno 30 giorni)
+- [ ] `Issuer` riconosciuto (Let's Encrypt / Sectigo / DigiCert / etc.)
 
 ### 7.3 Verifica HTTPS pubblico (da rete ESTERNA — 4G mobile NON LAN)
 
-- [ ] Browser su iPhone (4G OFF wifi): `https://wellness-buddy.epartner.it` → carica
-
+- [ ] Browser su iPhone (4G ON, wifi OFF): `https://wellness-buddy.epartner.it` → carica
 - [ ] Lucchetto verde, "Connessione protetta"
-- [ ] Cert details mostra issuer Let's Encrypt + scadenza ~90 giorni
+- [ ] Cert details mostra issuer wildcard + dominio `*.epartner.it`
+- [ ] Nessun warning "certificate not trusted" / "name mismatch"
 
 ### 7.4 Forza HTTPS redirect
 
-- [ ] `Invoke-WebRequest http://wellness-buddy.epartner.it -MaximumRedirection 0` → status 301/302 verso HTTPS (web.config gestisce)
+```powershell
+# Test redirect HTTP → HTTPS (web.config rule)
+$resp = Invoke-WebRequest http://wellness-buddy.epartner.it -MaximumRedirection 0 -ErrorAction SilentlyContinue
+Write-Host "Status: $($resp.StatusCode) | Location: $($resp.Headers.Location)"
+```
+
+- [ ] Status `301` o `302` con Location header verso `https://wellness-buddy.epartner.it`
+- [ ] Se status 200 → redirect mancante in web.config (verifica `<rule name="Redirect to HTTPS">` presente)
+
+### 7.5 Smoke HTTPS dal server
+
+```powershell
+Invoke-WebRequest https://wellness-buddy.epartner.it/api/health
+```
+
+- [ ] Status 200 + JSON `{"status":"ok",...}`
 
 ---
 
