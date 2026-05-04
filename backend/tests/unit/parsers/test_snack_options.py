@@ -141,17 +141,74 @@ def test_simple_snack_no_opzione_pattern_yields_single_option() -> None:
     assert parsed_value[0]["title"] == "Spuntino pomeriggio"
 
 
-def test_serale_oppure_bullets_yield_single_option() -> None:
-    """SPUNTINO SERALE uses `- 200 g yogurt`/`- oppure ...` plain bullets — NOT
-    `Opzione X:` pattern. Should still emit a single option (backward compat)."""
+def test_serale_oppure_bullets_yield_three_alternatives() -> None:
+    """Plan 02-05 update: SPUNTINO SERALE uses `- 200 g yogurt`/`- oppure ...`
+    plain bullets (NOT `Opzione X:` pattern). Real Stefano plan format. The
+    parser must recognize `oppure`-connected plain bullets as alternatives,
+    one MealOption per bullet, with `oppure` connector stripped from text."""
     parsed_value, _ = parse_section(
         "snacks",
         _SERALE_BODY,
         "SPUNTINO SERALE (opzionale - solo se fame vera)",
     )
     assert isinstance(parsed_value, list)
+    assert len(parsed_value) == 3
+    titles = [opt["title"] for opt in parsed_value]
+    for t in titles:
+        assert "Spuntino serale" in t
+    # Each option carries non-empty ingredients (the bullet text)
+    names_0 = [ing["name"] for ing in parsed_value[0]["ingredients"]]
+    assert names_0 == ["200 g yogurt di soia non zuccherato"]
+    names_1 = [ing["name"] for ing in parsed_value[1]["ingredients"]]
+    # The "oppure" connector is stripped before splitting on `+`
+    assert names_1 == ["1 scatoletta tonno con cetrioli"]
+    names_2 = [ing["name"] for ing in parsed_value[2]["ingredients"]]
+    assert names_2 == ["20 g cioccolato fondente 85%+"] or names_2 == [
+        "20 g cioccolato fondente 85%"
+    ]
+
+
+def test_serale_alternatives_carry_evening_slot() -> None:
+    """Plan 02-05: SERALE section heading triggers `slot='evening'` classification
+    so today_service can order evening snacks AFTER dinner (not before)."""
+    parsed_value, _ = parse_section(
+        "snacks",
+        _SERALE_BODY,
+        "SPUNTINO SERALE (opzionale - solo se fame vera)",
+    )
+    assert isinstance(parsed_value, list)
+    for opt in parsed_value:
+        assert opt.get("slot") == "evening", f"Expected slot='evening', got {opt.get('slot')!r}"
+
+
+def test_pomeriggio_alternatives_carry_afternoon_slot() -> None:
+    """Plan 02-05: POMERIGGIO heading triggers `slot='afternoon'`."""
+    parsed_value, _ = parse_section(
+        "snacks",
+        _STEFANO_POMERIGGIO_BODY,
+        "SPUNTINO POMERIGGIO (15:30-16:00) + Elettroliti",
+    )
+    assert isinstance(parsed_value, list)
+    for opt in parsed_value:
+        assert opt.get("slot") == "afternoon", f"Expected slot='afternoon', got {opt.get('slot')!r}"
+
+
+def test_simple_snack_prose_body_keeps_single_option() -> None:
+    """Backward compat: plain-prose snack body (no bullets at all) still emits
+    a SINGLE MealOption keyed by section heading."""
+    body = "Frutta + 30g mandorle\n"
+    parsed_value, _ = parse_section("snacks", body, "SPUNTINO POMERIGGIO")
+    assert isinstance(parsed_value, list)
     assert len(parsed_value) == 1
-    assert "Spuntino serale" in parsed_value[0]["title"]
+
+
+def test_single_plain_bullet_keeps_single_option() -> None:
+    """Edge case: section with only ONE plain bullet (no `oppure`, no `Opzione X:`)
+    should NOT split into alternatives — emits one MealOption."""
+    body = "- 200 g yogurt + 10 g noci\n"
+    parsed_value, _ = parse_section("snacks", body, "SPUNTINO POMERIGGIO")
+    assert isinstance(parsed_value, list)
+    assert len(parsed_value) == 1
 
 
 def test_macros_zeroed_for_alternatives() -> None:
