@@ -697,9 +697,9 @@ Location: https://wellness-buddy.epartner.it/
 
 Verifiche:
 
-- [ ] Status `301` (Moved Permanently)
-- [ ] Location header valorizzato: `https://wellness-buddy.epartner.it/`
-- [ ] Body response `Il documento è stato spostato` = body default IIS 301, conferma redirect attivo (non è un errore — è il payload della 301)
+- [X] Status `301` (Moved Permanently)
+- [X] Location header valorizzato: `https://wellness-buddy.epartner.it/`
+- [X] Body response `Il documento è stato spostato` = body default IIS 301, conferma redirect attivo (non è un errore — è il payload della 301)
 - [ ] Se status 200 → rule non attiva → verifica:
   1. Posizione rule (deve essere PRIMA delle altre)
   2. URL Rewrite module installato (`Get-WebGlobalModule | ? Name -eq 'RewriteModule'`)
@@ -712,7 +712,7 @@ Verifiche:
 Invoke-WebRequest https://wellness-buddy.epartner.it/api/health
 ```
 
-- [ ] Status 200 + JSON `{"status":"ok",...}`
+- [X] Status 200 + JSON `{"status":"ok",...}`
 
 ---
 
@@ -723,60 +723,122 @@ Invoke-WebRequest https://wellness-buddy.epartner.it/api/health
 cd E:\www\wellnessBuddy
 pwsh deploy\scripts\smoke-test.ps1 https://wellness-buddy.epartner.it
 ```
-- [ ] `/api/health` → 200, `status=ok`, `version`, `build_hash` presenti
-- [ ] `/api/version` o `/version.json` → ritorna `version` + `build_hash` (match `git rev-parse --short HEAD`)
-- [ ] `/` → serve `index.html` (contiene "Wellness Buddy")
-- [ ] HTTPS cert valido + non scaduto
+- [X] `/api/health` → 200, `status=ok`, `version`, `build_hash` presenti
+- [X] `/api/version` o `/version.json` → ritorna `version` + `build_hash` (match `git rev-parse --short HEAD`)
+- [X] `/` → serve `index.html` (contiene "Wellness Buddy")
+- [X] HTTPS cert valido + non scaduto
 
-### 8.2 Crea primo invite admin (Stefano)
+### 8.2 Bootstrap primo admin (Stefano) — insert diretto
+
+> **Razionale:** `create_invite` richiede `created_by: UUID` di un admin pre-esistente → chicken-and-egg per primo deploy. Bootstrap diretto via `INSERT` + bcrypt hash.
+
 ```powershell
 cd E:\www\wellnessBuddy\backend
-uv run python -c "
+
+# Set password temporanea per primo login (Stefano la cambia post-login)
+$env:ADMIN_BOOTSTRAP_PASSWORD = 'CambiaSubito2026!'
+
+uv run python -c @'
 import asyncio
-from app.services.auth_service import create_invite
-from app.core.db import async_session_factory
+import os
+from sqlalchemy import select
+from app.core.database import SessionLocal
+from app.core.security import hash_password
+from app.models.user import User
 
-async def main():
-    async with async_session_factory() as s:
-        token = await create_invite(s, email='s.brunelli@epartner.it', role='admin')
-        print(f'Invite link: https://wellness-buddy.epartner.it/register?token={token}')
+async def bootstrap():
+    async with SessionLocal() as s:
+        existing = await s.scalar(select(User).where(User.email == "s.brunelli@epartner.it"))
+        if existing:
+            print(f"Admin gia esistente: {existing.email} (role={existing.role}, id={existing.id})")
+            return
 
-asyncio.run(main())
-"
+        pwd = os.environ.get("ADMIN_BOOTSTRAP_PASSWORD")
+        if not pwd or len(pwd) < 8:
+            raise SystemExit("ERROR: set ADMIN_BOOTSTRAP_PASSWORD env var (>=8 chars)")
+
+        admin = User(
+            email="s.brunelli@epartner.it",
+            username="stefano",
+            hashed_password=hash_password(pwd),
+            role="admin",
+            timezone="Europe/Rome",
+        )
+        s.add(admin)
+        await s.commit()
+        await s.refresh(admin)
+        print(f"Admin creato: {admin.email} (id={admin.id})")
+        print(f"Login: https://wellness-buddy.epartner.it/login")
+        print(f"Password temporanea: {pwd}")
+        print(f"AZIONE OBBLIGATORIA: cambia password al primo login (settings)")
+
+asyncio.run(bootstrap())
+'@
+
+# Cleanup env var
+Remove-Item Env:ADMIN_BOOTSTRAP_PASSWORD
 ```
-- [ ] Comando stampa link invite — copialo
+
+- [ ] Output stampa `Admin creato: s.brunelli@epartner.it (id=...)`
+- [ ] Se `Admin gia esistente` → skip (idempotente)
 
 ### 8.3 Login Stefano
 
-- [ ] Apri link invite su browser → form pre-filled → completa registrazione → auto-login
-
-- [ ] Reindirizzato a `/today`
+- [ ] Apri `https://wellness-buddy.epartner.it/login` su browser
+- [ ] Email: `s.brunelli@epartner.it` · Password: `CambiaSubito2026!` (o quella settata in §8.2)
+- [ ] Login OK → reindirizzato a `/today`
+- [ ] Settings → Profilo → cambia password (UI/endpoint disponibile post-Phase 1)
+- [ ] Logout + re-login con nuova password per conferma
 
 ### 8.4 Endpoint Plan 02-02 live (settimana)
 
 - [ ] Da `/today` naviga a `/settimana/<thisWeek>` → carica
-
 - [ ] DevTools Network: `GET /api/weekly/<week_start>` → 200
 - [ ] Variant pills (Opzione A / Opzione B / Speciale) visibili
 - [ ] Macro ring settimanale renderizza
 
-### 8.5 Crea invite Marta
+### 8.5 Crea invite per Marta (admin Stefano logged-in)
+
+> **Approccio raccomandato:** usa endpoint admin via UI/API (Stefano già loggato come admin). Se UI invite non ancora disponibile (Phase 1 minimal), usa script Python con lookup `created_by`.
+
+**Opzione A — endpoint admin (preferito):**
+
+- [ ] Stefano logged-in → naviga a admin panel / route invite (verifica routing UI)
+- [ ] Inserisci `email: m.capotosti@epartner.it` → genera token
+- [ ] Copia link invite generato
+
+**Opzione B — script Python (fallback se UI non disponibile):**
+
 ```powershell
 cd E:\www\wellnessBuddy\backend
-uv run python -c "
+uv run python -c @'
 import asyncio
+from sqlalchemy import select
+from app.core.database import SessionLocal
 from app.services.auth_service import create_invite
-from app.core.db import async_session_factory
+from app.models.user import User
 
 async def main():
-    async with async_session_factory() as s:
-        token = await create_invite(s, email='m.capotosti@epartner.it', role='user')
-        print(f'Invite link Marta: https://wellness-buddy.epartner.it/register?token={token}')
+    async with SessionLocal() as s:
+        # Lookup admin Stefano (creato in §8.2)
+        stefano = await s.scalar(select(User).where(User.email == "s.brunelli@epartner.it"))
+        if not stefano:
+            raise SystemExit("ERROR: admin Stefano non trovato — esegui §8.2 prima")
+        if stefano.role != "admin":
+            raise SystemExit(f"ERROR: utente Stefano non ha role=admin (role={stefano.role})")
+
+        invite = await create_invite(s, created_by=stefano.id)
+        print(f"Invite token: {invite.token}")
+        print(f"Scade: {invite.expires_at} (24h validity)")
+        print(f"Link: https://wellness-buddy.epartner.it/register?token={invite.token}")
+        print(f"Marta usa link per registrarsi con email m.capotosti@epartner.it")
 
 asyncio.run(main())
-"
+'@
 ```
-- [ ] Link generato, condividi con Marta via canale sicuro
+
+- [ ] Link generato, condividi con Marta via canale sicuro (NON email pubblica — RDP / messaggio diretto / WhatsApp Brunelli)
+- [ ] Marta ha 24h per consumare token (poi scade)
 
 ---
 
