@@ -15,7 +15,10 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
-  testMatch: /e2e\/plan-02-04(-screenshots)?\.spec\.ts/,
+  // Plan 02-04 gap-closure tests + Plan 02-08 family-convergence (FAM-09).
+  // Both run against `pnpm dev` because they stub `/api/*` at the page-route
+  // layer and need React's full HMR module graph (no preview build needed).
+  testMatch: /e2e\/(plan-02-04(-screenshots)?|family-convergence)\.spec\.ts/,
   fullyParallel: false, // sequential so the same auth state is reused
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
