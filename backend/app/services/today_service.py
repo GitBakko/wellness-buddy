@@ -309,6 +309,7 @@ def _meals_from_parsed(
                 continue
             raw_macros = _coerce_macros(sn.get("macros"))
             macros = raw_macros if raw_macros.kcal > 0 else per_section_target
+            slot = _snack_slot(sn)
             entry = MealEntry(
                 meal_type="snack",
                 variant_key=str(sn.get("key") or "default"),
@@ -316,9 +317,10 @@ def _meals_from_parsed(
                 macros=macros,
                 photo_url=_coerce_photo_url(sn.get("photo_url")),
                 ingredients=_coerce_ingredients(sn.get("ingredients")),
+                slot=slot,
             )
             # Plan 02-05 Bug 2 — bucket by slot so we can render evening AFTER dinner.
-            if _snack_slot(sn) == "evening":
+            if slot == "evening":
                 evening_snacks.append(entry)
             else:
                 afternoon_snacks.append(entry)

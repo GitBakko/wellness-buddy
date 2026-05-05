@@ -33,6 +33,11 @@ export interface TodayMeal {
   /** Plan 02-04 gap-closure — composition list rendered below title.
    * Empty for plans whose parser couldn't extract ingredients (rare). */
   ingredients?: MealIngredient[];
+  /** Plan 02-05 — temporal slot for snacks ('afternoon' | 'evening').
+   * Frontend groups snack alternatives by slot so the user swipes
+   * between pomeriggio Opzione A/B/... and serale Alternativa 1/2/...
+   * separately. Null for non-snack meals. */
+  slot?: 'afternoon' | 'evening' | null;
 }
 
 export interface TodayWeight {

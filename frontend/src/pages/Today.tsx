@@ -13,6 +13,7 @@
 //   5. WeightQuickLog + WorkoutForm (responsive 2-col on md+)
 //   6. AIWidget placeholder (locked — no data, no network)
 
+import { useState } from 'react';
 import { Link } from 'react-router';
 
 import { Leaf, UploadSimple } from '@/components/icons';
@@ -20,6 +21,7 @@ import { AIWidget } from '@/components/ai/AIWidget';
 import { MacroRing } from '@/components/today/MacroRing';
 import { MacroDisplay } from '@/components/today/MacroDisplay';
 import { MealCard } from '@/components/today/MealCard';
+import { MealCarousel } from '@/components/today/MealCarousel';
 import { WeightQuickLog } from '@/components/today/WeightQuickLog';
 import { WorkoutForm } from '@/components/today/WorkoutForm';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -225,19 +227,12 @@ export default function Today(): React.ReactElement {
         </span>
       </div>
 
-      <section
-        className="flex flex-col gap-[var(--spacing-3)]"
-        aria-label="Pasti di oggi"
-      >
-        {data.meals.map((m) => (
-          <MealCard
-            key={`${m.meal_type}-${m.variant_key}`}
-            meal={m}
-            onToggle={() => complete.mutate(m.meal_type)}
-            disabled={complete.isPending}
-          />
-        ))}
-      </section>
+      <MealsSection
+        meals={data.meals}
+        onToggle={(mt) => complete.mutate(mt)}
+        disabled={complete.isPending}
+      />
+
 
       <section className="grid grid-cols-1 md:grid-cols-2 gap-[var(--spacing-4)]">
         <WeightQuickLog existing={data.weight_today ?? null} />
@@ -246,5 +241,108 @@ export default function Today(): React.ReactElement {
 
       <AIWidget />
     </main>
+  );
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// Plan 02-05 follow-up — group meals so multi-alternative snacks render in
+// a swipeable carousel instead of a vertical list of "things to eat together".
+// Single-option meals (breakfast / lunch / dinner / single snack) render as
+// the existing MealCard. Snacks with the same `slot` (afternoon / evening)
+// AND >1 alternatives collapse into one MealCarousel.
+// ───────────────────────────────────────────────────────────────────────────
+type MealsGroup =
+  | { kind: 'single'; meal: import('@/services/today').TodayMeal }
+  | {
+      kind: 'carousel';
+      slot: 'afternoon' | 'evening';
+      slotLabel: string;
+      options: import('@/services/today').TodayMeal[];
+    };
+
+function buildMealGroups(
+  meals: import('@/services/today').TodayMeal[],
+): MealsGroup[] {
+  const groups: MealsGroup[] = [];
+  const snackBuckets: Record<string, import('@/services/today').TodayMeal[]> = {
+    afternoon: [],
+    evening: [],
+  };
+  // Insertion order preserved so afternoon-snacks render before dinner and
+  // evening-snacks after dinner (today_service already orders the array).
+  const slotInsertedAt: Record<string, number> = {};
+
+  meals.forEach((m, idx) => {
+    if (m.meal_type !== 'snack') {
+      groups.push({ kind: 'single', meal: m });
+      return;
+    }
+    const slot: 'afternoon' | 'evening' =
+      m.slot === 'evening' ? 'evening' : 'afternoon';
+    if (snackBuckets[slot].length === 0) {
+      slotInsertedAt[slot] = idx;
+      // Reserve a placeholder slot in the groups array; fill after we know
+      // how many alternatives this snack-section has.
+      groups.push({
+        kind: 'carousel',
+        slot,
+        slotLabel:
+          slot === 'evening' ? 'Spuntino serale' : 'Spuntino pomeriggio',
+        options: snackBuckets[slot],
+      });
+    }
+    snackBuckets[slot].push(m);
+  });
+
+  // Collapse single-alternative snack carousels to plain MealCard so the UI
+  // doesn't show a 1-of-1 indicator for spuntini that have no alternatives.
+  return groups.flatMap<MealsGroup>((g) => {
+    if (g.kind === 'carousel' && g.options.length === 1) {
+      return [{ kind: 'single', meal: g.options[0]! }];
+    }
+    return [g];
+  });
+}
+
+interface MealsSectionProps {
+  meals: import('@/services/today').TodayMeal[];
+  onToggle: (mealType: string) => void;
+  disabled?: boolean;
+}
+
+function MealsSection({ meals, onToggle, disabled }: MealsSectionProps) {
+  // Track which alternative the user has chosen per snack-slot.
+  const [picked, setPicked] = useState<Record<string, string>>({});
+  const groups = buildMealGroups(meals);
+
+  return (
+    <section
+      className="flex flex-col gap-[var(--spacing-4)]"
+      aria-label="Pasti di oggi"
+    >
+      {groups.map((g, idx) => {
+        if (g.kind === 'single') {
+          return (
+            <MealCard
+              key={`${g.meal.meal_type}-${g.meal.variant_key}-${idx}`}
+              meal={g.meal}
+              onToggle={() => onToggle(g.meal.meal_type)}
+              disabled={disabled}
+            />
+          );
+        }
+        return (
+          <MealCarousel
+            key={`carousel-${g.slot}-${idx}`}
+            options={g.options}
+            slotLabel={g.slotLabel}
+            selectedKey={picked[g.slot]}
+            onSelect={(k) => setPicked((prev) => ({ ...prev, [g.slot]: k }))}
+            onToggleComplete={onToggle}
+            disabled={disabled}
+          />
+        );
+      })}
+    </section>
   );
 }

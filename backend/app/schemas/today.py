@@ -56,6 +56,11 @@ class MealEntry(BaseModel):
     # Empty when the meal has no parsed ingredients (legacy plans without
     # tables AND without grid cells).
     ingredients: list[MealIngredient] = Field(default_factory=list)
+    # Plan 02-05 carousel — temporal slot for snacks ('afternoon' | 'evening').
+    # Frontend groups snack alternatives by slot so the user swipes between
+    # Opzione A/B/C/D in pomeriggio and Alternativa 1/2/3 in serale separately.
+    # None for non-snack meals (breakfast/lunch/dinner).
+    slot: str | None = None
 
 
 class TodayWeight(BaseModel):

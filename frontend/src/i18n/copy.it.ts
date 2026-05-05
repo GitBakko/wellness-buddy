@@ -91,6 +91,13 @@ export const copy = {
     sectionMeals: 'I tuoi pasti',
     sectionMealsCount: '{done} / {total} completati',
     scorePillGood: 'Buon ritmo',
+    // Plan 02-05 — alternatives carousel (swipeable choice between Opzione A/B/...).
+    alternativesHeading: 'Alternative · scegline una',
+    alternativesIndicator: '{current} di {total}',
+    alternativesPrev: 'Alternativa precedente',
+    alternativesNext: 'Alternativa successiva',
+    alternativesSelectCta: 'Scegli questa',
+    alternativesSelectedLabel: 'Scelta',
   },
 
   // ───── Weight quick-log ─────
