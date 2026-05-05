@@ -3,18 +3,18 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-last_updated: "2026-05-05T09:08:00Z"
+last_updated: "2026-05-05T10:00:58Z"
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 18
-  completed_plans: 16
-  percent: 89
+  completed_plans: 17
+  percent: 94
 ---
 
 # State: Wellness Buddy
 
-**Last updated:** 2026-05-05 (Phase 2 in progress — Plans 02-01..02-06 complete; 02-07 family-sync next)
+**Last updated:** 2026-05-05 (Phase 2 in progress — Plans 02-01..02-07 complete; 02-08 closure next)
 
 ## Project Reference
 
@@ -30,14 +30,14 @@ progress:
 ## Current Position
 
 - **Phase:** 2 — Differentiators
-- **Plan:** 02-06 complete (shopping list PDF export — WeasyPrint+ReportLab via PdfExporter ABC, woff2 base64 inline brand template, OKLCH drift gate, frontend Esporta PDF blob download). Plans 02-01..02-06 complete; 02-07 (family sync) next.
-- **Status:** **Phase 1 COMPLETE code-side; Phase 2 in progress.** Plans 02-01 (GTK3 spike + PdfExporter ABC), 02-02 (/settimana + variant selector), 02-03 (production deploy), 02-04 (grid parser + per-day variants), 02-05 (shopping list end-to-end), 02-06 (shopping PDF) merged. Real Stefano + Marta plans now parse end-to-end, /spesa returns categorized items in 5 buckets, and Esporta PDF downloads `Lista-spesa-{week_start}.pdf` (live HTTP smoke 200 + application/pdf + 2-page real Stefano plan). Plans 02-07 (family sync), 02-08 (closure) ready to execute.
-- **Progress:** Phase 1/5 done code-side · Phase 2: Plans 6/8 complete · 2 plans remaining (02-07..08)
+- **Plan:** 02-07 complete (family sync activation — Group entity backfilled via idempotent Alembic 0002, get_user_with_group_access dependency with V13 404 envelope, 40-test negative-authz matrix, owner-only PATCH /api/family/share/{variant_id}, frontend SharedBadge + ShareToggleMenu + 15 family.* italian copy + italianTimeAgo helper). Plans 02-01..02-07 complete; 02-08 (Phase 2 closure pause-gate) next.
+- **Status:** **Phase 1 COMPLETE code-side; Phase 2 nearly complete.** Plans 02-01..02-07 merged. Real Stefano + Marta plans now parse end-to-end, /spesa returns categorized items in 5 buckets, Esporta PDF downloads `Lista-spesa-{week_start}.pdf`, and family sync activated end-to-end: Stefano sees Marta's pranzi/cene as `condiviso con Marta`, both can flip per-meal visibility via owner-only DropdownMenu, conflicts surface via named-partner toast, cross-group access returns 404 V13 (40-matrix locked). Plan 02-08 (closure pause-gate verifier — visual baselines + iPhone smoke) ready to execute.
+- **Progress:** Phase 1/5 done code-side · Phase 2: Plans 7/8 complete · 1 plan remaining (02-08)
 - **Phase progress bar:**
 
   ```text
   [##########] 100% — Phase 1: Foundation (10/10 plans, code-side closure)
-  [########..]  75% — Phase 2: Differentiators (6/8 plans complete)
+  [#########.]  88% — Phase 2: Differentiators (7/8 plans complete)
   ```
 
 ## Performance Metrics
@@ -65,6 +65,7 @@ progress:
 | 02-04 grid-parser| ~25 min  | 3/3   | 7 created + 10 modified  | 3       |
 | 02-05 shopping   | ~32 min  | 3/3   | 24 created + 9 modified  | 5       |
 | 02-06 pdf-export | ~27 min  | 3/3   | 9 created + 7 modified   | 4       |
+| 02-07 family-sync| ~44 min  | 3/3   | 16 created + 14 modified | 3       |
 
 ## Accumulated Context
 
@@ -124,6 +125,22 @@ progress:
 - (Plan 02-06) woff2 base64 inline pattern (D-13): ~47KB latin-ext woff2 source → ~63KB base64 in template body → ~67KB final shopping_list.html. Italian accents (à è ì ò ù) covered by latin-ext subset; production verifies on iPhone Safari + Mail.app.
 - (Plan 02-06) OKLCH drift CI gate dual-enforced: `backend/scripts/check_pdf_template_oklch.py` for CI runs + pytest `test_template_oklch_mirrors_theme_css` (importlib invoke) for dev runs. Same logic, two trigger points.
 - (Plan 02-06) Local dev `backend/.env` uses `PDF_BACKEND=reportlab` (gitignored). Production `.env.production` keeps `weasyprint`. Plan 02-01 ABC factory makes the swap transparent — endpoint contract identical.
+- (Plan 02-07) Alembic 0002_activate_groups data-only migration (idempotent reflective SQL via `sa.table()`); chain is baseline → 8137b2e24001 (02-04) → 0002 (02-07). Live dev DB upgraded; round-trip verified.
+- (Plan 02-07) PITFALL #16 mitigation: `auth_service.consume_invite_and_register` calls `ensure_personal_group(session, user)` post-flush so users registered POST-Phase-2-deploy never have NULL group_id.
+- (Plan 02-07) `get_user_with_group_access(target_user_id, current_user, session)` is the canonical cross-user authz dependency — `group_id` re-looked-up from DB on EVERY request (FAM-07 lock; never claim group from JWT). Cross-group → 404 V13 envelope, never 403.
+- (Plan 02-07) Cross-user reads on `/today`, `/weekly/{w}`, `/weekly/{w}/summary`, `/shopping/{w}`, `/shopping/{w}/export-pdf` accept optional `?user_id={partner}` and filter response to `visibility=group_shared`. `weight_today` + `workout_today` always nulled cross-user (CONV-14 — those resources are always private).
+- (Plan 02-07) `/weekly/{w}/summary` cross-user uses `_summary_from_filtered` helper to recompute kcal totals AFTER the visibility filter so partner's private meals never count toward the caller's totals.
+- (Plan 02-07) PATCH `/weekly/{w}/variant`, PATCH `/shopping/{w}/check`, POST `/shopping/{w}/reset` stay own-user only (no `?user_id=` surface). Matrix locks the contract: future cross-user mutation must surface 404.
+- (Plan 02-07) `MealEntry` schema gains optional `visibility / owner_user_id / variant_id / updated_at` fields surfaced from variant rows (or default per `_default_visibility_for(meal_type)` — lunch/dinner=group_shared, breakfast/snack=private). Frontend MealCard uses these to decide SharedBadge vs ShareToggleMenu render.
+- (Plan 02-07) 40-test negative-authz matrix in `test_family_authz_matrix.py` — 8 endpoints × 5 scenarios via @pytest.parametrize stack. `family_share_patch` row uses different callers per scenario (Marta/Outsider/Ex-member) to exercise non-owner ⇒ 404 from each caller's perspective.
+- (Plan 02-07) Frontend SharedBadge: Phosphor `UsersThree` 14px pill + truncated partner name + Radix tooltip "Aggiornato da {nome} · 2 minuti fa". `aria-label` italian. Tap-scale 0.97/80ms.
+- (Plan 02-07) Frontend ShareToggleMenu: `DotsThreeOutline` 44×44 trigger → Radix DropdownMenu → Switch. Optimistic state with rollback on error. Owner-only render gated by `owner_user_id === currentUserId && variant_id`.
+- (Plan 02-07) `useShareToggle` TanStack mutation in `services/family.ts`: 200 → italian success toast + invalidate `['today']` + `['weekly', undefined, weekStart]`; 409 → reuse `sync.conflictToast*` named-partner info toast (Plan 02-02 origin); other errors → italian `sharePerMealError`.
+- (Plan 02-07) `italianTimeAgo` helper in `lib/format.ts` covers 7 buckets (adesso / 1 minuto / N minuti / 1 ora / N ore / ieri / N giorni); singular vs plural agreement; clock skew (negative diff) collapses to "adesso".
+- (Plan 02-07) `copy.it.ts` family.* namespace = 15 keys verbatim per UI-SPEC §7.1 (sharedBadge×3, sharePerMeal×5, timeAgo×7).
+- (Plan 02-07) Phosphor facade pattern (CLAUDE.md UI rule) preserved — UsersThree + DotsThreeOutline added to `@/components/icons` only; grep gate verified clean.
+- (Plan 02-07) Radix Tooltip primitive shipped net-new in `frontend/src/components/ui/tooltip.tsx` matching the existing shadcn dropdown-menu.tsx style (tokens-only). `@radix-ui/react-tooltip ^1.2.8` added to dependencies.
+- (Plan 02-07) ShareToggleMenu vitest uses `userEvent.setup()` (not `fireEvent.click`) because Radix DropdownMenu listens to pointer events — pattern matches existing VariantSelector + WorkoutForm tests.
 
 ### Open Questions to Resolve in Plans
 

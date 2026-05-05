@@ -107,15 +107,15 @@ Requirements per release v1 (Sprint 1-5). Ogni requisito mappa a una fase roadma
 
 ### Multi-User Family Sync (Sprint 2)
 
-- [ ] **FAM-01**: User può appartenere a un gruppo (`Group`) — admin assegna group_id
-- [ ] **FAM-02**: Cene e pranzi default `visibility=group_shared`; colazione e spuntini default `private`
-- [ ] **FAM-03**: User può vedere pasti `group_shared` di altri membri stesso gruppo con badge "condiviso con [nome]"
-- [ ] **FAM-04**: Conflict resolution last-write-wins con `If-Unmodified-Since` style version su PATCH
-- [ ] **FAM-05**: Conflitto 409 → toast UX "Aggiornato da [nome] — ricarica per vedere ultima versione"
-- [ ] **FAM-06**: Endpoint `get_user_with_group_access(target_user_id)` dependency per cross-user reads (mai riusare `get_current_user` per shared paths)
-- [ ] **FAM-07**: `group_id` MAI in JWT — sempre re-look-up da DB
-- [ ] **FAM-08**: Test matrix negative-authz in CI: own/shared/private/non-family/ex-member access patterns
-- [ ] **FAM-09**: Polling TanStack Query (refetch on focus + 30s `staleTime`) per badge `condiviso` real-time (WebSocket deferred)
+- [x] **FAM-01**: User può appartenere a un gruppo (`Group`) — admin assegna group_id (Plan 02-07: Alembic 0002 backfill + register auto-create)
+- [x] **FAM-02**: Cene e pranzi default `visibility=group_shared`; colazione e spuntini default `private` (Plan 02-07: variant_service.default_visibility_for + today_service._default_visibility_for)
+- [x] **FAM-03**: User può vedere pasti `group_shared` di altri membri stesso gruppo con badge "condiviso con [nome]" (Plan 02-07: SharedBadge + cross-user filter)
+- [x] **FAM-04**: Conflict resolution last-write-wins con `If-Unmodified-Since` style version su PATCH (Plan 02-02 origin; Plan 02-07 verifies cross-user)
+- [x] **FAM-05**: Conflitto 409 → toast UX "Aggiornato da [nome] — ricarica per vedere ultima versione" (Plan 02-02 origin; Plan 02-07 useShareToggle reuses sync.conflictToast*)
+- [x] **FAM-06**: Endpoint `get_user_with_group_access(target_user_id)` dependency per cross-user reads (mai riusare `get_current_user` per shared paths) (Plan 02-07: app/core/deps.py)
+- [x] **FAM-07**: `group_id` MAI in JWT — sempre re-look-up da DB (Plan 02-07: get_user_with_group_access fetches User from DB on every request)
+- [x] **FAM-08**: Test matrix negative-authz in CI: own/shared/private/non-family/ex-member access patterns (Plan 02-07: 40 tests, 8 endpoints × 5 scenarios)
+- [x] **FAM-09**: Polling TanStack Query (refetch on focus + 30s `staleTime`) per badge `condiviso` real-time (WebSocket deferred) (Plan 02-07: useShareToggle invalidates ['today'] + ['weekly']; useToday staleTime: 30_000)
 
 ### Dashboard & KPI (Sprint 3)
 
@@ -271,7 +271,7 @@ Requirements per release v1 (Sprint 1-5). Ogni requisito mappa a una fase roadma
 | WORK-03, WORK-04 | Phase 3 | Engagement & Polish | Pending |
 | WEEK-01 — WEEK-05 | Phase 2 | Differentiators | Pending |
 | SHOP-01 — SHOP-08 | Phase 2 | Differentiators | Pending |
-| FAM-01 — FAM-09 | Phase 2 | Differentiators | Pending |
+| FAM-01 — FAM-09 | Phase 2 | Differentiators | Complete (Plan 02-07) |
 | DASH-01 — DASH-08 | Phase 3 | Engagement & Polish | Pending |
 | PUSH-01 — PUSH-07 | Phase 3 | Engagement & Polish | Pending |
 | ENG-01 — ENG-06 | Phase 3 | Engagement & Polish | Pending |

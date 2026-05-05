@@ -117,7 +117,7 @@ UI-01 â€” UI-20 (cross-cutting â€” every new component inherits tokens
 - [x] 02-04-PLAN.md - **NEW gap-closure**: weekly grid parser + per-day weekly variants + dual-mode `_parse_meal_grid` + alembic composite UNIQUE (PLAN-01, PLAN-02, PLAN-09, WEEK-01..05, UI-13)
 - [x] 02-05-PLAN.md - Italian quantity parser + 5-category mapper + shopping aggregator + APScheduler weekly reset cron + /spesa route + BroadcastChannel (SHOP-01..06, SHOP-08)
 - [x] 02-06-PLAN.md - shopping_list.html WeasyPrint template + woff2 base64 inline + export-pdf endpoint live + iPhone Safari accent verify (SHOP-07, D-12, D-13)
-- [ ] 02-07-PLAN.md - Alembic 0001 group activation + cross-user authz + family share endpoint + 40-test authz matrix + SharedBadge + ShareToggleMenu (FAM-01..09)
+- [x] 02-07-PLAN.md - Alembic 0002 group activation + cross-user authz + family share endpoint + 40-test authz matrix + SharedBadge + ShareToggleMenu (FAM-01..09; 0002 corrected from 0001 due to Plan 02-04 chain head 8137b2e24001)
 - [ ] 02-08-PLAN.md - Phase 2 closure CHECKPOINT: VERIFICATION.md + e2e family-convergence + axe + Lighthouse + tone review + STATE/ROADMAP updates
 
 **UI hint**: yes

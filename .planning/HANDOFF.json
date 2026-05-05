@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-05-04T10:42:44.056Z",
+  "timestamp": "2026-05-05T10:06:01.461Z",
   "source": "auto-postool",
   "partial": false,
   "phase": "2",
@@ -20,32 +20,32 @@
       "id": "02",
       "name": "Task 1: Regenerate visual baselines (D-31) — first action before any new component dev",
       "status": "done"
+    },
+    {
+      "id": "04",
+      "name": "Task 1: Backend parser + schema + migration (TDD RED→GREEN)",
+      "status": "done"
+    },
+    {
+      "id": "05",
+      "name": "Task 1: Backend ingredient_parser + category_mapper + plan parser **Categoria:** extension + comprehensive evil-corpus tests",
+      "status": "done"
+    },
+    {
+      "id": "06",
+      "name": "Task 1: Acquire woff2 fonts + create _build_inline_fonts.py helper + emit base64 strings into template",
+      "status": "done"
+    },
+    {
+      "id": "07",
+      "name": "Plan 02-07 family sync activation (3 tasks): Alembic 0002 backfill + register auto-create + get_user_with_group_access + cross-user ?user_id= on 5 endpoints + PATCH /api/family/share + 40-test authz matrix + SharedBadge + ShareToggleMenu + 15 family.* italian copy + italianTimeAgo helper",
+      "status": "done"
     }
   ],
   "remaining_tasks": [
     {
       "id": "03",
       "name": "Task 1: Create 02-03-DEPLOY-CHECKLIST.md artifact + extend copy.it.ts pwa.* with install follow-up keys",
-      "status": "not_started"
-    },
-    {
-      "id": "04",
-      "name": "Task 1: Backend parser + schema + migration (TDD RED→GREEN)",
-      "status": "not_started"
-    },
-    {
-      "id": "05",
-      "name": "Task 1: Backend ingredient_parser + category_mapper + plan parser **Categoria:** extension + comprehensive evil-corpus tests",
-      "status": "not_started"
-    },
-    {
-      "id": "06",
-      "name": "Task 1: Acquire woff2 fonts + create _build_inline_fonts.py helper + emit base64 strings into template",
-      "status": "not_started"
-    },
-    {
-      "id": "07",
-      "name": "Task 1: Alembic 0001_activate_groups data migration + auth_service Pitfall #16 fix + group_service.ensure_personal_group + idempotence test",
       "status": "not_started"
     },
     {
@@ -91,86 +91,22 @@
       "path": ".planning/STATE.md"
     },
     {
-      "status": "M",
-      "path": ".planning/phases/02-differentiators/02-04-PLAN.md"
+      "status": "??",
+      "path": ".planning/debug/plan-02-04-gaps.md"
     },
     {
-      "status": "M",
-      "path": ".planning/phases/02-differentiators/02-05-PLAN.md"
+      "status": "??",
+      "path": ".planning/debug/snack-serale-bugs.md"
     },
     {
-      "status": "M",
-      "path": ".planning/phases/02-differentiators/02-06-PLAN.md"
-    },
-    {
-      "status": "M",
-      "path": ".planning/phases/02-differentiators/02-07-PLAN.md"
-    },
-    {
-      "status": "A",
-      "path": ".planning/phases/02-differentiators/02-08-PLAN.md"
-    },
-    {
-      "status": "M",
-      "path": "backend/app/parsers/plan_parser.py"
-    },
-    {
-      "status": "M",
-      "path": "backend/app/parsers/plan_sections.py"
-    },
-    {
-      "status": "M",
-      "path": "backend/app/schemas/plan.py"
-    },
-    {
-      "status": "M",
-      "path": "backend/app/schemas/plan_parsed.py"
-    },
-    {
-      "status": "M",
-      "path": "backend/app/services/plan_service.py"
-    },
-    {
-      "status": "M",
-      "path": "backend/app/services/today_service.py"
-    },
-    {
-      "status": "M",
-      "path": "frontend/src/components/plans/PlanDiffView.tsx"
-    },
-    {
-      "status": "M",
-      "path": "frontend/src/i18n/copy.it.ts"
-    },
-    {
-      "status": "M",
-      "path": "frontend/src/lib/persistStorage.ts"
-    },
-    {
-      "status": "M",
-      "path": "frontend/src/pages/Plans.tsx"
-    },
-    {
-      "status": "M",
-      "path": "frontend/src/router.tsx"
-    },
-    {
-      "status": "M",
-      "path": "frontend/src/services/plans.ts"
-    },
-    {
-      "status": "M",
-      "path": "frontend/src/services/version.ts"
-    },
-    {
-      "status": "M",
-      "path": "frontend/vite.config.ts"
+      "status": "??",
+      "path": ".planning/phases/02-differentiators/02-07-SUMMARY.md"
     },
     {
       "status": "??",
       "path": "dist-package/"
     }
   ],
-  "next_action": "**Phase 1 COMPLETE code-side; Phase 2 in progress.** Plans 02-01 (GTK3 spike + PdfExporter ABC), 02-02 (/settimana + variant selector), 02-03 (production deploy) merged. First-prod-deploy on 2026-05-04 surfaced parser format mismatch — real Stefano + Marta plans use weekly grid `| Giorno | Opzione A | Opzione B |`, not `### Opzione X` subheadings. Plan 02-04 inserted as gap-closure: dual-mode parser + dict-of-list lunches/dinners + per-day WeeklyPlanVariant composite key + frontend per-day variant selector. Plans 02-05 (shopping), 02-06 (PDF), 02-07 (family sync), 02-08 (closure) shifted down. Ready for `/gsd:execute-phase` at Plan 02-04.",
-  "context_notes": "Status: **Phase 1 COMPLETE code-side; Phase 2 in progress.** Plans 02-01 (GTK3 spike + PdfExporter ABC), 02-02 (/settimana + variant selector), 02-03 (production deploy) merged. First-prod-deploy on 2026-05-04 surfaced parser format mismatch — real Stefano + Marta plans use weekly grid `| Giorno | Opzione A | Opzione B |`, not `### Opzione X` subheadings. Plan 02-04 inserted as gap-closure: dual-mode parser + dict-of-list lunches/dinners + per-day WeeklyPlanVariant composite key + frontend per-day variant selector. Plans 02-05 (shopping), 02-06 (PDF), 02-07 (family sync), 02-08 (closure) shifted down. Ready for `/gsd:execute-phase` at Plan 02-04.\n\nRecent commits:\ndda5b9e fix(02-03): gap-closure — auth bootstrap + version.json emit + nav /settimana\nd51ef91 docs(02-03): §8.3 skip password change (Phase 4 feature, not Phase 1-2)\n41f5876 fix(02-03): correct §8.2 admin bootstrap + §8.5 Marta invite\nf40b835 fix(02-03): smoke-test SSL check uses TcpClient+SslStream (PS 7+ compat)\n2fb31f6 fix(02-03): force HTTPS redirect rule in web.config + checklist setup steps"
+  "next_action": "**Phase 1 COMPLETE code-side; Phase 2 nearly complete.** Plans 02-01..02-07 merged. Real Stefano + Marta plans now parse end-to-end, /spesa returns categorized items in 5 buckets, Esporta PDF downloads `Lista-spesa-{week_start}.pdf`, and family sync activated end-to-end: Stefano sees Marta's pranzi/cene as `condiviso con Marta`, both can flip per-meal visibility via owner-only DropdownMenu, conflicts surface via named-partner toast, cross-group access returns 404 V13 (40-matrix locked). Plan 02-08 (closure pause-gate verifier — visual baselines + iPhone smoke) ready to execute.",
+  "context_notes": "Status: **Phase 1 COMPLETE code-side; Phase 2 nearly complete.** Plans 02-01..02-07 merged. Real Stefano + Marta plans now parse end-to-end, /spesa returns categorized items in 5 buckets, Esporta PDF downloads `Lista-spesa-{week_start}.pdf`, and family sync activated end-to-end: Stefano sees Marta's pranzi/cene as `condiviso con Marta`, both can flip per-meal visibility via owner-only DropdownMenu, conflicts surface via named-partner toast, cross-group access returns 404 V13 (40-matrix locked). Plan 02-08 (closure pause-gate verifier — visual baselines + iPhone smoke) ready to execute.\n\nRecent commits:\n1be1a58 feat(02-07-task-3): SharedBadge + ShareToggleMenu + MealCard extension + family.* copy + italianTimeAgo + Phosphor facade additions (FAM-02..05, FAM-09, D-15, D-18)\n26d21ca feat(02-07-task-2): get_user_with_group_access dep + cross-user wiring (today/weekly/shopping) + family share endpoint + 40-test authz matrix (FAM-02..09, D-19..D-21)\n9267884 feat(02-07-task-1): Alembic 0002_activate_groups + auth register auto-creates household + idempotence tests (FAM-01, D-22, D-23, Pitfall #16)\n70eccc1 docs(02-06): complete shopping PDF export plan — SUMMARY + STATE + ROADMAP + REQUIREMENTS\nd7e3f3c feat(02-06-task-3): Esporta PDF button wiring + iPhone Safari accent verify artifact (SHOP-07, T-PDF-02, D-13)"
 }
