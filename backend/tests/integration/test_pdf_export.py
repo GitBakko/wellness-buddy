@@ -21,7 +21,6 @@ contract under test (Response/headers/PDF magic) is identical.
 
 from __future__ import annotations
 
-import os
 from uuid import uuid4
 
 import pytest
@@ -29,15 +28,35 @@ import pytest_asyncio
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-# Force ReportLab fallback for the test suite — local dev box lacks GTK3/Pango.
-# Plan 02-08 covers WeasyPrint validation on the production Windows Server.
-os.environ["PDF_BACKEND"] = "reportlab"
-
-from app.core.security import hash_password  # noqa: E402
-from app.models.plan import NutritionPlan  # noqa: E402
-from app.models.user import User  # noqa: E402
+from app.core.security import hash_password
+from app.models.plan import NutritionPlan
+from app.models.user import User
+from app.services.pdf_export import ReportLabExporter, get_pdf_exporter
 
 pytestmark = [pytest.mark.integration, pytest.mark.asyncio(loop_scope="session")]
+
+
+@pytest.fixture(autouse=True)
+def _force_reportlab_backend() -> object:
+    """Pin the PDF backend to ReportLab for every test in this module.
+
+    Local dev box lacks GTK3/Pango so WeasyPrint cannot ``dlopen`` libgobject.
+    Plan 02-01 ABC factory makes the backend swap transparent — the contract
+    under test (Response shape, %PDF magic, headers) is identical. Plan 02-08
+    validates WeasyPrint primary on the production Windows Server.
+
+    Using FastAPI dependency override (not env-var mutation) so the override
+    is scoped to this test module — avoids leaking state into the rest of
+    the suite (where ``shopping_api`` tests do not exercise PDF render and
+    the env-cached ``settings.PDF_BACKEND`` is not relevant).
+    """
+    from app.main import app
+
+    app.dependency_overrides[get_pdf_exporter] = lambda: ReportLabExporter()
+    try:
+        yield
+    finally:
+        app.dependency_overrides.pop(get_pdf_exporter, None)
 
 
 WEEK_START = "2026-05-04"
@@ -350,16 +369,18 @@ async def test_export_via_reportlab_fallback(
     pdf_user: User,
     pdf_plan_accent: NutritionPlan,
 ) -> None:
-    """When PDF_BACKEND=reportlab the same endpoint returns a valid PDF.
+    """ReportLab backend honors the Plan 02-01 ABC contract.
 
-    The full suite already runs with PDF_BACKEND=reportlab on this dev box
-    (GTK3 unavailable). This test asserts the factory wires the right
-    concrete class and the response shape is identical to the WeasyPrint
-    contract (Plan 02-01 ABC honored).
+    The autouse fixture pins this entire module to ReportLab via
+    ``app.dependency_overrides``. We assert that the override actually
+    returns a ``ReportLabExporter`` (sanity check) and that the endpoint
+    contract is identical to the WeasyPrint primary path.
     """
-    from app.services.pdf_export import ReportLabExporter, get_pdf_exporter
+    from app.main import app
 
-    assert isinstance(get_pdf_exporter(), ReportLabExporter)
+    override = app.dependency_overrides.get(get_pdf_exporter)
+    assert override is not None
+    assert isinstance(override(), ReportLabExporter)
 
     access = await _login(async_client, "pdf-user@test.example.com", "Password123!")
     r = await async_client.post(

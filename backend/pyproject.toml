@@ -42,6 +42,11 @@ dev = [
     "types-python-jose",
     "types-passlib",
     "freezegun>=1.5.5",
+    # pypdf is test-only: validates Italian accent corpus round-trips through
+    # the PDF text layer (Plan 02-06 SHOP-07). The endpoint itself never
+    # imports pypdf — manual iPhone Safari + Mail.app verification covers the
+    # visual glyph case.
+    "pypdf>=4",
 ]
 
 [tool.pytest.ini_options]
@@ -91,6 +96,9 @@ ignore = ["S101"]  # allow assert in tests
 # UP042 (str, Enum -> StrEnum) is suggested but `class Visibility(str, PyEnum)` is the
 # documented pattern for SQLAlchemy SAEnum + Pydantic v2 interop pre-3.11 StrEnum.
 "app/models/**" = ["N811", "N812", "UP042"]
+# CLI helper scripts are intended to print to stdout/stderr.
+"scripts/**" = ["T20"]
+"app/templates/_build_inline_fonts.py" = ["T20"]
 
 [tool.mypy]
 python_version = "3.12"

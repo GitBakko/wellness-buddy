@@ -32,18 +32,18 @@ def main() -> None:
     for filename, family, weight, style in EXPECTED_FONTS:
         path = FONT_DIR / filename
         if not path.exists():
-            print(f"WARN: missing {filename} — copy into backend/app/static/fonts/")  # noqa: T201
+            print(f"WARN: missing {filename} — copy into backend/app/static/fonts/")
             continue
         encoded = base64.b64encode(path.read_bytes()).decode("ascii")
-        print(f"--- {filename} ({len(encoded)} bytes base64) ---")  # noqa: T201
-        print("@font-face {")  # noqa: T201
-        print(f'  font-family: "{family}";')  # noqa: T201
-        print(f'  src: url(data:font/woff2;base64,{encoded}) format("woff2");')  # noqa: T201
-        print(f"  font-weight: {weight};")  # noqa: T201
-        print(f"  font-style: {style};")  # noqa: T201
-        print("  font-display: block;")  # noqa: T201
-        print("}")  # noqa: T201
-        print()  # noqa: T201
+        print(f"--- {filename} ({len(encoded)} bytes base64) ---")
+        print("@font-face {")
+        print(f'  font-family: "{family}";')
+        print(f'  src: url(data:font/woff2;base64,{encoded}) format("woff2");')
+        print(f"  font-weight: {weight};")
+        print(f"  font-style: {style};")
+        print("  font-display: block;")
+        print("}")
+        print()
 
 
 if __name__ == "__main__":

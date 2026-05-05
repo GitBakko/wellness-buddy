@@ -323,23 +323,38 @@ async def test_post_reset_clears_check_state(
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# PDF endpoint scaffold — Plan 02-06 wires real impl
+# PDF endpoint contract — Plan 02-06 wired the real exporter (was 501 in 02-05)
 # ──────────────────────────────────────────────────────────────────────────────
 
 
-async def test_export_pdf_endpoint_returns_501(
+async def test_export_pdf_endpoint_authenticated(
     async_client: AsyncClient,
     shop_user: User,
     shop_active_plan: NutritionPlan,
 ) -> None:
-    access = await _login(async_client, "shop-user@test.example.com", "Password123!")
-    r = await async_client.post(
-        f"/api/shopping/{WEEK_START}/export-pdf",
-        headers={"Authorization": f"Bearer {access}"},
-    )
-    assert r.status_code == 501
-    body = r.json()
-    assert body["code"] == "not_implemented"
+    """Endpoint is reachable + authenticated; full PDF contract is exercised by
+    ``tests/integration/test_pdf_export.py``.
+
+    Here we just assert the route is no longer the 501 stub from Plan 02-05.
+    We pin the exporter to ReportLab via dependency override so this test does
+    not depend on GTK3/Pango being installed on the local dev box.
+    """
+    from app.main import app
+    from app.services.pdf_export import ReportLabExporter, get_pdf_exporter
+
+    app.dependency_overrides[get_pdf_exporter] = lambda: ReportLabExporter()
+    try:
+        access = await _login(async_client, "shop-user@test.example.com", "Password123!")
+        r = await async_client.post(
+            f"/api/shopping/{WEEK_START}/export-pdf",
+            headers={"Authorization": f"Bearer {access}"},
+        )
+        assert r.status_code != 501, "Plan 02-06 wired the exporter — endpoint is no longer a stub"
+        assert r.status_code == 200
+        assert r.headers["content-type"] == "application/pdf"
+        assert r.content[:4] == b"%PDF"
+    finally:
+        app.dependency_overrides.pop(get_pdf_exporter, None)
 
 
 # ──────────────────────────────────────────────────────────────────────────────
