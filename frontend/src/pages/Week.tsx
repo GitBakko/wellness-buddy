@@ -270,13 +270,21 @@ export default function Week(): React.ReactElement {
       >
         {data.days.map((day) => {
           const dayDate = parseISO(day.date);
-          const completed = day.meals.filter((m) => m.completed).length;
+          // Plan 02-07 follow-up — past days are history: hide unchecked meals
+          // and hide variant selector on completed ones (only the selection
+          // the user actually ate matters once the day is done).
+          const todayIso = new Date().toISOString().slice(0, 10);
+          const isPastDay = day.date < todayIso;
+          const visibleMeals = isPastDay
+            ? day.meals.filter((m) => m.completed)
+            : day.meals;
+          const completed = visibleMeals.filter((m) => m.completed).length;
           const summary = copy.week.daySummaryFormat
-            .replace('{count}', String(day.meals.length))
+            .replace('{count}', String(visibleMeals.length))
             .replace(
               '{kcal}',
               String(
-                day.meals.reduce((acc, m) => acc + (m.macros.kcal ?? 0), 0),
+                visibleMeals.reduce((acc, m) => acc + (m.macros.kcal ?? 0), 0),
               ),
             );
           return (
@@ -291,16 +299,25 @@ export default function Week(): React.ReactElement {
                   {italianDateLong(dayDate)}
                 </h2>
                 <span className="text-[length:var(--text-caption)] text-[color:var(--color-text-muted)] tabular-nums whitespace-nowrap">
-                  {completed}/{day.meals.length} · {summary}
+                  {isPastDay
+                    ? `${visibleMeals.length} · ${summary}`
+                    : `${completed}/${day.meals.length} · ${summary}`}
                 </span>
               </header>
+              {isPastDay && visibleMeals.length === 0 ? (
+                <p className="text-[length:var(--text-caption)] text-[color:var(--color-text-muted)] italic m-0">
+                  {copy.week.pastDayEmpty}
+                </p>
+              ) : null}
               <ul className="flex flex-col gap-[var(--spacing-3)] list-none p-0 m-0">
-                {day.meals.map((m) => {
+                {visibleMeals.map((m) => {
                   const todayMeal = toTodayMeal(m);
                   const mealLabel = copy.today.mealLabels[m.slot] ?? m.slot;
                   // Lunch + dinner support 3-variant selector; breakfast/snack do not.
+                  // Plan 02-07 follow-up — past days lock the selection: only
+                  // the eaten variant matters, no point in re-picking.
                   const showSelector =
-                    m.slot === 'lunch' || m.slot === 'dinner';
+                    !isPastDay && (m.slot === 'lunch' || m.slot === 'dinner');
                   const variantSlot = showSelector ? (
                     <VariantSelector
                       value={toVariantKey(m.variant_key)}

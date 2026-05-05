@@ -51,7 +51,10 @@ export function LoginForm(): React.ReactElement {
     setSubmitting(true);
     try {
       await login(values.email, values.password);
-      navigate('/welcome', { replace: true });
+      // Plan 02-07 follow-up — show /welcome only on FIRST login. Returning
+      // users skip straight to /today; clearing localStorage resets it.
+      const decision = localStorage.getItem('wb:persist-decision');
+      navigate(decision ? '/today' : '/welcome', { replace: true });
     } catch (e) {
       const code = (e as ApiError | undefined)?.response?.data?.code;
       const message =

@@ -169,6 +169,23 @@ export function MacroRing({
         />
       </svg>
 
+      {/* Plan 02-07 follow-up — opaque cream disc behind center text so the
+          numbers stay readable when fat/carbs/protein arcs are close to full
+          (the inner amber arc at r=40 was creating visual cross-talk against
+          the bold kcal digits). */}
+      <div
+        aria-hidden="true"
+        className="absolute pointer-events-none rounded-full"
+        style={{
+          left: '50%',
+          top: '50%',
+          width: '60%',
+          height: '60%',
+          transform: 'translate(-50%, -50%)',
+          background: 'var(--color-surface)',
+          boxShadow: '0 0 0 4px var(--color-surface)',
+        }}
+      />
       {/* Center text — Plus Jakarta 800 for kcal value (NOT Instrument Serif) */}
       <div
         className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none gap-[2px]"

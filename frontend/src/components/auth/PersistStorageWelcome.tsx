@@ -24,11 +24,14 @@ export function PersistStorageWelcome(): React.ReactElement {
   const navigate = useNavigate();
 
   async function onAccept(): Promise<void> {
-    await requestPersistentStorage();
+    const granted = await requestPersistentStorage();
+    // Persist decision so future logins skip the welcome screen.
+    localStorage.setItem('wb:persist-decision', granted ? 'granted' : 'denied');
     navigate('/today', { replace: true });
   }
 
   function onSkip(): void {
+    localStorage.setItem('wb:persist-decision', 'skipped');
     navigate('/today', { replace: true });
   }
 

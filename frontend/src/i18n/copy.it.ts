@@ -259,6 +259,8 @@ export const copy = {
       sun: 'Domenica',
     } as Record<string, string>,
     daySummaryFormat: '{count} pasti · {kcal} kcal previsti',
+    // Plan 02-07 follow-up — copy shown on past days when no meal was checked.
+    pastDayEmpty: 'Nessun pasto registrato.',
     weeklyTotalLabel: 'Settimana',
     weeklyTotalSubtitle: 'su {target}',
     weeklyKcalSuffix: 'kcal · settimana',
