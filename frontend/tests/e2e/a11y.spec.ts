@@ -10,6 +10,10 @@
 // Routes covered (per UI-SPEC §9 "Per-screen Phase 1 a11y test list"):
 //   /login, /signup, /today, /storico, /piano, /impostazioni
 //
+// Plan 02-08 closure: extended with /settimana/{seed} + /spesa/{seed} to lock
+// Phase 2 a11y on the new differentiator surfaces. Deterministic ISO Monday
+// 2026-05-04 keeps the boot path stable across runs.
+//
 // VoiceOver smoke test (real iOS) — NOT covered here. Documented as manual
 // pause-gate item in `.planning/phases/01-foundation/01-VALIDATION.md`.
 // VoiceOver tooling (`@guidepup/playwright`) is desktop-only and does not
@@ -18,7 +22,16 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-const ROUTES = ['/login', '/signup', '/today', '/storico', '/piano', '/impostazioni'];
+const ROUTES = [
+  '/login',
+  '/signup',
+  '/today',
+  '/settimana/2026-05-04',
+  '/spesa/2026-05-04',
+  '/storico',
+  '/piano',
+  '/impostazioni',
+];
 
 for (const route of ROUTES) {
   test(`a11y wcag2aa: ${route}`, async ({ page }) => {

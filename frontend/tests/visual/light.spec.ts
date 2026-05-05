@@ -7,6 +7,9 @@
 // + new /settimana route. Use the deterministic seed Monday 2026-05-04 for
 // the /settimana fixture so screenshots are stable across runs.
 //
+// Plan 02-08 closure (D-31 follow-up): added /spesa/2026-05-04 to lock the
+// shopping list visual baseline alongside /today + /settimana for Phase 2.
+//
 // To re-record after a deliberate UI change: `pnpm test:visual --update-snapshots`
 // then commit the new PNGs under `frontend/tests/visual/__screenshots__/`.
 
@@ -16,6 +19,7 @@ const ROUTES = [
   '/login',
   '/today',
   '/settimana/2026-05-04',
+  '/spesa/2026-05-04',
   '/piano',
   '/impostazioni',
 ];
