@@ -61,6 +61,18 @@ class MealEntry(BaseModel):
     # Opzione A/B/C/D in pomeriggio and Alternativa 1/2/3 in serale separately.
     # None for non-snack meals (breakfast/lunch/dinner).
     slot: str | None = None
+    # Plan 02-07 — visibility + owner identification for cross-user rendering.
+    # Frontend MealCard uses these to decide whether to render SharedBadge
+    # (visibility=group_shared AND owner_user_id != current_user_id) and
+    # ShareToggleMenu (owner_user_id == current_user_id). The visibility
+    # value comes from the persisted variant row when one exists; defaults
+    # are FAM-02 / CONV-14 (lunch/dinner=group_shared, breakfast/snack=private).
+    visibility: str = "private"
+    owner_user_id: str | None = None
+    # Variant row id — needed by ShareToggleMenu PATCH /api/family/share/{id}.
+    # None when no WeeklyPlanVariant row exists yet (frontend hides toggle).
+    variant_id: str | None = None
+    updated_at: str | None = None
 
 
 class TodayWeight(BaseModel):

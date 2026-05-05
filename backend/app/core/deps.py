@@ -69,3 +69,35 @@ async def require_admin(user: User = Depends(get_current_user)) -> User:
     if getattr(user, "role", None) != "admin":
         raise AppException(403, "Non hai accesso a questa sezione.", "forbidden")
     return user
+
+
+async def get_user_with_group_access(
+    target_user_id: UUID,
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+) -> User:
+    """Authz dependency for cross-user reads on group-shared resources (FAM-06, FAM-07).
+
+    Source: D-19, D-20, FAM-06, FAM-07. ``group_id`` is NEVER read from the JWT —
+    it is re-looked-up from the database on every request so revocation is
+    immediate (membership change reflects within one HTTP round trip).
+
+    Returns:
+      * ``current_user`` when ``target_user_id == current_user.id`` (own data path).
+      * ``target`` user when ``target.group_id == current_user.group_id`` and both
+        groups are non-null (shared path).
+      * Raises ``AppException(404, "Risorsa non trovata.", "not_found")``
+        otherwise (V13 information-disclosure mitigation — never reveal whether
+        the target user exists when they're outside the caller's group).
+    """
+    if target_user_id == current_user.id:
+        return current_user
+    target = (await session.scalars(select(User).where(User.id == target_user_id))).first()
+    if (
+        target is None
+        or target.group_id is None
+        or current_user.group_id is None
+        or target.group_id != current_user.group_id
+    ):
+        raise AppException(404, "Risorsa non trovata.", "not_found")
+    return target

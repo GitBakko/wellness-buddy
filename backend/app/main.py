@@ -29,6 +29,7 @@ from app.api import (
     ai,
     auth,
     errors,
+    family,
     health,
     plans,
     shopping,
@@ -116,5 +117,7 @@ for r in (
     shopping.router,
     ai.router,
     admin.router,
+    # Plan 02-07 — family share toggle (FAM-02, FAM-03)
+    family.router,
 ):
     app.include_router(r)

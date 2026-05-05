@@ -205,6 +205,36 @@ def _snack_slot(sn: dict) -> str:
     return "afternoon"
 
 
+def _default_visibility_for(meal_type: str) -> str:
+    """FAM-02 / CONV-14 default visibility per meal type when no variant row exists.
+
+    Lunch/dinner default ``group_shared`` (cene + pranzi shared between partners
+    by default). Breakfast/snack default ``private``. Matches
+    ``variant_service.default_visibility_for`` exactly so the read path stays
+    consistent with the upsert path.
+    """
+    return "group_shared" if meal_type in ("lunch", "dinner") else "private"
+
+
+def _attach_variant_meta(
+    meal: MealEntry,
+    variant: WeeklyPlanVariant | None,
+    *,
+    owner_user_id: str,
+) -> MealEntry:
+    """Plan 02-07 — fill MealEntry.{visibility, owner_user_id, variant_id, updated_at}."""
+    meal.owner_user_id = owner_user_id
+    if variant is not None:
+        meal.visibility = variant.visibility.value
+        meal.variant_id = str(variant.id)
+        meal.updated_at = variant.updated_at.isoformat() if variant.updated_at else None
+    else:
+        meal.visibility = _default_visibility_for(meal.meal_type)
+        meal.variant_id = None
+        meal.updated_at = None
+    return meal
+
+
 def _meals_from_parsed(
     parsed: dict,
     day_of_week: int = 0,
@@ -388,6 +418,13 @@ async def build_today_payload(session: AsyncSession, user: User) -> TodayRespons
         for m in meals:
             if m.meal_type in completed_meal_types:
                 m.completed = True
+
+        # Plan 02-07 — attach visibility + owner_user_id + variant_id to every
+        # MealEntry so the frontend MealCard can render SharedBadge or
+        # ShareToggleMenu without a second round trip.
+        owner_id_str = str(user.id)
+        for m in meals:
+            _attach_variant_meta(m, variant_by_meal.get(m.meal_type), owner_user_id=owner_id_str)
 
     # Today's weight (user-scoped)
     weight_row = (

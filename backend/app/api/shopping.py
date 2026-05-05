@@ -17,12 +17,13 @@ reads with the 404 V13 contract.
 from __future__ import annotations
 
 from datetime import UTC, date, datetime
+from uuid import UUID
 
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Query, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_session
-from app.core.deps import get_current_user
+from app.core.deps import get_current_user, get_user_with_group_access
 from app.core.exceptions import AppException
 from app.models.user import User
 from app.schemas.shopping import (
@@ -46,11 +47,18 @@ def _parse_week_start(week_start: str) -> date:
 @router.get("/{week_start}", response_model=ShoppingResponse)
 async def get_shopping(
     week_start: str,
-    user: User = Depends(get_current_user),
+    user_id: UUID | None = Query(default=None),
+    current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> dict:
+    """Plan 02-07 — accepts optional ``?user_id={partner}`` for view-only
+    cross-user reads. Cross-group access raises 404 via V13 envelope.
+    """
     ws = _parse_week_start(week_start)
-    return await shopping_service.aggregate_for_week(session, user=user, week_start=ws)
+    target = current_user
+    if user_id is not None and user_id != current_user.id:
+        target = await get_user_with_group_access(user_id, current_user, session)
+    return await shopping_service.aggregate_for_week(session, user=target, week_start=ws)
 
 
 @router.patch("/{week_start}/check", response_model=ShoppingResponse)
@@ -92,21 +100,24 @@ async def post_reset(
 )
 async def export_pdf(
     week_start: str,
-    user: User = Depends(get_current_user),
+    user_id: UUID | None = Query(default=None),
+    current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
     exporter: PdfExporter = Depends(get_pdf_exporter),
 ) -> Response:
     """Render the categorized shopping list to a downloadable PDF (SHOP-07).
 
     Plan 02-06 wires Plan 02-01's ``PdfExporter`` ABC with Plan 02-05's
-    ``shopping_service.build_pdf_payload``. The active backend is decided
-    by ``settings.PDF_BACKEND`` — WeasyPrint primary on production
-    (Windows Server 2019 + GTK3) or ReportLab fallback when GTK3 is
-    unavailable. Both backends honor the same ABC contract so the response
-    shape is identical.
+    ``shopping_service.build_pdf_payload``.
+
+    Plan 02-07 — accepts optional ``?user_id={partner}`` so a partner in the
+    same group can download the other's shopping list. Cross-group → 404 (V13).
     """
     ws = _parse_week_start(week_start)
-    payload = await shopping_service.build_pdf_payload(session, user=user, week_start=ws)
+    target = current_user
+    if user_id is not None and user_id != current_user.id:
+        target = await get_user_with_group_access(user_id, current_user, session)
+    payload = await shopping_service.build_pdf_payload(session, user=target, week_start=ws)
     pdf_bytes = await exporter.render_shopping_list(**payload)
     return Response(
         content=pdf_bytes,
