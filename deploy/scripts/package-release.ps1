@@ -95,9 +95,8 @@ $stageDir = Join-Path $stageRoot $pkgName
 if (Test-Path $stageRoot) { Remove-Item $stageRoot -Recurse -Force }
 New-Item -ItemType Directory -Path $stageDir -Force | Out-Null
 
-# 2a. Backend (exclude virtualenv, caches, tests)
-$backendExcludes = @('.venv', '__pycache__', '.pytest_cache', '.mypy_cache', '.ruff_cache', 'tests', '*.pyc', '*.pyo', 'htmlcov', '.coverage')
-robocopy 'backend' (Join-Path $stageDir 'backend') /E /XD .venv __pycache__ .pytest_cache .mypy_cache .ruff_cache tests htmlcov /XF '*.pyc' '*.pyo' '.coverage' /NFL /NDL /NJH /NJS /NC /NS /NP | Out-Null
+# 2a. Backend (exclude virtualenv, caches, tests, secrets — never ship .env or .env.dpapi)
+robocopy 'backend' (Join-Path $stageDir 'backend') /E /XD .venv __pycache__ .pytest_cache .mypy_cache .ruff_cache tests htmlcov /XF '*.pyc' '*.pyo' '.coverage' '.env' '.env.*' /NFL /NDL /NJH /NJS /NC /NS /NP | Out-Null
 if ($LASTEXITCODE -gt 7) { Write-Error "robocopy backend failed (exit $LASTEXITCODE)."; exit 1 }
 
 # 2b. Frontend dist only
