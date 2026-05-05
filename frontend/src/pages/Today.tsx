@@ -124,6 +124,7 @@ export default function Today(): React.ReactElement {
   const { data, isLoading, isError } = useToday();
   const complete = useCompleteMeal();
   const username = useAuthStore((s) => s.user?.username) ?? '';
+  const currentUserId = useAuthStore((s) => s.user?.id);
 
   if (isLoading) {
     return (
@@ -239,6 +240,8 @@ export default function Today(): React.ReactElement {
         meals={data.meals}
         onToggle={(mt) => complete.mutate(mt)}
         disabled={complete.isPending}
+        currentUserId={currentUserId}
+        weekStart={weekStartFromIso(data.date)}
       />
 
 
@@ -312,13 +315,32 @@ function buildMealGroups(
   });
 }
 
+/** Plan 02-07 — derive Monday-of-week from an ISO date (YYYY-MM-DD). */
+function weekStartFromIso(iso: string): string {
+  const d = new Date(iso);
+  // Monday=1..Sunday=0 in JS getDay; ISO Monday should be day_of_week==0
+  const dow = (d.getDay() + 6) % 7; // 0=Mon..6=Sun
+  d.setDate(d.getDate() - dow);
+  return d.toISOString().slice(0, 10);
+}
+
 interface MealsSectionProps {
   meals: import('@/services/today').TodayMeal[];
   onToggle: (mealType: string) => void;
   disabled?: boolean;
+  /** Plan 02-07 — auth user id; ShareToggleMenu uses this to decide owner vs partner. */
+  currentUserId?: string;
+  /** Plan 02-07 — Monday of the rendered week (YYYY-MM-DD) for cache invalidation. */
+  weekStart?: string;
 }
 
-function MealsSection({ meals, onToggle, disabled }: MealsSectionProps) {
+function MealsSection({
+  meals,
+  onToggle,
+  disabled,
+  currentUserId,
+  weekStart,
+}: MealsSectionProps) {
   // Selection happens implicitly: user swipes to the alternative they want
   // and taps the card's check button (one gesture = scelta + segna pasto).
   // No separate "Scegli questa" CTA.
@@ -337,6 +359,8 @@ function MealsSection({ meals, onToggle, disabled }: MealsSectionProps) {
               meal={g.meal}
               onToggle={() => onToggle(g.meal.meal_type)}
               disabled={disabled}
+              currentUserId={currentUserId}
+              weekStart={weekStart}
             />
           );
         }

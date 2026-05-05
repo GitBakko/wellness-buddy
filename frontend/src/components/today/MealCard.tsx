@@ -19,6 +19,8 @@
 // All copy from copy.it.ts; all icons via @/components/icons facade; zero hex.
 
 import { BowlFood, Check, Circle, Cookie, Fish, OrangeSlice } from '@/components/icons';
+import { SharedBadge } from '@/components/family/SharedBadge';
+import { ShareToggleMenu } from '@/components/family/ShareToggleMenu';
 import {
   Dialog,
   DialogClose,
@@ -47,6 +49,13 @@ interface Props {
    * non-functional check button only confused users.
    */
   hideCheckButton?: boolean;
+  // ─── Plan 02-07 — family sync surface (FAM-02..FAM-05) ───
+  /** Authenticated user's id. SharedBadge hides when ownerUserId === currentUserId. */
+  currentUserId?: string;
+  /** Owner display name shown in SharedBadge pill. Required for badge to render. */
+  partnerName?: string;
+  /** Optional week_start (YYYY-MM-DD) so ShareToggleMenu invalidates the matching weekly query. */
+  weekStart?: string;
 }
 
 type IconC = ComponentType<
@@ -66,7 +75,21 @@ export function MealCard({
   disabled,
   variantSlot,
   hideCheckButton,
+  currentUserId,
+  partnerName,
+  weekStart,
 }: Props): React.ReactElement {
+  // Plan 02-07 — family sync render gates.
+  //   Show SharedBadge when caller is reading a partner's group_shared meal.
+  //   Show ShareToggleMenu when caller IS the owner AND a variant row exists.
+  const isShared = meal.visibility === 'group_shared';
+  const ownerUserId = meal.owner_user_id ?? null;
+  const variantId = meal.variant_id ?? null;
+  const isOwner =
+    Boolean(currentUserId) && Boolean(ownerUserId) && currentUserId === ownerUserId;
+  const showSharedBadge =
+    isShared && !isOwner && Boolean(ownerUserId) && Boolean(partnerName);
+  const showShareToggle = isOwner && Boolean(variantId);
   // Plan 02-05 — snack temporal label fallback (when meal.slot is set the
   // user is reading a /settimana snack row or a /today single-snack edge case;
   // /today carousel passes its own slotLabel via the parent header).
@@ -119,8 +142,14 @@ export function MealCard({
 
       {/* Info column */}
       <div className="flex-1 min-w-0 flex flex-col gap-[var(--spacing-1)]">
-        <div className="text-[var(--text-caption)] font-bold uppercase tracking-[0.08em] text-[color:var(--color-text-muted)] flex items-center gap-[var(--spacing-1)]">
-          {slotLabel}
+        <div className="text-[var(--text-caption)] font-bold uppercase tracking-[0.08em] text-[color:var(--color-text-muted)] flex items-center gap-[var(--spacing-2)]">
+          <span>{slotLabel}</span>
+          {showSharedBadge && partnerName ? (
+            <SharedBadge
+              partnerName={partnerName}
+              updatedAt={meal.updated_at ?? null}
+            />
+          ) : null}
         </div>
         <h3 className="text-[var(--text-base)] font-semibold leading-tight text-[color:var(--color-text)] m-0 line-clamp-2">
           {meal.title}
@@ -221,6 +250,16 @@ export function MealCard({
           <div className="mt-[var(--spacing-1)]">{variantSlot}</div>
         ) : null}
       </div>
+
+      {/* Plan 02-07 — owner share toggle (DotsThreeOutline → Switch).
+          Hidden when caller is not the owner OR no variant row exists. */}
+      {showShareToggle && variantId ? (
+        <ShareToggleMenu
+          variantId={variantId}
+          currentVisibility={isShared ? 'group_shared' : 'private'}
+          weekStart={weekStart}
+        />
+      ) : null}
 
       {/* Check button — 44×44 minimum. Hidden on /settimana (read-only). */}
       {hideCheckButton ? null : (

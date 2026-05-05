@@ -68,4 +68,9 @@ export {
   FilePdf,
   // Plan 02-06 — Esporta PDF button loading state.
   CircleNotch,
+  // Plan 02-07 — Family sync surface:
+  //   UsersThree       → SharedBadge pill on group_shared MealCards
+  //   DotsThreeOutline → ShareToggleMenu trigger (owner only)
+  UsersThree,
+  DotsThreeOutline,
 } from '@phosphor-icons/react';

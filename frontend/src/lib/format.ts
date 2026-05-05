@@ -74,3 +74,46 @@ export const formatWeight = (kg: number): string => `${italianNumber(kg)} kg`;
 
 /** Convenience: format calories with Italian thousands separator: 1250 → "1.250 kcal". */
 export const formatCalories = (kcal: number): string => `${italianNumberInt(kcal)} kcal`;
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Plan 02-07 — italianTimeAgo helper (UI-SPEC §7.2)
+//
+// Buckets (matches family.timeAgo* copy):
+//   < 1 min   → "adesso"
+//   1 min     → "1 minuto fa"  (singular)
+//   2..59 min → "{n} minuti fa"
+//   1 hour    → "1 ora fa"     (singular)
+//   2..23 h   → "{n} ore fa"
+//   24..47 h  → "ieri"
+//   3+ days   → "{n} giorni fa"
+//
+// Future-tense (negative diffMs — clock skew between client and server) collapses
+// to "adesso" so the toast never reads "tra 2 minuti" which would be confusing.
+// ──────────────────────────────────────────────────────────────────────────────
+
+import { copy as _copy } from '@/i18n/copy.it';
+
+export function italianTimeAgo(date: Date | string, now: Date = new Date()): string {
+  const target = typeof date === 'string' ? new Date(date) : date;
+  const diffMs = now.getTime() - target.getTime();
+  if (Number.isNaN(diffMs)) return _copy.family.timeAgoJustNow;
+  if (diffMs < 60_000) return _copy.family.timeAgoJustNow;
+
+  const diffMin = Math.floor(diffMs / 60_000);
+  if (diffMin < 60) {
+    return diffMin === 1
+      ? _copy.family.timeAgoMinutesSingular
+      : _copy.family.timeAgoMinutes.replace('{minutes}', String(diffMin));
+  }
+
+  const diffHr = Math.floor(diffMs / 3_600_000);
+  if (diffHr < 24) {
+    return diffHr === 1
+      ? _copy.family.timeAgoHoursSingular
+      : _copy.family.timeAgoHours.replace('{hours}', String(diffHr));
+  }
+
+  const diffDay = Math.floor(diffMs / 86_400_000);
+  if (diffDay === 1) return _copy.family.timeAgoYesterday;
+  return _copy.family.timeAgoDays.replace('{days}', String(diffDay));
+}

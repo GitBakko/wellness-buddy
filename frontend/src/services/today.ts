@@ -38,6 +38,19 @@ export interface TodayMeal {
    * between pomeriggio Opzione A/B/... and serale Alternativa 1/2/...
    * separately. Null for non-snack meals. */
   slot?: 'afternoon' | 'evening' | null;
+  /** Plan 02-07 — visibility surfaced from the persisted variant row.
+   * MealCard renders SharedBadge when visibility==='group_shared' AND
+   * owner_user_id !== current_user_id; renders ShareToggleMenu when
+   * owner_user_id === current_user_id. Defaults: lunch/dinner=group_shared,
+   * breakfast/snack=private (CONV-14, FAM-02). */
+  visibility?: 'private' | 'group_shared';
+  /** Plan 02-07 — owner of this meal entry. Null only on the empty-plan path. */
+  owner_user_id?: string | null;
+  /** Plan 02-07 — variant row id for ShareToggleMenu mutation target.
+   * Null when no variant row exists yet (toggle hidden in that case). */
+  variant_id?: string | null;
+  /** Plan 02-07 — last write timestamp for SharedBadge tooltip "Aggiornato 2 min fa". */
+  updated_at?: string | null;
 }
 
 export interface TodayWeight {

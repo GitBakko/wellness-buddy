@@ -346,6 +346,28 @@ export const copy = {
     emptyBody: 'Scegli le varianti settimanali per generare la lista.',
     emptyCta: 'Vai alla settimana',
   },
+
+  // ───── Family sync (Plan 02-07 — UI-SPEC §7.1, FAM-02..FAM-09) ─────
+  // 15-key namespace: SharedBadge (3) + ShareToggleMenu (5) + timeAgo (7).
+  // Tone rules (CLAUDE.md UI rule 11): NO `!`, no panic, "Aggiornato da..." stays
+  // info-toned, partner name interpolated via {partnerName} placeholder.
+  family: {
+    sharedBadgeLabel: '{partnerName}',
+    sharedBadgeAria: 'Condiviso con {partnerName}',
+    sharedBadgeTooltipFormat: 'Aggiornato da {partnerName} · {timeAgo}',
+    sharePerMealMenuAria: 'Opzioni pasto',
+    sharePerMealToggleLabel: 'Condividi con la famiglia',
+    sharePerMealOnSuccess: 'Condivisione attivata.',
+    sharePerMealOffSuccess: 'Condivisione disattivata.',
+    sharePerMealError: 'Aggiornamento non riuscito. Riprova.',
+    timeAgoJustNow: 'adesso',
+    timeAgoMinutes: '{minutes} minuti fa',
+    timeAgoMinutesSingular: '1 minuto fa',
+    timeAgoHours: '{hours} ore fa',
+    timeAgoHoursSingular: '1 ora fa',
+    timeAgoYesterday: 'ieri',
+    timeAgoDays: '{days} giorni fa',
+  },
 } as const;
 
 export type Copy = typeof copy;
