@@ -35,6 +35,7 @@ from app.models.invite import InviteToken
 from app.models.refresh import RefreshToken
 from app.models.user import User
 from app.services.audit_service import write_audit
+from app.services.group_service import ensure_personal_group
 
 # PITFALLS#4 — within this window after rotation, replaying the OLD refresh
 # returns the cached new pair instead of triggering family revocation.
@@ -243,6 +244,9 @@ async def consume_invite_and_register(
     )
     session.add(user)
     await session.flush()  # populate user.id
+    # PITFALL #16 mitigation — every new user gets a personal household group at
+    # registration time so users.group_id is never NULL post-Phase-2 deploy.
+    await ensure_personal_group(session, user)
     invite.used_by = user.id
     await write_audit(
         session,
