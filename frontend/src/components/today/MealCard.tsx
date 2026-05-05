@@ -67,7 +67,15 @@ export function MealCard({
   variantSlot,
   hideCheckButton,
 }: Props): React.ReactElement {
-  const slotLabel = copy.today.mealLabels[meal.meal_type] ?? meal.meal_type;
+  // Plan 02-05 — snack temporal label fallback (when meal.slot is set the
+  // user is reading a /settimana snack row or a /today single-snack edge case;
+  // /today carousel passes its own slotLabel via the parent header).
+  const slotLabel =
+    meal.meal_type === 'snack' && meal.slot === 'afternoon'
+      ? copy.today.snackLabelAfternoon
+      : meal.meal_type === 'snack' && meal.slot === 'evening'
+        ? copy.today.snackLabelEvening
+        : (copy.today.mealLabels[meal.meal_type] ?? meal.meal_type);
   const ariaLabel = `${slotLabel}: ${meal.title}`;
   const SlotIcon = SLOT_ICON[meal.meal_type] ?? (OrangeSlice as IconC);
 

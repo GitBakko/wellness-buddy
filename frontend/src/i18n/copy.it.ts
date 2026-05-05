@@ -74,6 +74,10 @@ export const copy = {
       dinner: 'Cena',
       snack: 'Spuntino',
     } as Record<string, string>,
+    // Plan 02-05 — temporal labels for snack rows on /settimana (and /today
+    // single-snack edge case). Render based on TodayMeal.slot.
+    snackLabelAfternoon: 'Spuntino pomeriggio',
+    snackLabelEvening: 'Spuntino serale',
     macroKcal: 'kcal',
     macroProtChip: 'prot',
     macroProtFull: 'proteine',

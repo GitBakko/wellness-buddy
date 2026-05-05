@@ -43,6 +43,11 @@ class MealEntry(BaseModel):
     # (day_of_week, slot). Empty list when the slot has no alternatives (e.g.
     # breakfast — single dict in parsed_json).
     options: list[MealOptionPayload] = Field(default_factory=list)
+    # Plan 02-05 — temporal slot for snacks ('afternoon' | 'evening' | None).
+    # weekly_service emits TWO snack entries per day when the plan has both a
+    # SPUNTINO POMERIGGIO and a SPUNTINO SERALE section. Frontend renders
+    # afternoon BEFORE dinner and evening AFTER dinner (matches /today order).
+    snack_slot: str | None = None
 
 
 class WeeklyDay(BaseModel):

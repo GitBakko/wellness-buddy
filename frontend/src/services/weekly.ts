@@ -58,6 +58,10 @@ export interface WeeklyMealEntry {
   /** Plan 02-04: per-day variant options the user can pick between. Empty for
    *  breakfast/snack slots; lunch + dinner usually have 1-3 options per day. */
   options: WeeklyMealOption[];
+  /** Plan 02-05: temporal slot for snacks ('afternoon' | 'evening'). Backend
+   *  emits TWO snack entries per day when the plan has both pomeriggio and
+   *  serale sections. Null for non-snack rows. */
+  snack_slot?: 'afternoon' | 'evening' | null;
 }
 
 export interface WeeklyDay {

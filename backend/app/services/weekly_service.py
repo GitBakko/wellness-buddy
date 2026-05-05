@@ -24,6 +24,17 @@ from app.models.variant import WeeklyPlanVariant
 
 MEAL_SLOTS = ("breakfast", "lunch", "dinner", "snack")
 
+# Plan 02-05 — temporal ordering of meal entries on /settimana, matching /today.
+# Snack slots are emitted twice per day (afternoon BEFORE dinner, evening AFTER).
+# Each tuple = (slot, snack_temporal). snack_temporal is None for non-snack rows.
+ORDERED_SLOTS: tuple[tuple[str, str | None], ...] = (
+    ("breakfast", None),
+    ("lunch", None),
+    ("snack", "afternoon"),
+    ("dinner", None),
+    ("snack", "evening"),
+)
+
 # Plan 02-04 — Italian day slugs ordered by Monday=0..Sunday=6 (matches plan_sections).
 _INT_TO_DAY_SLUG = ("lun", "mar", "mer", "gio", "ven", "sab", "dom")
 
@@ -70,6 +81,32 @@ def _merge_macros(slot: str, raw: Any, daily_target: dict[str, Any]) -> dict[str
     return _proportional_macros(slot, daily_target)
 
 
+def _split_snacks_by_temporal(
+    parsed: dict[str, Any] | None,
+) -> dict[str, list[dict[str, Any]]]:
+    """Plan 02-05 — split parsed.snacks list into afternoon + evening buckets.
+
+    Reads MealOption.slot field set by the parser ('afternoon'|'evening').
+    Legacy parsed_json without slot defaults to afternoon (preserves prior
+    behavior — snack rendered between lunch and dinner).
+    """
+    if not isinstance(parsed, dict):
+        return {"afternoon": [], "evening": []}
+    snacks = parsed.get("snacks")
+    if not isinstance(snacks, list):
+        return {"afternoon": [], "evening": []}
+    buckets: dict[str, list[dict[str, Any]]] = {"afternoon": [], "evening": []}
+    for sn in snacks:
+        if not isinstance(sn, dict):
+            continue
+        raw = sn.get("slot")
+        slot = (
+            "evening" if isinstance(raw, str) and raw.strip().lower() == "evening" else "afternoon"
+        )
+        buckets[slot].append(sn)
+    return buckets
+
+
 async def build_weekly_payload(
     session: AsyncSession, *, user: User, week_start: date_t
 ) -> dict[str, Any]:
@@ -105,34 +142,63 @@ async def build_weekly_payload(
     )
     daily_target: dict[str, Any] = daily_target_raw if isinstance(daily_target_raw, dict) else {}
 
+    # Plan 02-05 — split snacks once per plan (parsed_json is week-stable).
+    snack_buckets = _split_snacks_by_temporal(plan.parsed_json)
+
     days: list[dict[str, Any]] = []
     for d in range(7):
         day_date = week_start + timedelta(days=d)
         meals: list[dict[str, Any]] = []
-        for slot in MEAL_SLOTS:
-            v = variant_map.get((d, slot))
-            meal_block = _resolve_meal(
-                plan.parsed_json,
-                slot,
-                v.variant_key if v else "default",
-                day_of_week=d,
-            )
-            options = _options_for_slot(
-                plan.parsed_json, slot, day_of_week=d, daily_target=daily_target
-            )
+        for slot, snack_temporal in ORDERED_SLOTS:
+            # Plan 02-05 — skip snack entry when the plan has no snacks for
+            # this temporal slot (e.g., MARTA without spuntino serale).
+            if slot == "snack":
+                bucket = snack_buckets.get(snack_temporal or "afternoon", [])
+                if not bucket:
+                    continue
+                meal_block = bucket[0]
+                # Snacks: variant_key from row 0; alternatives go in `options`.
+                v = variant_map.get((d, slot))
+                title = str(meal_block.get("title") or "")
+                ingredients = list(meal_block.get("ingredients") or [])
+                macros_raw = meal_block.get("macros")
+                options = [
+                    {
+                        "key": str(o.get("key") or ""),
+                        "title": str(o.get("title") or ""),
+                        "macros": _merge_macros(slot, o.get("macros"), daily_target),
+                    }
+                    for o in bucket
+                    if isinstance(o, dict)
+                ]
+            else:
+                v = variant_map.get((d, slot))
+                meal_block = _resolve_meal(
+                    plan.parsed_json,
+                    slot,
+                    v.variant_key if v else "default",
+                    day_of_week=d,
+                )
+                title = str(meal_block.get("title") or "")
+                ingredients = list(meal_block.get("ingredients") or [])
+                macros_raw = meal_block.get("macros")
+                options = _options_for_slot(
+                    plan.parsed_json, slot, day_of_week=d, daily_target=daily_target
+                )
             meals.append(
                 {
                     "slot": slot,
-                    "title": str(meal_block.get("title") or ""),
+                    "title": title,
                     "variant_key": v.variant_key if v else "default",
                     "visibility": v.visibility.value if v else "private",
                     "version": v.version if v else 0,
                     "updated_at": (v.updated_at.isoformat() if v else None),
                     "completed": v.completed if v else False,
                     "owner_user_id": str(user.id),
-                    "macros": _merge_macros(slot, meal_block.get("macros"), daily_target),
-                    "ingredients": list(meal_block.get("ingredients") or []),
+                    "macros": _merge_macros(slot, macros_raw, daily_target),
+                    "ingredients": ingredients,
                     "options": options,
+                    "snack_slot": snack_temporal,
                 }
             )
         days.append({"date": day_date.isoformat(), "day_of_week": d, "meals": meals})

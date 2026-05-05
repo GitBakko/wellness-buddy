@@ -154,6 +154,9 @@ function toTodayMeal(m: WeeklyMealEntry): TodayMeal {
     photo_url: null,
     // Plan 02-04 gap-closure — surface composition list to MealCard.
     ingredients: m.ingredients ?? [],
+    // Plan 02-05 — propagate snack temporal slot so MealCard label reads
+    // "Spuntino pomeriggio" / "Spuntino serale" instead of generic "Spuntino".
+    slot: m.snack_slot ?? null,
   };
 }
 
