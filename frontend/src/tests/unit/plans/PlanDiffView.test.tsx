@@ -12,6 +12,7 @@ describe('PlanDiffView', () => {
     render(
       <PlanDiffView
         diff={{
+          has_active_plan: true,
           added: ['dinners'],
           removed: ['lunches'],
           changed: ['breakfast'],
@@ -31,12 +32,21 @@ describe('PlanDiffView', () => {
   });
 
   it('renders empty state when no diff', () => {
-    render(<PlanDiffView diff={{ added: [], removed: [], changed: [] }} />);
+    render(<PlanDiffView diff={{ has_active_plan: true, added: [], removed: [], changed: [] }} />);
     expect(screen.getByText(copy.plans.diffEmpty)).toBeInTheDocument();
   });
 
   it('only shows present buckets', () => {
-    render(<PlanDiffView diff={{ added: ['dinners'], removed: [], changed: [] }} />);
+    render(
+      <PlanDiffView
+        diff={{
+          has_active_plan: true,
+          added: ['dinners'],
+          removed: [],
+          changed: [],
+        }}
+      />,
+    );
     expect(screen.getByText(copy.plans.diffAddedHeading)).toBeInTheDocument();
     expect(screen.queryByText(copy.plans.diffRemovedHeading)).not.toBeInTheDocument();
     expect(screen.queryByText(copy.plans.diffChangedHeading)).not.toBeInTheDocument();

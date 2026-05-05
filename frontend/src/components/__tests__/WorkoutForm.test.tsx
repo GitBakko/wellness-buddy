@@ -9,9 +9,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WorkoutForm } from '@/components/today/WorkoutForm';
 import { copy } from '@/i18n/copy.it';
 
-function renderWithQuery(
-  ui: React.ReactElement,
-): ReturnType<typeof render> {
+function renderWithQuery(ui: React.ReactElement): ReturnType<typeof render> {
   const qc = new QueryClient({
     defaultOptions: {
       queries: { retry: false, staleTime: 0 },
@@ -27,9 +25,7 @@ describe('WorkoutForm', () => {
     expect(screen.getByText(copy.workout.heading)).toBeInTheDocument();
     expect(screen.getByText(copy.workout.toggleLabel)).toBeInTheDocument();
     // Submit CTA always visible — even when not trained
-    expect(
-      screen.getByRole('button', { name: copy.workout.submitCta }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: copy.workout.submitCta })).toBeInTheDocument();
   });
 
   it('hides duration/type/notes when trained=false', () => {
@@ -82,8 +78,11 @@ describe('WorkoutForm copy is sourced from copy.it.ts', () => {
     expect(copy.workout.successToast).toBe('Allenamento registrato.');
   });
 
-  it('uses italian toggle label (Hai allenato oggi?)', () => {
-    expect(copy.workout.toggleLabel).toMatch(/^Hai allenato/);
+  it('uses italian toggle label (Ti sei allenato oggi?)', () => {
+    // Canonical italian copy lives in copy.it.ts (single source of truth).
+    // Reflexive second-person ("Ti sei allenato") matches the WIN REQUISITE
+    // friendly tone — warmer than the imperative "Hai allenato".
+    expect(copy.workout.toggleLabel).toMatch(/^Ti sei allenato/);
   });
 
   it('does not use the forbidden `!` character in error states', () => {
