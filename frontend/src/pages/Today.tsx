@@ -184,10 +184,19 @@ export default function Today(): React.ReactElement {
   }
 
   const macros = aggregateMacros(data);
-  const completedCount = data.meals.filter((m) => m.completed).length;
+  // Plan 02-05 follow-up — count LOGICAL meal slots, not alternatives.
+  // Stefano has 5 slots (breakfast/lunch/snack-pomeriggio/dinner/snack-serale)
+  // even when snack-pomeriggio carries 4 alternatives — user only eats one.
+  // A snack slot counts as completed if ANY of its alternatives is checked.
+  const mealGroups = buildMealGroups(data.meals);
+  const completedCount = mealGroups.filter((g) =>
+    g.kind === 'single'
+      ? g.meal.completed
+      : g.options.some((o) => o.completed),
+  ).length;
   const sectionMeta = copy.today.sectionMealsCount
     .replace('{done}', String(completedCount))
-    .replace('{total}', String(data.meals.length));
+    .replace('{total}', String(mealGroups.length));
 
   return (
     <main className="p-[var(--spacing-4)] flex flex-col gap-[var(--spacing-5)] max-w-3xl mx-auto">

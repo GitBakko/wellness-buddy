@@ -323,6 +323,7 @@ export default function Week(): React.ReactElement {
                         }}
                         disabled
                         variantSlot={variantSlot}
+                        hideCheckButton
                       />
                     </li>
                   );

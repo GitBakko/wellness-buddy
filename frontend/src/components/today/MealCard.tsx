@@ -19,6 +19,13 @@
 // All copy from copy.it.ts; all icons via @/components/icons facade; zero hex.
 
 import { BowlFood, Check, Circle, Cookie, Fish, OrangeSlice } from '@/components/icons';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { copy } from '@/i18n/copy.it';
 import { italianNumberInt } from '@/lib/format';
 import type { TodayMeal } from '@/services/today';
@@ -34,6 +41,12 @@ interface Props {
    * /today does not pass this prop; legacy callsites unaffected.
    */
   variantSlot?: ReactNode;
+  /**
+   * Plan 02-05 — when true, the completion check button is omitted entirely.
+   * /settimana passes true because completion is owned by /today; rendering a
+   * non-functional check button only confused users.
+   */
+  hideCheckButton?: boolean;
 }
 
 type IconC = ComponentType<
@@ -52,6 +65,7 @@ export function MealCard({
   onToggle,
   disabled,
   variantSlot,
+  hideCheckButton,
 }: Props): React.ReactElement {
   const slotLabel = copy.today.mealLabels[meal.meal_type] ?? meal.meal_type;
   const ariaLabel = `${slotLabel}: ${meal.title}`;
@@ -104,29 +118,79 @@ export function MealCard({
           {meal.title}
         </h3>
         {meal.ingredients && meal.ingredients.length > 0 ? (
-          <ul
-            data-testid="meal-ingredients"
-            className="flex flex-col gap-[2px] text-[var(--text-caption)] text-[color:var(--color-text-muted)] m-0 p-0 list-none leading-[var(--leading-caption)]"
-          >
-            {meal.ingredients.slice(0, 5).map((ing, idx) => (
-              <li
-                key={`${ing.name}-${idx}`}
-                className="flex items-baseline gap-[var(--spacing-1)] line-clamp-1"
-              >
-                <span aria-hidden="true" className="text-[color:var(--color-leaf-500)] font-bold">
-                  ·
-                </span>
-                <span className="truncate">
-                  {ing.quantity ? `${ing.quantity} ${ing.name}` : ing.name}
-                </span>
-              </li>
-            ))}
+          <>
+            <ul
+              data-testid="meal-ingredients"
+              className="flex flex-col gap-[2px] text-[var(--text-caption)] text-[color:var(--color-text-muted)] m-0 p-0 list-none leading-[var(--leading-caption)]"
+            >
+              {meal.ingredients.slice(0, 5).map((ing, idx) => (
+                <li
+                  key={`${ing.name}-${idx}`}
+                  className="flex items-baseline gap-[var(--spacing-1)] line-clamp-1"
+                >
+                  <span aria-hidden="true" className="text-[color:var(--color-leaf-500)] font-bold">
+                    ·
+                  </span>
+                  <span className="truncate">
+                    {ing.quantity ? `${ing.quantity} ${ing.name}` : ing.name}
+                  </span>
+                </li>
+              ))}
+            </ul>
             {meal.ingredients.length > 5 ? (
-              <li className="text-[color:var(--color-text-muted)] italic">
-                +{meal.ingredients.length - 5}
-              </li>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button
+                    type="button"
+                    className="self-start mt-[var(--spacing-1)] text-[var(--text-caption)] font-semibold text-[color:var(--color-leaf-700)] underline-offset-2 hover:underline transition-transform duration-[var(--duration-instant)] ease-[var(--ease-out-soft)] active:scale-[0.97]"
+                  >
+                    {copy.today.ingredientsViewAll.replace(
+                      '{count}',
+                      String(meal.ingredients.length),
+                    )}
+                  </button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogTitle>
+                    {copy.today.ingredientsDialogTitle} · {meal.title}
+                  </DialogTitle>
+                  <ul
+                    className="flex flex-col gap-[var(--spacing-1)] mt-[var(--spacing-3)] text-[var(--text-base)] text-[color:var(--color-text)] list-none m-0 p-0 max-h-[60vh] overflow-y-auto"
+                  >
+                    {meal.ingredients.map((ing, idx) => (
+                      <li
+                        key={`${ing.name}-full-${idx}`}
+                        className="flex items-baseline gap-[var(--spacing-2)] py-[var(--spacing-1)] border-b border-[var(--color-border)] last:border-b-0"
+                      >
+                        <span
+                          aria-hidden="true"
+                          className="text-[color:var(--color-leaf-500)] font-bold"
+                        >
+                          ·
+                        </span>
+                        <span className="flex-1">
+                          {ing.quantity ? `${ing.quantity} ${ing.name}` : ing.name}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                  <DialogClose asChild>
+                    <button
+                      type="button"
+                      className="mt-[var(--spacing-4)] self-end inline-flex items-center min-h-11 px-[var(--spacing-4)] rounded-[var(--radius-pill)] text-[var(--text-base)] font-semibold transition-transform duration-[var(--duration-instant)] ease-[var(--ease-out-soft)] active:scale-[0.97]"
+                      style={{
+                        border: '1.5px solid var(--color-border)',
+                        background: 'var(--color-surface)',
+                        color: 'var(--color-text)',
+                      }}
+                    >
+                      {copy.today.ingredientsDialogClose}
+                    </button>
+                  </DialogClose>
+                </DialogContent>
+              </Dialog>
             ) : null}
-          </ul>
+          </>
         ) : null}
         <div className="flex flex-wrap gap-[var(--spacing-2)] text-[var(--text-caption)] tabular-nums font-medium text-[color:var(--color-text-muted)]">
           <span
@@ -150,33 +214,35 @@ export function MealCard({
         ) : null}
       </div>
 
-      {/* Check button — 44×44 minimum */}
-      <button
-        type="button"
-        onClick={() => {
-          if (!meal.completed && !disabled) onToggle();
-        }}
-        disabled={disabled || meal.completed}
-        aria-label={checkAria}
-        aria-pressed={meal.completed}
-        data-completed={meal.completed ? 'true' : undefined}
-        className="w-11 h-11 rounded-[var(--radius-pill)] inline-flex items-center justify-center flex-shrink-0 transition-transform duration-[var(--duration-instant)] ease-[var(--ease-out-soft)] active:scale-[0.97] disabled:cursor-default"
-        style={{
-          border: meal.completed
-            ? '1.5px solid var(--color-leaf-500)'
-            : '1.5px solid var(--color-border)',
-          background: meal.completed ? 'var(--color-leaf-500)' : 'transparent',
-          color: meal.completed
-            ? 'var(--color-text-inverse)'
-            : 'var(--color-text-muted)',
-        }}
-      >
-        {meal.completed ? (
-          <Check size={22} weight="bold" aria-hidden="true" />
-        ) : (
-          <Circle size={22} weight="regular" aria-hidden="true" />
-        )}
-      </button>
+      {/* Check button — 44×44 minimum. Hidden on /settimana (read-only). */}
+      {hideCheckButton ? null : (
+        <button
+          type="button"
+          onClick={() => {
+            if (!meal.completed && !disabled) onToggle();
+          }}
+          disabled={disabled || meal.completed}
+          aria-label={checkAria}
+          aria-pressed={meal.completed}
+          data-completed={meal.completed ? 'true' : undefined}
+          className="w-11 h-11 rounded-[var(--radius-pill)] inline-flex items-center justify-center flex-shrink-0 transition-transform duration-[var(--duration-instant)] ease-[var(--ease-out-soft)] active:scale-[0.97] disabled:cursor-default"
+          style={{
+            border: meal.completed
+              ? '1.5px solid var(--color-leaf-500)'
+              : '1.5px solid var(--color-border)',
+            background: meal.completed ? 'var(--color-leaf-500)' : 'transparent',
+            color: meal.completed
+              ? 'var(--color-text-inverse)'
+              : 'var(--color-text-muted)',
+          }}
+        >
+          {meal.completed ? (
+            <Check size={22} weight="bold" aria-hidden="true" />
+          ) : (
+            <Circle size={22} weight="regular" aria-hidden="true" />
+          )}
+        </button>
+      )}
     </article>
   );
 }

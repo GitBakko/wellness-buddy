@@ -97,6 +97,10 @@ export const copy = {
     alternativesIndicator: '{current} di {total}',
     alternativesPrev: 'Alternativa precedente',
     alternativesNext: 'Alternativa successiva',
+    // Plan 02-05 — ingredient overflow dialog.
+    ingredientsViewAll: 'Vedi tutti ({count})',
+    ingredientsDialogTitle: 'Ingredienti',
+    ingredientsDialogClose: 'Chiudi',
   },
 
   // ───── Weight quick-log ─────
