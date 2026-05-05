@@ -1,5 +1,9 @@
 # Plan 02-06 — iPhone Safari + Mail.app PDF Accent Verification (T-PDF-02)
 
+> **Status (Plan 02-08 closure, 2026-05-05):** PENDING — awaiting iPhone test on real device.
+>
+> Plan 02-08 closure has prepared this artifact for sign-off. The 4 surfaces × 7 accent strings cannot be verified autonomously — they require a physical iPhone with the installed PWA against the production deploy. Stefano signs each row of the matrix below after running the steps. Phase 2 pause-gate cannot close until at least Surfaces 1, 2, 3 sign PASS (Surface 4 desktop is a complement, not a blocker).
+
 **Verification opened:** _________________ (Stefano fills date)
 **Production URL:** `https://wellness-buddy.epartner.it/spesa/{currentWeek}`
 **PDF endpoint:** `POST /api/shopping/{week_start}/export-pdf`

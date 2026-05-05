@@ -4,6 +4,8 @@
       "url": [
         "http://localhost:4173/login",
         "http://localhost:4173/today",
+        "http://localhost:4173/settimana/2026-05-04",
+        "http://localhost:4173/spesa/2026-05-04",
         "http://localhost:4173/piano",
         "http://localhost:4173/impostazioni"
       ],
