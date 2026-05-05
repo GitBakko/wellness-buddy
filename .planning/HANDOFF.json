@@ -1,112 +1,74 @@
 {
   "version": "1.0",
-  "timestamp": "2026-05-05T10:06:01.461Z",
-  "source": "auto-postool",
-  "partial": false,
+  "timestamp": "2026-05-05T13:55:00Z",
+  "source": "plan-02-08-autonomous-closure",
+  "partial": true,
   "phase": "2",
   "phase_name": "Differentiators",
   "phase_dir": ".planning/phases/02-differentiators",
-  "plan": "02",
-  "task": null,
-  "total_tasks": 8,
-  "status": "auto-checkpoint",
+  "plan": "08",
+  "task": "1-of-2",
+  "total_tasks": 2,
+  "status": "pending_checkpoint",
   "completed_tasks": [
     {
-      "id": "01",
-      "name": "Task 1: Install WeasyPrint stack on Windows Server staging + run --info verification",
-      "status": "done"
-    },
-    {
-      "id": "02",
-      "name": "Task 1: Regenerate visual baselines (D-31) — first action before any new component dev",
-      "status": "done"
-    },
-    {
-      "id": "04",
-      "name": "Task 1: Backend parser + schema + migration (TDD RED→GREEN)",
-      "status": "done"
-    },
-    {
-      "id": "05",
-      "name": "Task 1: Backend ingredient_parser + category_mapper + plan parser **Categoria:** extension + comprehensive evil-corpus tests",
-      "status": "done"
-    },
-    {
-      "id": "06",
-      "name": "Task 1: Acquire woff2 fonts + create _build_inline_fonts.py helper + emit base64 strings into template",
-      "status": "done"
-    },
-    {
-      "id": "07",
-      "name": "Plan 02-07 family sync activation (3 tasks): Alembic 0002 backfill + register auto-create + get_user_with_group_access + cross-user ?user_id= on 5 endpoints + PATCH /api/family/share + 40-test authz matrix + SharedBadge + ShareToggleMenu + 15 family.* italian copy + italianTimeAgo helper",
+      "id": "08",
+      "name": "Task 1: Run Phase 2 integration sweep + draft VERIFICATION.md goal-backward + family-convergence e2e + visual + axe",
       "status": "done"
     }
   ],
   "remaining_tasks": [
     {
-      "id": "03",
-      "name": "Task 1: Create 02-03-DEPLOY-CHECKLIST.md artifact + extend copy.it.ts pwa.* with install follow-up keys",
-      "status": "not_started"
-    },
-    {
       "id": "08",
-      "name": "Task 1: Run Phase 2 integration sweep (backend + frontend + axe + visual + Lighthouse) + draft VERIFICATION.md goal-backward",
-      "status": "not_started"
+      "name": "Task 2: CHECKPOINT — Stefano + Marta tone review + sign VERIFICATION.md verdict + flip STATE/ROADMAP to completed",
+      "status": "blocked_on_human",
+      "blocked_on": [
+        "Stefano + Marta tone review on 7 Phase 2 surfaces (file: 02-08-TONE-REVIEW-CHECKLIST.md)",
+        "Stefano iPhone PDF accent verify — 4 surfaces × 7 accent strings (file: 02-06-IPHONE-PDF-VERIFY.md)",
+        "Stefano GTK3 7-day spike Day 7 verdict — 5xx <2% threshold (file: 02-01-GTK3-SPIKE.md)",
+        "Stefano production Lighthouse PWA + a11y ≥95 on /today + /settimana + /spesa (https://wellness-buddy.epartner.it)"
+      ]
     }
   ],
   "blockers": [],
-  "human_actions_pending": [],
-  "decisions": [],
-  "uncommitted_files": [
+  "human_actions_pending": [
     {
-      "status": "M",
-      "path": ".claude/worktrees/agent-a32df8fe35cb33e41"
+      "id": "tone-review",
+      "owner": "Stefano + Marta",
+      "artifact": ".planning/phases/02-differentiators/02-08-TONE-REVIEW-CHECKLIST.md",
+      "action": "Open each of 7 Phase 2 surfaces on installed PWA on real iPhones, walk the Lifesum Pure variant A acceptance criteria, sign initial + date + time + verdict (PASS/CONCERNS/BLOCK) + notes."
     },
     {
-      "status": "M",
-      "path": ".claude/worktrees/agent-a42d61b0768ffbad5"
+      "id": "iphone-pdf-verify",
+      "owner": "Stefano",
+      "artifact": ".planning/phases/02-differentiators/02-06-IPHONE-PDF-VERIFY.md",
+      "action": "Generate a PDF on the production deploy that contains the 7-string accent corpus (Pomodorì / Caffè / Olio d'oliva / Yogurt grèco / piada / puttanèsca / Tiramisù) in ingredient names. Open on iPhone Safari + Mail.app + Files + macOS Preview/Adobe Reader DC. Sign each surface PASS/FAIL. If any FAIL, flip PDF_BACKEND=reportlab in .env.production and restart NSSM."
     },
     {
-      "status": "M",
-      "path": ".claude/worktrees/agent-ae9002924481d0930"
+      "id": "gtk3-day-7-verdict",
+      "owner": "Stefano",
+      "artifact": ".planning/phases/02-differentiators/02-01-GTK3-SPIKE.md",
+      "action": "Run on Windows Server 2019 production NSSM service: fill Day 0 install verification matrix + Day 1/3/4/7 stability checks + 5xx-rate calculation over 7-day window. <2% PASS / ≥2% flip backend per the threshold rule."
     },
     {
-      "status": "M",
-      "path": ".claude/worktrees/agent-aecfa2e25edd7e75d"
-    },
-    {
-      "status": "M",
-      "path": ".claude/worktrees/agent-afb85e72e91a166f4"
-    },
-    {
-      "status": "M",
-      "path": ".claude/worktrees/agent-afde3495816ecdf18"
-    },
-    {
-      "status": "M",
-      "path": ".planning/HANDOFF.json"
-    },
-    {
-      "status": "M",
-      "path": ".planning/STATE.md"
-    },
-    {
-      "status": "??",
-      "path": ".planning/debug/plan-02-04-gaps.md"
-    },
-    {
-      "status": "??",
-      "path": ".planning/debug/snack-serale-bugs.md"
-    },
-    {
-      "status": "??",
-      "path": ".planning/phases/02-differentiators/02-07-SUMMARY.md"
-    },
-    {
-      "status": "??",
-      "path": "dist-package/"
+      "id": "production-lighthouse",
+      "owner": "Stefano",
+      "artifact": "(record in VERIFICATION.md §1 PWA / a11y rows)",
+      "action": "Run Chrome DevTools Lighthouse against https://wellness-buddy.epartner.it/today + /settimana/{currentWeek} + /spesa/{currentWeek}. Record 6 score lines (PWA + a11y per route). Target: PWA ≥95 + a11y ≥95."
     }
   ],
-  "next_action": "**Phase 1 COMPLETE code-side; Phase 2 nearly complete.** Plans 02-01..02-07 merged. Real Stefano + Marta plans now parse end-to-end, /spesa returns categorized items in 5 buckets, Esporta PDF downloads `Lista-spesa-{week_start}.pdf`, and family sync activated end-to-end: Stefano sees Marta's pranzi/cene as `condiviso con Marta`, both can flip per-meal visibility via owner-only DropdownMenu, conflicts surface via named-partner toast, cross-group access returns 404 V13 (40-matrix locked). Plan 02-08 (closure pause-gate verifier — visual baselines + iPhone smoke) ready to execute.",
-  "context_notes": "Status: **Phase 1 COMPLETE code-side; Phase 2 nearly complete.** Plans 02-01..02-07 merged. Real Stefano + Marta plans now parse end-to-end, /spesa returns categorized items in 5 buckets, Esporta PDF downloads `Lista-spesa-{week_start}.pdf`, and family sync activated end-to-end: Stefano sees Marta's pranzi/cene as `condiviso con Marta`, both can flip per-meal visibility via owner-only DropdownMenu, conflicts surface via named-partner toast, cross-group access returns 404 V13 (40-matrix locked). Plan 02-08 (closure pause-gate verifier — visual baselines + iPhone smoke) ready to execute.\n\nRecent commits:\n1be1a58 feat(02-07-task-3): SharedBadge + ShareToggleMenu + MealCard extension + family.* copy + italianTimeAgo + Phosphor facade additions (FAM-02..05, FAM-09, D-15, D-18)\n26d21ca feat(02-07-task-2): get_user_with_group_access dep + cross-user wiring (today/weekly/shopping) + family share endpoint + 40-test authz matrix (FAM-02..09, D-19..D-21)\n9267884 feat(02-07-task-1): Alembic 0002_activate_groups + auth register auto-creates household + idempotence tests (FAM-01, D-22, D-23, Pitfall #16)\n70eccc1 docs(02-06): complete shopping PDF export plan — SUMMARY + STATE + ROADMAP + REQUIREMENTS\nd7e3f3c feat(02-06-task-3): Esporta PDF button wiring + iPhone Safari accent verify artifact (SHOP-07, T-PDF-02, D-13)"
+  "decisions": [
+    "FAM-09 staleTime nuance: production QueryClient ships staleTime=30s + refetchOnWindowFocus=true; the ≤5s budget applies to wire convergence once a refetch is queued AND to the user-facing FAM-05 Ricarica action. Future Phase 5 push channel will collapse trigger time to ≤1s under steady state.",
+    "Convergence test uses page.reload() with localStorage cache cleared (FAM-05 Ricarica path) instead of hacking React Query internals via test globals.",
+    "3 stale test fixtures auto-fixed in Plan 02-08 because pnpm build is a hard prerequisite for any production deploy verification (Rule 1 + Rule 3 scope)."
+  ],
+  "uncommitted_files": [],
+  "last_commits": [
+    "f326459 test(02-08): align stale fixtures so pnpm build passes Phase 2 closure",
+    "208de80 test(02-08): family-convergence e2e Playwright test (FAM-09 ≤5s)",
+    "095c336 test(02-08): regenerate visual baselines + extend axe-core to /settimana + /spesa",
+    "90107ca docs(02-08): VERIFICATION + tone review + iPhone PDF + GTK3 Day 7 checklists"
+  ],
+  "next_action": "Phase 2 PENDING CHECKPOINT — autonomous portion of Plan 02-08 done. Stefano + Marta complete the 4 human_actions_pending entries above; then run /gsd:execute-phase 02-differentiators which will resume Plan 02-08 Task 2 (the human-verify checkpoint) and flip STATE.md phase_2_status from pending_checkpoint → completed, marking Phase 2 done and unlocking Phase 3 (Engagement & Polish — mascot/Lottie/dashboard/push notifications).",
+  "context_notes": "Plan 02-08 autonomous closure delivered: VERIFICATION.md + 02-08-TONE-REVIEW-CHECKLIST.md + family-convergence.spec.ts (4.8s) + 12 visual baselines (2 new for /spesa) + axe-core 8/8 (now covers /settimana + /spesa) + GTK3 Day 7 dev verdict + iPhone PDF PENDING header. Test counts: backend 366/366, frontend 123/123 (was 120/123 pre-fix), lint+typecheck+build all green. WIN REQUISITE audit clean: 0 hex literals, 1 phosphor facade file, 6 tap-scale interactive surfaces, 0 motion >250ms. Phase 2 cannot mark complete until 4 PENDING items resolve."
 }

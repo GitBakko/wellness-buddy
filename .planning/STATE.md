@@ -3,18 +3,19 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-last_updated: "2026-05-05T10:00:58Z"
+last_updated: "2026-05-05T13:50:00Z"
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 18
   completed_plans: 17
   percent: 94
+phase_2_status: pending_checkpoint
 ---
 
 # State: Wellness Buddy
 
-**Last updated:** 2026-05-05 (Phase 2 in progress — Plans 02-01..02-07 complete; 02-08 closure next)
+**Last updated:** 2026-05-05 (Phase 2 PENDING CHECKPOINT — autonomous closure portion of Plan 02-08 done; Stefano + Marta sign-offs blocking)
 
 ## Project Reference
 
@@ -29,15 +30,15 @@ progress:
 
 ## Current Position
 
-- **Phase:** 2 — Differentiators
-- **Plan:** 02-07 complete (family sync activation — Group entity backfilled via idempotent Alembic 0002, get_user_with_group_access dependency with V13 404 envelope, 40-test negative-authz matrix, owner-only PATCH /api/family/share/{variant_id}, frontend SharedBadge + ShareToggleMenu + 15 family.* italian copy + italianTimeAgo helper). Plans 02-01..02-07 complete; 02-08 (Phase 2 closure pause-gate) next.
-- **Status:** **Phase 1 COMPLETE code-side; Phase 2 nearly complete.** Plans 02-01..02-07 merged. Real Stefano + Marta plans now parse end-to-end, /spesa returns categorized items in 5 buckets, Esporta PDF downloads `Lista-spesa-{week_start}.pdf`, and family sync activated end-to-end: Stefano sees Marta's pranzi/cene as `condiviso con Marta`, both can flip per-meal visibility via owner-only DropdownMenu, conflicts surface via named-partner toast, cross-group access returns 404 V13 (40-matrix locked). Plan 02-08 (closure pause-gate verifier — visual baselines + iPhone smoke) ready to execute.
-- **Progress:** Phase 1/5 done code-side · Phase 2: Plans 7/8 complete · 1 plan remaining (02-08)
+- **Phase:** 2 — Differentiators (PENDING CHECKPOINT)
+- **Plan:** 02-08 autonomous portion complete (Plan 02-08 closure: VERIFICATION.md + tone review checklist + GTK3 Day 7 + iPhone PDF status headers + family-convergence e2e + visual baselines for /spesa + axe-core extension to /settimana + /spesa). Phase 2 cannot mark `complete` until 4 human-only items resolve: tone review (Stefano + Marta), iPhone PDF accent verify (Stefano), GTK3 Day 7 verdict (Stefano), production Lighthouse PWA + a11y on /today + /settimana + /spesa (Stefano).
+- **Status:** **Phase 1 COMPLETE code-side; Phase 2 PENDING CHECKPOINT.** Plans 02-01..02-07 merged + Plan 02-08 autonomous closure delivered. Real Stefano + Marta plans now parse end-to-end, /spesa returns categorized items in 5 buckets, Esporta PDF downloads `Lista-spesa-{week_start}.pdf`, family sync activated end-to-end with `condiviso con {nome}` badge + per-meal visibility toggle + named-partner conflict toast + cross-group 404 V13 (40-matrix locked) + ≤5s convergence on Marta's tab via reload model (FAM-09 e2e green in 4.8s). Phase 2 closure verifier (VERIFICATION.md) records 4/5 success criteria PASS autonomously; SC5 PARTIAL pending tone review.
+- **Progress:** Phase 1/5 done code-side · Phase 2: Plans 8/8 code-side complete; CHECKPOINT pending
 - **Phase progress bar:**
 
   ```text
   [##########] 100% — Phase 1: Foundation (10/10 plans, code-side closure)
-  [#########.]  88% — Phase 2: Differentiators (7/8 plans complete)
+  [##########] 100% — Phase 2: Differentiators (8/8 plans, PENDING human-verify checkpoint)
   ```
 
 ## Performance Metrics
@@ -66,6 +67,7 @@ progress:
 | 02-05 shopping   | ~32 min  | 3/3   | 24 created + 9 modified  | 5       |
 | 02-06 pdf-export | ~27 min  | 3/3   | 9 created + 7 modified   | 4       |
 | 02-07 family-sync| ~44 min  | 3/3   | 16 created + 14 modified | 3       |
+| 02-08 closure    | ~50 min  | 1/2   | 2 created + 7 modified   | 4       |
 
 ## Accumulated Context
 
@@ -197,7 +199,14 @@ progress:
 
 ### Next Action
 
-**`/gsd:execute-phase 02-differentiators`** — Phase 2 in progress. Plans 02-01..02-06 complete (shopping list + PDF export shipped). Wave 7 = 02-07 (family sync — wires `get_user_with_group_access` for cross-user reads + condiviso badge convergence) ready to execute next. Stefano iPhone PDF accent verification (`02-06-IPHONE-PDF-VERIFY.md`) pending production deploy.
+**Phase 2 PENDING CHECKPOINT** — autonomous closure portion of Plan 02-08 done; the 4 PENDING items below block the Phase 2 → Phase 3 transition:
+
+1. **Tone review** — Stefano + Marta open `02-08-TONE-REVIEW-CHECKLIST.md`, walk the 7 surfaces (/today + /settimana + /spesa + PDF + ConflictToast + VariantSelector dropdown + condiviso badge) on real iPhones against Lifesum Pure variant A, sign verdict.
+2. **iPhone PDF accent verify** — Stefano fills `02-06-IPHONE-PDF-VERIFY.md` (4 surfaces × 7 accent strings) on the production deploy. If any FAIL, flip `PDF_BACKEND=reportlab`.
+3. **GTK3 Day 7 verdict** — Stefano fills `02-01-GTK3-SPIKE.md` Day 7 cells + 5xx-rate after the 7-day spike runs on the Windows Server 2019 production NSSM service. <2% PASS / ≥2% flip backend.
+4. **Production Lighthouse** — Stefano runs Chrome DevTools Lighthouse on `https://wellness-buddy.epartner.it/today /settimana/{w} /spesa/{w}` and records 6 score lines. Target: PWA ≥95 + a11y ≥95.
+
+After all 4 resolve PASS, run `/gsd:execute-phase 02-differentiators` to complete Plan 02-08 Task 2 (the human-verify checkpoint), which will mark Phase 2 complete and unlock Phase 3 (Engagement & Polish — mascot/Lottie/dashboard/push notifications).
 
 ### Phase 2 Plan Index
 
@@ -209,8 +218,8 @@ progress:
 | 02-04 | Gap-closure: weekly grid parser + per-day variants | 4 | done (commits 745fd96, b97cbc1, c6f1241) |
 | 02-05 | Shopping list | 5 | done (commits 52e0753, 8f8748d, 8810764, 50270db, 55f94f7) |
 | 02-06 | Shopping PDF | 6 | done (commits 4eff599, 3f3240f, 248e24a, d7e3f3c) |
-| 02-07 | Family sync | 7 | not started |
-| 02-08 | Phase 2 closure CHECKPOINT | 8 | not started |
+| 02-07 | Family sync | 7 | done (commits 9267884, 26d21ca, 1be1a58, a253a31, 7fe69be) |
+| 02-08 | Phase 2 closure CHECKPOINT | 8 | pending_checkpoint (autonomous task 1 done — commits f326459, 208de80, 095c336, 90107ca; task 2 awaits Stefano + Marta sign-off) |
 
 ---
 *State initialized: 2026-05-01 — Phase 1 (Foundation) is the current focus.*
