@@ -66,4 +66,6 @@ export {
   ArrowCounterClockwise,
   ClipboardText,
   FilePdf,
+  // Plan 02-06 — Esporta PDF button loading state.
+  CircleNotch,
 } from '@phosphor-icons/react';

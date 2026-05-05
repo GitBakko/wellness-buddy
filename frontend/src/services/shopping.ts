@@ -183,6 +183,82 @@ export function useResetShopping(weekStart: string) {
 }
 
 /**
+ * POST /api/shopping/{weekStart}/export-pdf — download the lista-spesa as PDF.
+ *
+ * Uses the browser-direct ``fetch`` path (NOT ``apiClient`` which auto-decodes
+ * JSON) so the response stays a Blob. Trigger pattern (UI-SPEC §10.4):
+ *
+ *   1. button enters loading state (spinner replaces label, width-stable)
+ *   2. fetch with credentials + Bearer JWT
+ *   3. on 200 → blob → ``URL.createObjectURL`` → anchor.download → click → revoke
+ *   4. sonner success toast ``"PDF pronto."`` (4s auto-dismiss)
+ *   5. on 5xx → sonner error toast ``"Esportazione non riuscita. Riprova tra poco."``
+ *
+ * The endpoint is JWT-authenticated (own-user only Phase 2) and emits
+ * ``Cache-Control: private, no-store`` so the blob is never cached by an
+ * intermediary (T-02-06-02 mitigation).
+ */
+export function useExportPdf(weekStart: string) {
+  return useMutation({
+    mutationFn: async () => {
+      const headers: Record<string, string> = {};
+      const token = useAuthStore.getState().accessToken;
+      if (token) headers.Authorization = `Bearer ${token}`;
+
+      const resp = await fetch(`/api/shopping/${weekStart}/export-pdf`, {
+        method: 'POST',
+        credentials: 'include',
+        headers,
+      });
+
+      if (!resp.ok) {
+        // Try to parse the JSON error envelope ({detail, code}); fall back to
+        // a synthesized error so the onError handler always sees a usable shape.
+        let body: { detail?: string; code?: string } | null = null;
+        try {
+          body = await resp.json();
+        } catch {
+          body = null;
+        }
+        throw {
+          status: resp.status,
+          code: body?.code,
+          detail: body?.detail ?? `HTTP ${resp.status}`,
+        };
+      }
+
+      const blob = await resp.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Lista-spesa-${weekStart}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      return { ok: true } as const;
+    },
+    onSuccess: () => {
+      toast.success(copy.shopping.exportPdfReady, { duration: 4000 });
+    },
+    onError: (err: unknown) => {
+      // Keep the "Esportazione non riuscita" friendly italian copy for any
+      // non-domain failure (5xx, network blips, browser quirks). The
+      // ``no_active_plan`` case surfaces only when the user clears their
+      // active plan after page-load — surface the same generic copy: the
+      // CTA disables itself naturally on the empty-state branch of
+      // Shopping.tsx so this branch is defensive.
+      const code = (err as { code?: string } | null)?.code;
+      if (code === 'no_active_plan') {
+        toast.error(copy.errors.generic500);
+      } else {
+        toast.error(copy.shopping.exportPdfError);
+      }
+    },
+  });
+}
+
+/**
  * Compose a plain-text shopping list for the "Copia testo" CTA. Italian
  * formatting matches the WeasyPrint PDF template (Plan 02-06) so users can
  * paste into messages / notes / share apps.

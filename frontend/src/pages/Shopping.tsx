@@ -22,6 +22,7 @@ import { toast } from 'sonner';
 
 import {
   ArrowCounterClockwise,
+  CircleNotch,
   ClipboardText,
   FilePdf,
 } from '@/components/icons';
@@ -49,6 +50,7 @@ import {
   composeTextExport,
   shoppingQueryKey,
   SHOPPING_CHANNEL,
+  useExportPdf,
   useResetShopping,
   useShopping,
   useToggleItem,
@@ -120,6 +122,7 @@ export default function Shopping(): React.ReactElement {
   const { data, isLoading, isError, error } = useShopping(weekStart);
   const toggle = useToggleItem(weekStart);
   const reset = useResetShopping(weekStart);
+  const exportPdf = useExportPdf(weekStart);
 
   const [view, setView] = React.useState<ShoppingView>('category');
   const [resetOpen, setResetOpen] = React.useState(false);
@@ -153,9 +156,9 @@ export default function Shopping(): React.ReactElement {
   }, [data]);
 
   const handleExportPdf = React.useCallback(() => {
-    // Plan 02-06 wires this — for now surface the friendly message.
-    toast.info(copy.shopping.exportPdfNotYet);
-  }, []);
+    if (exportPdf.isPending) return;
+    exportPdf.mutate();
+  }, [exportPdf]);
 
   const handleResetConfirm = React.useCallback(() => {
     setResetOpen(false);
@@ -326,10 +329,32 @@ export default function Shopping(): React.ReactElement {
             <button
               type="button"
               onClick={handleExportPdf}
-              className="inline-flex items-center gap-[var(--spacing-2)] min-h-11 px-[var(--spacing-4)] rounded-[var(--radius-pill)] bg-[color:var(--color-leaf-500)] text-[color:var(--color-text-inverse)] font-semibold shadow-[var(--shadow-1)] active:scale-[calc(1-0.03*var(--motion-scale))]"
+              disabled={exportPdf.isPending}
+              aria-busy={exportPdf.isPending}
+              aria-label={copy.shopping.exportPdfCta}
+              className="inline-flex items-center justify-center gap-[var(--spacing-2)] min-h-11 min-w-[148px] px-[var(--spacing-4)] rounded-[var(--radius-pill)] bg-[color:var(--color-leaf-500)] text-[color:var(--color-text-inverse)] font-semibold shadow-[var(--shadow-1)] active:scale-[calc(1-0.03*var(--motion-scale))] disabled:opacity-70 disabled:cursor-progress transition-opacity"
             >
-              <FilePdf size={18} weight="fill" aria-hidden="true" />
-              {copy.shopping.exportPdfCta}
+              {exportPdf.isPending ? (
+                <>
+                  <CircleNotch
+                    size={18}
+                    weight="bold"
+                    aria-hidden="true"
+                    className="animate-spin"
+                    style={
+                      {
+                        animationDuration: 'calc(900ms * var(--motion-scale, 1))',
+                      } as React.CSSProperties
+                    }
+                  />
+                  <span aria-hidden="true">{copy.shopping.exportPdfCta}</span>
+                </>
+              ) : (
+                <>
+                  <FilePdf size={18} weight="fill" aria-hidden="true" />
+                  {copy.shopping.exportPdfCta}
+                </>
+              )}
             </button>
           </div>
         </div>
