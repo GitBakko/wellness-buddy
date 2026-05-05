@@ -3,18 +3,18 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-last_updated: "2026-05-04T11:35:30Z"
+last_updated: "2026-05-05T09:08:00Z"
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 18
-  completed_plans: 15
-  percent: 83
+  completed_plans: 16
+  percent: 89
 ---
 
 # State: Wellness Buddy
 
-**Last updated:** 2026-05-04 (Phase 2 in progress — Plans 02-01..02-05 complete; 02-06 PDF is next)
+**Last updated:** 2026-05-05 (Phase 2 in progress — Plans 02-01..02-06 complete; 02-07 family-sync next)
 
 ## Project Reference
 
@@ -30,14 +30,14 @@ progress:
 ## Current Position
 
 - **Phase:** 2 — Differentiators
-- **Plan:** 02-05 complete (shopping list aggregation + 5-category mapper + APScheduler weekly reset cron + /spesa route + BroadcastChannel multi-tab sync shipped). Plans 02-01..02-05 complete; 02-06 (PDF) next in queue.
-- **Status:** **Phase 1 COMPLETE code-side; Phase 2 in progress.** Plans 02-01 (GTK3 spike + PdfExporter ABC), 02-02 (/settimana + variant selector), 02-03 (production deploy), 02-04 (grid parser + per-day variants), 02-05 (shopping list end-to-end) merged. Real Stefano + Marta plans now parse end-to-end and the /spesa endpoint returns 43 categorized items from Stefano's plan in 5 fixed buckets. Plans 02-06 (PDF), 02-07 (family sync), 02-08 (closure) ready to execute.
-- **Progress:** Phase 1/5 done code-side · Phase 2: Plans 5/8 complete · 3 plans remaining (02-06..08)
+- **Plan:** 02-06 complete (shopping list PDF export — WeasyPrint+ReportLab via PdfExporter ABC, woff2 base64 inline brand template, OKLCH drift gate, frontend Esporta PDF blob download). Plans 02-01..02-06 complete; 02-07 (family sync) next.
+- **Status:** **Phase 1 COMPLETE code-side; Phase 2 in progress.** Plans 02-01 (GTK3 spike + PdfExporter ABC), 02-02 (/settimana + variant selector), 02-03 (production deploy), 02-04 (grid parser + per-day variants), 02-05 (shopping list end-to-end), 02-06 (shopping PDF) merged. Real Stefano + Marta plans now parse end-to-end, /spesa returns categorized items in 5 buckets, and Esporta PDF downloads `Lista-spesa-{week_start}.pdf` (live HTTP smoke 200 + application/pdf + 2-page real Stefano plan). Plans 02-07 (family sync), 02-08 (closure) ready to execute.
+- **Progress:** Phase 1/5 done code-side · Phase 2: Plans 6/8 complete · 2 plans remaining (02-07..08)
 - **Phase progress bar:**
 
   ```text
   [##########] 100% — Phase 1: Foundation (10/10 plans, code-side closure)
-  [######....]  63% — Phase 2: Differentiators (5/8 plans complete)
+  [########..]  75% — Phase 2: Differentiators (6/8 plans complete)
   ```
 
 ## Performance Metrics
@@ -64,6 +64,7 @@ progress:
 | 01-09 lifesum-px | ~28 min  | 3/3   | 4 created + 22 modified  | 3       |
 | 02-04 grid-parser| ~25 min  | 3/3   | 7 created + 10 modified  | 3       |
 | 02-05 shopping   | ~32 min  | 3/3   | 24 created + 9 modified  | 5       |
+| 02-06 pdf-export | ~27 min  | 3/3   | 9 created + 7 modified   | 4       |
 
 ## Accumulated Context
 
@@ -118,6 +119,11 @@ progress:
 - (Plan 02-05) BroadcastChannel + window.focus listener fallback for iOS Safari Private mode multi-tab sync (D-25, Pitfall #15) — 3 unit tests cover delivery, unsubscribe, and fallback paths.
 - (Plan 02-05) Native `<details><summary>` for ShoppingCategorySection collapsible — zero JS state, full keyboard a11y inherited.
 - (Plan 02-05) BowlSteam icon used for Condimenti instead of Wine (kitchen-objects WIN REQUISITE) — better semantic match for sauces/oils/condiments.
+- (Plan 02-06) shopping_list.html template + WeasyPrint export endpoint live; OKLCH drift gate passes 6/6; iPhone PDF accent verify artifact ready for Stefano post-deploy run. ReportLab fallback validated end-to-end on dev (no GTK3); production WeasyPrint visual contract validated via `02-06-IPHONE-PDF-VERIFY.md` after deploy.
+- (Plan 02-06) Tests pin PDF backend via `app.dependency_overrides[get_pdf_exporter] = ReportLabExporter` (not env mutation) — settings cache at module init makes env-var override unreliable across test files; FastAPI DI overrides scope cleanly.
+- (Plan 02-06) woff2 base64 inline pattern (D-13): ~47KB latin-ext woff2 source → ~63KB base64 in template body → ~67KB final shopping_list.html. Italian accents (à è ì ò ù) covered by latin-ext subset; production verifies on iPhone Safari + Mail.app.
+- (Plan 02-06) OKLCH drift CI gate dual-enforced: `backend/scripts/check_pdf_template_oklch.py` for CI runs + pytest `test_template_oklch_mirrors_theme_css` (importlib invoke) for dev runs. Same logic, two trigger points.
+- (Plan 02-06) Local dev `backend/.env` uses `PDF_BACKEND=reportlab` (gitignored). Production `.env.production` keeps `weasyprint`. Plan 02-01 ABC factory makes the swap transparent — endpoint contract identical.
 
 ### Open Questions to Resolve in Plans
 
@@ -174,7 +180,7 @@ progress:
 
 ### Next Action
 
-**`/gsd:execute-phase 02-differentiators`** — Phase 2 in progress. Plans 02-01..02-05 complete (shopping list end-to-end shipped). Wave 6 = 02-06 (shopping PDF — wires WeasyPrint exporter from Plan 02-01 + `build_pdf_payload` from 02-05) ready to execute next.
+**`/gsd:execute-phase 02-differentiators`** — Phase 2 in progress. Plans 02-01..02-06 complete (shopping list + PDF export shipped). Wave 7 = 02-07 (family sync — wires `get_user_with_group_access` for cross-user reads + condiviso badge convergence) ready to execute next. Stefano iPhone PDF accent verification (`02-06-IPHONE-PDF-VERIFY.md`) pending production deploy.
 
 ### Phase 2 Plan Index
 
@@ -185,7 +191,7 @@ progress:
 | 02-03 | Production deploy CHECKPOINT | 3 | done |
 | 02-04 | Gap-closure: weekly grid parser + per-day variants | 4 | done (commits 745fd96, b97cbc1, c6f1241) |
 | 02-05 | Shopping list | 5 | done (commits 52e0753, 8f8748d, 8810764, 50270db, 55f94f7) |
-| 02-06 | Shopping PDF | 6 | ready |
+| 02-06 | Shopping PDF | 6 | done (commits 4eff599, 3f3240f, 248e24a, d7e3f3c) |
 | 02-07 | Family sync | 7 | not started |
 | 02-08 | Phase 2 closure CHECKPOINT | 8 | not started |
 

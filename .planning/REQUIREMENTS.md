@@ -102,7 +102,7 @@ Requirements per release v1 (Sprint 1-5). Ogni requisito mappa a una fase roadma
 - [ ] **SHOP-04**: Divisione per categoria italiana: Frigo & Freschi / Frutta & Verdura / Dispensa / Condimenti / Integratori
 - [ ] **SHOP-05**: Vista alternativa "lista per giorno" (cosa serve lunedì, martedì, ecc.)
 - [ ] **SHOP-06**: Esportazione lista come testo semplice (copia/condividi)
-- [ ] **SHOP-07**: Esportazione lista come PDF via WeasyPrint con brand Tailwind tokens (Italian accents nativi)
+- [x] **SHOP-07**: Esportazione lista come PDF via WeasyPrint con brand Tailwind tokens (Italian accents nativi) (Plan 02-06 — shopping_list.html Jinja2 template + woff2 base64 inline + Esporta PDF blob download; Stefano iPhone Safari + Mail.app verification pending production deploy via 02-06-IPHONE-PDF-VERIFY.md)
 - [ ] **SHOP-08**: Reset settimanale automatico ogni lunedì 00:00 (user timezone) con possibilità rollover
 
 ### Multi-User Family Sync (Sprint 2)
@@ -183,7 +183,7 @@ Requirements per release v1 (Sprint 1-5). Ogni requisito mappa a una fase roadma
 - [ ] **DEP-03**: IIS/Nginx reverse proxy: `/api/*` → localhost:8000, `/*` → dist/
 - [ ] **DEP-04**: SSL Let's Encrypt via win-acme su dominio configurabile
 - [ ] **DEP-05**: File `.env` produzione con SECRET_KEY, DATABASE_URL, CORS_ORIGINS, AI_*, MAX_USERS=100, ADMIN_EMAIL
-- [ ] **DEP-06**: WeasyPrint GTK3 Runtime MSI installato + spike validation Sprint 2
+- [x] **DEP-06**: WeasyPrint GTK3 Runtime MSI installato + spike validation Sprint 2 (Plan 02-01 spike + Plan 02-06 endpoint live; Plan 02-08 production observability + Stefano iPhone sign-off)
 - [ ] **DEP-07**: VAPID keys generated e persistite (Sprint 3)
 - [ ] **DEP-08**: Docker Compose opzionale per dev/staging
 - [ ] **DEP-09**: Documentazione DEPLOY.md con setup step-by-step Windows Server 2019
@@ -279,7 +279,7 @@ Requirements per release v1 (Sprint 1-5). Ogni requisito mappa a una fase roadma
 | AI-01 — AI-07 | Phase 1 | Foundation (ABC + NullProvider stub) | Pending |
 | AI-08 — AI-16 | Phase 5 | AI Activation | Pending |
 | DEP-01 — DEP-05, DEP-08, DEP-09 | Phase 1 | Foundation | Pending |
-| DEP-06 | Phase 2 | Differentiators (WeasyPrint GTK3 spike) | Pending |
+| DEP-06 | Phase 2 | Differentiators (WeasyPrint GTK3 spike + PDF endpoint) | Plan 02-01 + 02-06 done; production iPhone sign-off pending |
 | DEP-07 | Phase 3 | Engagement & Polish (VAPID keys) | Pending |
 | UI-01 — UI-20 | All Phases | Cross-cutting WIN REQUISITE | Pending |
 
