@@ -13,7 +13,6 @@
 //   5. WeightQuickLog + WorkoutForm (responsive 2-col on md+)
 //   6. AIWidget placeholder (locked — no data, no network)
 
-import { useState } from 'react';
 import { Link } from 'react-router';
 
 import { Leaf, UploadSimple } from '@/components/icons';
@@ -311,8 +310,9 @@ interface MealsSectionProps {
 }
 
 function MealsSection({ meals, onToggle, disabled }: MealsSectionProps) {
-  // Track which alternative the user has chosen per snack-slot.
-  const [picked, setPicked] = useState<Record<string, string>>({});
+  // Selection happens implicitly: user swipes to the alternative they want
+  // and taps the card's check button (one gesture = scelta + segna pasto).
+  // No separate "Scegli questa" CTA.
   const groups = buildMealGroups(meals);
 
   return (
@@ -336,8 +336,6 @@ function MealsSection({ meals, onToggle, disabled }: MealsSectionProps) {
             key={`carousel-${g.slot}-${idx}`}
             options={g.options}
             slotLabel={g.slotLabel}
-            selectedKey={picked[g.slot]}
-            onSelect={(k) => setPicked((prev) => ({ ...prev, [g.slot]: k }))}
             onToggleComplete={onToggle}
             disabled={disabled}
           />

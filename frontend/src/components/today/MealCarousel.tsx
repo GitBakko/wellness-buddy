@@ -7,18 +7,18 @@
 //   * Native horizontal scroll-snap, 1 card visible at a time
 //   * Swipe left/right to traverse alternatives (no library, pure CSS)
 //   * IntersectionObserver tracks the active card
-//   * Active card is highlighted (scale + leaf-500 ring); user taps "Scegli
-//     questa" to mark selection (selection lives in parent state for now —
-//     persistence in WeeklyPlanVariant is Phase 4 scope).
+//   * The card's existing check button doubles as "scelta + segna pasto" so
+//     no separate select CTA is needed (one gesture: swipe to the alternative
+//     you want, tap check to mark it eaten).
 //   * Desktop ≥768px gets prev/next caret buttons that scroll programmatically.
 //
 // Honors UI-04 (motion ≤250ms) + UI-05 (prefers-reduced-motion via CSS
-// scroll-behavior) + UI-13 (44×44 tap target on caret + select CTA).
+// scroll-behavior) + UI-13 (44×44 tap target on caret + check button).
 //
 // All copy from copy.it.ts, all icons via @/components/icons facade, no hex.
 
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
-import { CaretLeft, CaretRight, Check } from '@/components/icons';
+import { CaretLeft, CaretRight } from '@/components/icons';
 import { MealCard } from '@/components/today/MealCard';
 import { copy } from '@/i18n/copy.it';
 import type { TodayMeal } from '@/services/today';
@@ -28,10 +28,6 @@ interface Props {
   options: TodayMeal[];
   /** Caption shown above the carousel (e.g., "Spuntino pomeriggio"). */
   slotLabel: string;
-  /** Selected option's variant_key (controlled). Undefined = none chosen yet. */
-  selectedKey?: string;
-  /** Called when user taps "Scegli questa" on the active card. */
-  onSelect: (variantKey: string) => void;
   /** Called when user taps the completion check on the active card. */
   onToggleComplete: (mealType: string) => void;
   /** Disabled state forwarded to the active card's check button. */
@@ -47,8 +43,6 @@ function fillTemplate(template: string, vars: Record<string, string | number>): 
 export function MealCarousel({
   options,
   slotLabel,
-  selectedKey,
-  onSelect,
   onToggleComplete,
   disabled,
 }: Props): React.ReactElement {
@@ -91,9 +85,6 @@ export function MealCarousel({
   const goNext = useCallback(() => {
     if (activeIdx < options.length - 1) scrollTo(activeIdx + 1);
   }, [activeIdx, options.length, scrollTo]);
-
-  const active = options[activeIdx];
-  const isSelected = selectedKey === active?.variant_key;
 
   return (
     <section
@@ -163,7 +154,6 @@ export function MealCarousel({
       >
         {options.map((meal, idx) => {
           const isActive = idx === activeIdx;
-          const isPicked = selectedKey === meal.variant_key;
           return (
             <div
               key={meal.variant_key}
@@ -182,21 +172,11 @@ export function MealCarousel({
                 total: options.length,
               })}
             >
-              <div
-                className="rounded-[var(--radius-md)] transition-shadow duration-[var(--duration-base)] ease-[var(--ease-out-soft)]"
-                style={{
-                  outline: isPicked
-                    ? '2px solid var(--color-leaf-500)'
-                    : '2px solid transparent',
-                  outlineOffset: '2px',
-                }}
-              >
-                <MealCard
-                  meal={meal}
-                  onToggle={() => onToggleComplete(meal.meal_type)}
-                  disabled={disabled}
-                />
-              </div>
+              <MealCard
+                meal={meal}
+                onToggle={() => onToggleComplete(meal.meal_type)}
+                disabled={disabled}
+              />
             </div>
           );
         })}
@@ -236,33 +216,6 @@ export function MealCarousel({
           );
         })}
       </nav>
-
-      {/* Select CTA — applies to the active card */}
-      {active ? (
-        <div className="flex justify-center mt-[var(--spacing-1)]">
-          <button
-            type="button"
-            onClick={() => onSelect(active.variant_key)}
-            disabled={isSelected}
-            aria-pressed={isSelected}
-            className="inline-flex items-center gap-[var(--spacing-2)] min-h-11 px-[var(--spacing-4)] rounded-[var(--radius-pill)] text-[var(--text-base)] font-semibold transition-transform duration-[var(--duration-instant)] ease-[var(--ease-out-soft)] active:scale-[0.97] disabled:cursor-default"
-            style={{
-              border: '1.5px solid var(--color-leaf-500)',
-              background: isSelected ? 'var(--color-leaf-500)' : 'transparent',
-              color: isSelected
-                ? 'var(--color-text-inverse)'
-                : 'var(--color-leaf-700)',
-            }}
-          >
-            {isSelected ? (
-              <Check size={18} weight="bold" aria-hidden="true" />
-            ) : null}
-            {isSelected
-              ? copy.today.alternativesSelectedLabel
-              : copy.today.alternativesSelectCta}
-          </button>
-        </div>
-      ) : null}
     </section>
   );
 }
